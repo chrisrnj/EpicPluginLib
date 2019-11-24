@@ -1,0 +1,9 @@
+api-version: '1.13'
+description: |-
+  Allow plugins to create configurations, languages, error reports, chat messaging more easily.
+  This was made to help me (Epicnicity322) generalize my plugins, but anyone can use it,
+  everything is documented and open source.
+name: EpicPluginAPI
+author: Epicnicity322
+main: com.epicnicity322.epicpluginapi.EpicPluginAPI
+version: '1.0'
