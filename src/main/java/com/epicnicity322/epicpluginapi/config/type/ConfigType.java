@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class ConfigType
+public class ConfigType implements Type
 {
     private String name;
     private String defaults;
