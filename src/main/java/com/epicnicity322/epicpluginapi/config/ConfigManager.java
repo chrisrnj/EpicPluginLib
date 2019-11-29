@@ -114,10 +114,6 @@ public class ConfigManager
         return dataFolder.toPath();
     }
 
-    public enum LoadResult
-    {
-        SUCCESS, RESTORED_OLD, ERROR_EXTRACTION, ERROR_LOAD
-    }
 
     /**
      * Extracts language from the plugin jar and converts hard coded language and jar language into {@link Configuration}
@@ -128,9 +124,9 @@ public class ConfigManager
      * @return The load result of each language.
      * @throws Exception If config.yml isn't loaded or isn't in the {@link HashSet}<{@link ConfigType}> specified in this class constructor.
      */
-    public HashMap<LanguageType, LoadResult> loadLanguage(HashSet<String> acceptable_language_versions, HashMap<String, String> hardCodedLang) throws Exception
+    public HashMap<LanguageType, LoadOutput> loadLanguage(HashSet<String> acceptable_language_versions, HashMap<String, String> hardCodedLang) throws Exception
     {
-        HashMap<LanguageType, LoadResult> loadResult = new HashMap<>();
+        HashMap<LanguageType, LoadOutput> loadResult = new HashMap<>();
         String locale;
 
         locale = getConfigByName("config.yml").getString("Locale");
@@ -153,7 +149,7 @@ public class ConfigManager
                 LANGUAGES.put(LanguageType.EXTERNAL, language);
 
                 if (!language.contains("Version") || !acceptable_language_versions.contains(language.getString("Version"))) {
-                    loadResult.put(LanguageType.EXTERNAL, LoadResult.RESTORED_OLD);
+                    loadResult.put(LanguageType.EXTERNAL, LoadOutput.output(LoadOutput.LoadResult.RESTORED_OLD));
                     Files.move(langFile, Utility.getUniquePath(Paths.get(langFile.toString() + ".old")));
                     extract = true;
                 }
@@ -175,7 +171,7 @@ public class ConfigManager
 
                     Files.delete(extractedLang);
                 } catch (Exception e) {
-                    loadResult.put(LanguageType.EXTERNAL, LoadResult.ERROR_EXTRACTION);
+                    loadResult.put(LanguageType.EXTERNAL, LoadOutput.output(LoadOutput.LoadResult.ERROR_EXTRACTION, e));
                 }
 
                 if (Files.exists(langFile)) {
@@ -183,17 +179,17 @@ public class ConfigManager
                 }
             }
 
-            loadResult.put(LanguageType.EXTERNAL, LoadResult.SUCCESS);
+            loadResult.put(LanguageType.EXTERNAL, LoadOutput.output(LoadOutput.LoadResult.SUCCESS));
         } catch (Exception e) {
-            loadResult.put(LanguageType.EXTERNAL, LoadResult.ERROR_LOAD);
+            loadResult.put(LanguageType.EXTERNAL, LoadOutput.output(LoadOutput.LoadResult.ERROR_LOAD, e));
         }
 
         //Language in jar load
         try {
             LANGUAGES.put(LanguageType.JAR, YamlConfiguration.loadConfiguration(new InputStreamReader(Objects.requireNonNull(plugin.getResource("lang/Language " + locale + ".yml")))));
-            loadResult.put(LanguageType.JAR, LoadResult.SUCCESS);
+            loadResult.put(LanguageType.JAR, LoadOutput.output(LoadOutput.LoadResult.SUCCESS));
         } catch (Exception e) {
-            loadResult.put(LanguageType.JAR, LoadResult.ERROR_LOAD);
+            loadResult.put(LanguageType.JAR, LoadOutput.output(LoadOutput.LoadResult.ERROR_LOAD, e));
         }
 
         //Hard coded language load
@@ -204,9 +200,9 @@ public class ConfigManager
                 LANGUAGES.get(LanguageType.HARD_CODED).set(key, hardCodedLang.get(key));
             }
 
-            loadResult.put(LanguageType.HARD_CODED, LoadResult.SUCCESS);
+            loadResult.put(LanguageType.HARD_CODED, LoadOutput.output(LoadOutput.LoadResult.SUCCESS));
         } catch (Exception e) {
-            loadResult.put(LanguageType.HARD_CODED, LoadResult.ERROR_LOAD);
+            loadResult.put(LanguageType.HARD_CODED, LoadOutput.output(LoadOutput.LoadResult.ERROR_LOAD, e));
         }
 
         return loadResult;
@@ -217,9 +213,9 @@ public class ConfigManager
      *
      * @return The load result of each configuration.
      */
-    public HashMap<ConfigType, LoadResult> loadConfig()
+    public HashMap<ConfigType, LoadOutput> loadConfig()
     {
-        HashMap<ConfigType, LoadResult> loadResult = new HashMap<>();
+        HashMap<ConfigType, LoadOutput> loadResult = new HashMap<>();
 
         for (ConfigType type : types) {
             String confName = type.getName();
@@ -234,7 +230,7 @@ public class ConfigManager
                     FileConfiguration loadedConf = CONFIGURATIONS.get(type);
 
                     if (!loadedConf.contains("Version") || !type.getAcceptableVersions().contains(loadedConf.getString("Version"))) {
-                        loadResult.put(type, LoadResult.RESTORED_OLD);
+                        loadResult.put(type, LoadOutput.output(LoadOutput.LoadResult.RESTORED_OLD));
                         Files.move(confPath, Utility.getUniquePath(parentFolder.resolve(confPath.getFileName() + ".old")));
                         createConfig = true;
                     }
@@ -246,7 +242,7 @@ public class ConfigManager
                     try {
                         Utility.stringToFile(type.getDefaults(), confPath);
                     } catch (Exception e) {
-                        loadResult.put(type, LoadResult.ERROR_EXTRACTION);
+                        loadResult.put(type, LoadOutput.output(LoadOutput.LoadResult.ERROR_EXTRACTION, e));
                     }
 
                     if (Files.exists(confPath)) {
@@ -254,9 +250,9 @@ public class ConfigManager
                     }
                 }
 
-                loadResult.putIfAbsent(type, LoadResult.SUCCESS);
+                loadResult.putIfAbsent(type, LoadOutput.output(LoadOutput.LoadResult.SUCCESS));
             } catch (Exception e) {
-                loadResult.put(type, LoadResult.ERROR_LOAD);
+                loadResult.put(type, LoadOutput.output(LoadOutput.LoadResult.ERROR_LOAD, e));
             }
         }
 
