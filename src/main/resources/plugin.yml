@@ -3,5 +3,5 @@ description: 'Allows plugins to create configurations and languages, report erro
 name: EpicPluginAPI
 author: Epicnicity322
 main: com.epicnicity322.epicpluginapi.EpicPluginAPI
-version: '1.2-SNAPSHOT'
+version: '1.2'
 website: https://github.com/Epicnicity322/EpicPluginAPI
