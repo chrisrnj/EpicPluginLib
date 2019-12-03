@@ -23,17 +23,6 @@ public class Utility
         Files.write(destination, data.replaceAll("\n", System.getProperty("line.separator")).getBytes(), StandardOpenOption.CREATE_NEW);
     }
 
-    public static boolean sleep(long millis)
-    {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ignored) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * Checks if the file in the end of the path already exists. If so, then this will rename the path by adding
      * "(1)" (Or a greater number depending on how many duplicates are in the parent folder) to the end of the file name.
