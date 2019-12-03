@@ -32,7 +32,9 @@ public class ErrorLogger
         try {
             Path folder = manager.getDataFolder().resolve("Error Report");
 
-            Files.createDirectories(folder);
+            if (!Files.exists(folder)) {
+                Files.createDirectories(folder);
+            }
 
             Path error = Utility.getUniquePath(Paths.get(folder.toString(), LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss")) + ".LOG"));
@@ -55,31 +57,16 @@ public class ErrorLogger
             Bukkit.getLogger().log(Level.SEVERE, "Something went wrong while reporting an error of \"" + desc.getName() + "\".");
             Bukkit.getLogger().log(Level.SEVERE, "Please contact the developer(s): " + desc.getAuthors());
             System.out.println(" ");
-
-            Utility.sleep(3000);
-
             System.out.println("Error that was being reported:");
             System.out.println(" ");
-
-            Utility.sleep(1000);
-
             exception.printStackTrace();
-
-            Utility.sleep(2000);
-
             System.out.println(" ");
             System.out.println("Error that occurred while reporting:");
             System.out.println(" ");
-            Utility.sleep(1000);
-
             e.printStackTrace();
-
-            Utility.sleep(2000);
             System.out.println(" ");
             Bukkit.getLogger().log(Level.WARNING, "Please read the messages above these errors and report them.");
             System.out.println(" ");
-
-            Utility.sleep(5000);
         }
     }
 
