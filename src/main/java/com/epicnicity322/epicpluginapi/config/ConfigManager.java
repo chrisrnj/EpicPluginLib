@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -101,16 +100,12 @@ public class ConfigManager
      * This creates the data folder before you use it, just to avoid errors and simplify code.
      *
      * @return The data folder as {@link Path}
-     * @throws Exception If something went wrong while creating the folder.
      */
-    public Path getDataFolder() throws Exception
+    public Path getDataFolder()
     {
         File dataFolder = plugin.getDataFolder();
 
-        if (!dataFolder.mkdirs()) {
-            throw new IOException("Something went wrong while creating data folder.");
-        }
-
+        dataFolder.mkdir();
         return dataFolder.toPath();
     }
 
@@ -132,13 +127,13 @@ public class ConfigManager
         locale = getConfigByName("config.yml").getString("Locale");
 
         if (locale == null) {
-            throw new NullPointerException("Config.yml doesn't contains \"Locale\" key.");
+            throw new NullPointerException("Config.yml doesn't contain \"Locale\" key.");
         }
 
         try {
             Path langFolder = getDataFolder().resolve("Language");
 
-            Files.createDirectories(langFolder);
+            langFolder.toFile().mkdir();
 
             Path langFile = langFolder.resolve("Language " + locale.toUpperCase() + ".yml");
 
