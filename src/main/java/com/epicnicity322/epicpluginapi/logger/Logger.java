@@ -21,7 +21,7 @@ public class Logger
 
     public void log(String message, Level level)
     {
-        if (config == null || !config.getBoolean("ShowColoredMessagesInConsole")) {
+        if (config == null || !config.getBoolean("Show Colored Messages In Console")) {
             Bukkit.getLogger().log(level, (prefix + message).replaceAll("&1|&2|&3|&4|&5|&6|&7|&8|&9|&0|&a|&b|&c|&d|&e|&f|&k|&l|&m|&n|&o|&r", ""));
             return;
         }
