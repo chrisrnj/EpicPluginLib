@@ -1,5 +1,5 @@
 api-version: '1.13'
-description: 'Allows plugins to create configurations and languages, report errors and send messages more easily.'
+description: 'Allows plugins to create configurations and languages, report errors, handle commands and send messages more easily.'
 name: EpicPluginAPI
 author: Epicnicity322
 main: com.epicnicity322.epicpluginapi.EpicPluginAPI
