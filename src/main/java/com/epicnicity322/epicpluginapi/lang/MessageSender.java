@@ -21,6 +21,11 @@ public class MessageSender
         this.manager = manager;
     }
 
+    public void setConfigManager(ConfigManager manager)
+    {
+        this.manager = manager;
+    }
+
     public void send(CommandSender sender, boolean prefix, String message)
     {
         if (!message.contains("<null>")) {

@@ -19,6 +19,16 @@ public class Logger
         config = mainConfig;
     }
 
+    public void setPrefix(String prefix)
+    {
+        this.prefix = prefix;
+    }
+
+    public void setMainConfig(FileConfiguration mainConfig)
+    {
+        config = mainConfig;
+    }
+
     public void log(String message, Level level)
     {
         if (config == null || !config.getBoolean("Show Colored Messages In Console")) {

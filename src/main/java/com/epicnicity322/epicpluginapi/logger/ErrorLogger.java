@@ -25,6 +25,16 @@ public class ErrorLogger
         this.logger = logger;
     }
 
+    public void setConfigManager(ConfigManager manager)
+    {
+        this.manager = manager;
+    }
+
+    public void setLogger(Logger logger)
+    {
+        this.logger = logger;
+    }
+
     public void report(Exception exception, String title)
     {
         PluginDescriptionFile desc = manager.getPlugin().getDescription();
