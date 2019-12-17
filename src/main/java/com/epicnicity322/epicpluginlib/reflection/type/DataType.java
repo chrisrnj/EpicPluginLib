@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.reflection.type;
+package com.epicnicity322.epicpluginlib.reflection.type;
 
 import java.util.HashMap;
 

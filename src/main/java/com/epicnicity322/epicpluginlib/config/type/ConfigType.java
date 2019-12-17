@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.config.type;
+package com.epicnicity322.epicpluginlib.config.type;
 
 import java.nio.file.Path;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.command;
+package com.epicnicity322.epicpluginlib.command;
 
 import org.bukkit.command.CommandSender;
 

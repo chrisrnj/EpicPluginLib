@@ -1,6 +1,6 @@
-package com.epicnicity322.epicpluginapi.reflection.type;
+package com.epicnicity322.epicpluginlib.reflection.type;
 
-import com.epicnicity322.epicpluginapi.reflection.ReflectionUtil;
+import com.epicnicity322.epicpluginlib.reflection.ReflectionUtil;
 import org.bukkit.Bukkit;
 
 public enum PackageType

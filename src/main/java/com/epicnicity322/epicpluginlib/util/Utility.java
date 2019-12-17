@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.util;
+package com.epicnicity322.epicpluginlib.util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +21,15 @@ public class Utility
     public static void stringToFile(String data, Path destination) throws IOException
     {
         Files.write(destination, data.replaceAll("\n", System.getProperty("line.separator")).getBytes(), StandardOpenOption.CREATE_NEW);
+    }
+
+    public static int matchZeros(int maxLength, String toMatch)
+    {
+        while (toMatch.length() < maxLength) {
+            toMatch = toMatch + "0";
+        }
+
+        return Integer.parseInt(toMatch);
     }
 
     /**

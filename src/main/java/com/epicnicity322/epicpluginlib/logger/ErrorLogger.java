@@ -1,7 +1,7 @@
-package com.epicnicity322.epicpluginapi.logger;
+package com.epicnicity322.epicpluginlib.logger;
 
-import com.epicnicity322.epicpluginapi.config.ConfigManager;
-import com.epicnicity322.epicpluginapi.util.Utility;
+import com.epicnicity322.epicpluginlib.config.ConfigManager;
+import com.epicnicity322.epicpluginlib.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 

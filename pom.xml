@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.epicnicity322.epicpluginapi</groupId>
-    <artifactId>EpicPluginAPI</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <groupId>com.epicnicity322.epicpluginlib</groupId>
+    <artifactId>EpicPluginLib</artifactId>
+    <version>1.3</version>
 
     <build>
         <plugins>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.14.4-R0.1-SNAPSHOT</version>
+            <version>1.15-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

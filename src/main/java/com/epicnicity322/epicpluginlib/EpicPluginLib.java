@@ -1,6 +1,6 @@
-package com.epicnicity322.epicpluginapi;
+package com.epicnicity322.epicpluginlib;
 
-import com.epicnicity322.epicpluginapi.logger.Logger;
+import com.epicnicity322.epicpluginlib.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashSet;
 import java.util.logging.Level;
 
-public class EpicPluginAPI extends JavaPlugin
+public class EpicPluginLib extends JavaPlugin
 {
     @Override
     public void onEnable()
@@ -16,23 +16,23 @@ public class EpicPluginAPI extends JavaPlugin
         HashSet<String> dependingPlugins = new HashSet<>();
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            if (plugin.getDescription().getSoftDepend().contains("EpicPluginAPI")) {
+            if (plugin.getDescription().getSoftDepend().contains("EpicPluginLib")) {
                 dependingPlugins.add(plugin.getName());
-            } else if (plugin.getDescription().getDepend().contains("EpicPluginAPI")) {
+            } else if (plugin.getDescription().getDepend().contains("EpicPluginLib")) {
                 dependingPlugins.add(plugin.getName());
             }
         }
 
-        Logger logger = new Logger("[EpicPluginAPI] ", null);
+        Logger logger = new Logger("[EpicPluginLib] ", null);
 
         if (dependingPlugins.size() > 0) {
-            logger.log("API enabled successfully.", Level.INFO);
+            logger.log("Lib enabled successfully.", Level.INFO);
 
             for (String plugin : dependingPlugins) {
                 logger.log("Found dependency: " + plugin, Level.INFO);
             }
         } else {
-            logger.log("API enabled but no dependencies were found.", Level.WARNING);
+            logger.log("Lib enabled but no dependencies were found.", Level.WARNING);
         }
     }
 }

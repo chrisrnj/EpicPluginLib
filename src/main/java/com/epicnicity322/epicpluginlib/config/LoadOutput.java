@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.config;
+package com.epicnicity322.epicpluginlib.config;
 
 import com.sun.istack.internal.Nullable;
 

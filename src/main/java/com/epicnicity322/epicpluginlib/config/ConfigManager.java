@@ -1,8 +1,8 @@
-package com.epicnicity322.epicpluginapi.config;
+package com.epicnicity322.epicpluginlib.config;
 
-import com.epicnicity322.epicpluginapi.config.type.ConfigType;
-import com.epicnicity322.epicpluginapi.config.type.LanguageType;
-import com.epicnicity322.epicpluginapi.util.Utility;
+import com.epicnicity322.epicpluginlib.config.type.ConfigType;
+import com.epicnicity322.epicpluginlib.config.type.LanguageType;
+import com.epicnicity322.epicpluginlib.util.Utility;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;

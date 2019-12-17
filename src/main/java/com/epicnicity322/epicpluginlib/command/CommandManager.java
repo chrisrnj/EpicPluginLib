@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.command;
+package com.epicnicity322.epicpluginlib.command;
 
 import com.sun.istack.internal.Nullable;
 import org.bukkit.command.PluginCommand;

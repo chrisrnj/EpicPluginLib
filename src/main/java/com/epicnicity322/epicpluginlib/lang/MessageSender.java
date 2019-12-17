@@ -1,7 +1,7 @@
-package com.epicnicity322.epicpluginapi.lang;
+package com.epicnicity322.epicpluginlib.lang;
 
-import com.epicnicity322.epicpluginapi.config.ConfigManager;
-import com.epicnicity322.epicpluginapi.config.type.LanguageType;
+import com.epicnicity322.epicpluginlib.config.ConfigManager;
+import com.epicnicity322.epicpluginlib.config.type.LanguageType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;

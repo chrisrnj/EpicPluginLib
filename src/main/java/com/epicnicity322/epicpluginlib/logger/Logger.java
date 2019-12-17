@@ -1,4 +1,4 @@
-package com.epicnicity322.epicpluginapi.logger;
+package com.epicnicity322.epicpluginlib.logger;
 
 import com.sun.istack.internal.Nullable;
 import org.bukkit.Bukkit;

@@ -1,8 +1,8 @@
-package com.epicnicity322.epicpluginapi.reflection;
+package com.epicnicity322.epicpluginlib.reflection;
 
-import com.epicnicity322.epicpluginapi.reflection.type.DataType;
-import com.epicnicity322.epicpluginapi.reflection.type.PackageType;
-import com.epicnicity322.epicpluginapi.reflection.type.SubPackageType;
+import com.epicnicity322.epicpluginlib.reflection.type.DataType;
+import com.epicnicity322.epicpluginlib.reflection.type.PackageType;
+import com.epicnicity322.epicpluginlib.reflection.type.SubPackageType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
