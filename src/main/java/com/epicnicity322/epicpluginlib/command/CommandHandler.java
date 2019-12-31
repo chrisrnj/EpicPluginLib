@@ -1,8 +1,9 @@
 package com.epicnicity322.epicpluginlib.command;
 
-import com.sun.istack.internal.Nullable;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class CommandHandler implements CommandExecutor
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, org.bukkit.command.Command command, String s, String[] strings)
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull org.bukkit.command.Command command, @NotNull String s, String[] strings)
     {
         if (strings.length == 0) {
             if (description != null) {

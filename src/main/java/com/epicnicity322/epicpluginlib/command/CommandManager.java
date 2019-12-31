@@ -1,7 +1,7 @@
 package com.epicnicity322.epicpluginlib.command;
 
-import com.sun.istack.internal.Nullable;
 import org.bukkit.command.PluginCommand;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 

@@ -1,6 +1,6 @@
 package com.epicnicity322.epicpluginlib.config;
 
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class will help output both {@link LoadResult} and Exceptions.
