@@ -4,6 +4,7 @@ import com.epicnicity322.epicpluginlib.config.ConfigManager;
 import com.epicnicity322.epicpluginlib.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,13 +17,15 @@ import java.util.logging.Level;
 
 public class ErrorLogger
 {
+    private PluginDescriptionFile description;
+    private Path dataFolder;
     private ConfigManager manager;
-    private Logger logger;
 
-    public ErrorLogger(ConfigManager manager, Logger logger)
+    public ErrorLogger(PluginDescriptionFile description, Path dataFolder, @Nullable ConfigManager manager)
     {
+        this.description = description;
+        this.dataFolder = dataFolder;
         this.manager = manager;
-        this.logger = logger;
     }
 
     public void setConfigManager(ConfigManager manager)
@@ -30,17 +33,10 @@ public class ErrorLogger
         this.manager = manager;
     }
 
-    public void setLogger(Logger logger)
-    {
-        this.logger = logger;
-    }
-
     public void report(Exception exception, String title)
     {
-        PluginDescriptionFile desc = manager.getPlugin().getDescription();
-
         try {
-            Path folder = manager.getDataFolder().resolve("Error Report");
+            Path folder = dataFolder.resolve("Error Report");
 
             if (!Files.exists(folder)) {
                 Files.createDirectories(folder);
@@ -50,22 +46,23 @@ public class ErrorLogger
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss")) + ".LOG"));
 
             Utility.stringToFile("=====================================================================" +
-                    "\n>> Please report this file to " + desc.getAuthors() +
-                    (desc.getWebsite() == null ? "" : "\n>> " + desc.getWebsite()) +
+                    "\n>> Please report this file to " + description.getAuthors() +
+                    (description.getWebsite() == null ? "" : "\n>> " + description.getWebsite()) +
                     "\n=====================================================================" +
                     "\n" +
-                    "\n - " + desc.getName() + " v" + desc.getVersion() +
+                    "\n - " + description.getName() + " v" + description.getVersion() +
                     "\n" +
                     "\n" + title +
                     "\n" + stackTraceToString(exception), error);
 
-            if (manager.getConfigByName("config.yml").getBoolean("Notify New Error Reports to Console")) {
-                logger.log("&4Warn ->&8 New log at &nError Report&8 folder.", Level.WARNING);
+            if (manager == null || manager.getConfigByName("config.yml").getBoolean("Notify New Error Reports to Console")) {
+                assert manager != null;
+                manager.getPlugin().getLogger().log(Level.WARNING, "&4Warn ->&8 New log at &nError Report&8 folder.");
             }
         } catch (Exception e) {
             System.out.println(" ");
-            Bukkit.getLogger().log(Level.SEVERE, "Something went wrong while reporting an error of \"" + desc.getName() + "\".");
-            Bukkit.getLogger().log(Level.SEVERE, "Please contact the developer(s): " + desc.getAuthors());
+            Bukkit.getLogger().log(Level.SEVERE, "Something went wrong while reporting an error of \"" + description.getName() + "\".");
+            Bukkit.getLogger().log(Level.SEVERE, "Please contact the developer(s): " + description.getAuthors());
             System.out.println(" ");
             System.out.println("Error that was being reported:");
             System.out.println(" ");
