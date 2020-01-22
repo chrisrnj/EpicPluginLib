@@ -55,8 +55,7 @@ public class ErrorLogger
                     "\n" + title +
                     "\n" + stackTraceToString(exception), error);
 
-            if (manager == null || manager.getConfigByName("config.yml").getBoolean("Notify New Error Reports to Console")) {
-                assert manager != null;
+            if (manager != null && manager.getConfigByName("config.yml").getBoolean("Notify New Error Reports to Console")) {
                 manager.getPlugin().getLogger().log(Level.WARNING, "&4Warn ->&8 New log at &nError Report&8 folder.");
             }
         } catch (Exception e) {
