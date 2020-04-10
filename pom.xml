@@ -6,7 +6,7 @@
 
     <groupId>com.epicnicity322.epicpluginlib</groupId>
     <artifactId>EpicPluginLib</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
 
     <build>
         <plugins>
