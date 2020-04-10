@@ -16,15 +16,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LoadOutput
 {
-    public enum LoadResult
-    {
-        SUCCESS, RESTORED_OLD, ERROR_EXTRACTION, ERROR_LOAD
-    }
-
     private LoadResult result;
     private Exception exception;
     private boolean hasException = true;
-
     private LoadOutput(LoadResult result, @Nullable Exception exception)
     {
         this.result = result;
@@ -83,5 +77,10 @@ public class LoadOutput
     public Exception getException() throws NullPointerException
     {
         return exception;
+    }
+
+    public enum LoadResult
+    {
+        SUCCESS, RESTORED_OLD, ERROR_EXTRACTION, ERROR_LOAD
     }
 }

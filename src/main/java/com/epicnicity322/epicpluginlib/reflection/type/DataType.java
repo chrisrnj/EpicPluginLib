@@ -14,8 +14,6 @@ public enum DataType
     BOOLEAN(boolean.class, Boolean.class);
 
     private static HashMap<Class<?>, DataType> CLASS_MAP = new HashMap<>();
-    private Class<?> primitive;
-    private Class<?> reference;
 
     static {
         for (DataType t : values()) {
@@ -24,20 +22,13 @@ public enum DataType
         }
     }
 
+    private Class<?> primitive;
+    private Class<?> reference;
+
     DataType(Class<?> primitive, Class<?> reference)
     {
         this.primitive = primitive;
         this.reference = reference;
-    }
-
-    public Class<?> getPrimitive()
-    {
-        return primitive;
-    }
-
-    public Class<?> getReference()
-    {
-        return reference;
     }
 
     public static DataType fromClass(Class<?> c)
@@ -97,5 +88,15 @@ public enum DataType
         }
 
         return true;
+    }
+
+    public Class<?> getPrimitive()
+    {
+        return primitive;
+    }
+
+    public Class<?> getReference()
+    {
+        return reference;
     }
 }

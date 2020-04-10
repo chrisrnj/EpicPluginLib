@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class Utility
+public final class Utility
 {
     public static boolean isInteger(Object value)
     {
@@ -20,16 +20,19 @@ public class Utility
 
     public static void stringToFile(String data, Path destination) throws IOException
     {
-        Files.write(destination, data.replaceAll("\n", System.getProperty("line.separator")).getBytes(), StandardOpenOption.CREATE_NEW);
+        Files.write(destination, data.replaceAll("\n", System.getProperty("line.separator")).getBytes(),
+                StandardOpenOption.CREATE_NEW);
     }
 
     public static int matchZeros(int maxLength, String toMatch)
     {
-        while (toMatch.length() < maxLength) {
-            toMatch = toMatch + "0";
+        StringBuilder toMatchBuilder = new StringBuilder(toMatch);
+
+        while (toMatchBuilder.length() < maxLength) {
+            toMatchBuilder.append("0");
         }
 
-        return Integer.parseInt(toMatch);
+        return Integer.parseInt(toMatchBuilder.toString());
     }
 
     /**
@@ -50,19 +53,20 @@ public class Utility
         while (Files.exists(path)) {
             fileName = path.getFileName().toString();
 
-            String fileNameOnly = fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")).trim() : fileName.trim();
+            String fileNameOnly = fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")).trim() :
+                    fileName.trim();
             String parenthesisPrefix = "";
 
             // If a duplicate does not have a space before the parenthesis, then this space will be added by this.
-            if (fileNameOnly.contains(" ")) {
-                if (fileNameOnly.charAt(fileNameOnly.lastIndexOf(" ") + 1) != '(') {
-                    parenthesisPrefix = " ";
-                }
+            if (fileNameOnly.contains(" ") && fileNameOnly.charAt(fileNameOnly.lastIndexOf(" ") + 1) != '(') {
+                parenthesisPrefix = " ";
             }
 
             if (isADuplicate(fileNameOnly)) {
-                l = Long.parseLong(fileNameOnly.substring(fileNameOnly.lastIndexOf("(") + 1).replace(")", ""));
-                path = parentPath.resolve(fileNameOnly.substring(0, fileNameOnly.lastIndexOf("(")) + parenthesisPrefix + "(" + (l + 1) + ")" + extension);
+                l = Long.parseLong(fileNameOnly.substring(fileNameOnly.lastIndexOf("(") + 1).replace(")",
+                        ""));
+                path = parentPath.resolve(fileNameOnly.substring(0, fileNameOnly.lastIndexOf("(")) +
+                        parenthesisPrefix + "(" + (l + 1) + ")" + extension);
             } else {
                 path = parentPath.resolve(fileNameOnly + " (1)" + extension);
             }

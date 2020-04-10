@@ -28,6 +28,14 @@ public class ErrorLogger
         this.manager = manager;
     }
 
+    public static String stackTraceToString(Exception exception)
+    {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        exception.printStackTrace(pw);
+        return sw.toString();
+    }
+
     public void setConfigManager(ConfigManager manager)
     {
         this.manager = manager;
@@ -74,13 +82,5 @@ public class ErrorLogger
             Bukkit.getLogger().log(Level.WARNING, "Please read the messages above these errors and report them.");
             System.out.println(" ");
         }
-    }
-
-    public static String stackTraceToString(Exception exception)
-    {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        exception.printStackTrace(pw);
-        return sw.toString();
     }
 }

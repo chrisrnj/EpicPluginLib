@@ -24,6 +24,8 @@ public class ConfigManager
 {
     private JavaPlugin plugin;
     private HashSet<ConfigType> types;
+    private HashMap<ConfigType, FileConfiguration> CONFIGURATIONS = new HashMap<>();
+    private HashMap<LanguageType, Configuration> LANGUAGES = new HashMap<>();
 
     /**
      * This class will help you extract, load and get configurations and languages.
@@ -36,9 +38,6 @@ public class ConfigManager
         this.plugin = plugin;
         this.types = types;
     }
-
-    private HashMap<ConfigType, FileConfiguration> CONFIGURATIONS = new HashMap<>();
-    private HashMap<LanguageType, Configuration> LANGUAGES = new HashMap<>();
 
     /**
      * @param type The type that you want.

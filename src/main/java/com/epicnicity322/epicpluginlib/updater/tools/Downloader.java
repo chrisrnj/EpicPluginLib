@@ -9,28 +9,13 @@ public class Downloader implements Runnable
 {
     private URL url;
     private OutputStream out;
+    private Result result;
 
     public Downloader(URL url, OutputStream out)
     {
         this.url = url;
         this.out = out;
     }
-
-    /**
-     * OFFLINE = Unable to connect to url.
-     * SUCCESS = Update downloaded successfully.
-     * TIMEOUT = Connection timed out.
-     * UNEXPECTED_ERROR = Something went wrong while downloading.
-     */
-    public enum Result
-    {
-        OFFLINE,
-        SUCCESS,
-        TIMEOUT,
-        UNEXPECTED_ERROR
-    }
-
-    private Result result;
 
     public Result getResult()
     {
@@ -85,5 +70,19 @@ public class Downloader implements Runnable
         }
 
         return url;
+    }
+
+    /**
+     * OFFLINE = Unable to connect to url.
+     * SUCCESS = Update downloaded successfully.
+     * TIMEOUT = Connection timed out.
+     * UNEXPECTED_ERROR = Something went wrong while downloading.
+     */
+    public enum Result
+    {
+        OFFLINE,
+        SUCCESS,
+        TIMEOUT,
+        UNEXPECTED_ERROR
     }
 }

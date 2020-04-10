@@ -73,22 +73,6 @@ public class Updater
         }
     }
 
-    /**
-     * AVAILABLE = There is a update available.
-     * NOT_AVAILABLE = Latest version is installed.
-     * OFFLINE = Unable to connect to api.spigotmc.org.
-     * TIMEOUT = Connection timed out.
-     * UNEXPECTED_ERROR = Something went wrong while checking for updates.
-     */
-    public enum CheckResult
-    {
-        AVAILABLE,
-        NOT_AVAILABLE,
-        OFFLINE,
-        TIMEOUT,
-        UNEXPECTED_ERROR
-    }
-
     public CheckResult check()
     {
         try {
@@ -108,11 +92,11 @@ public class Updater
 
             latestVersion = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
-            Integer latestNoDot = Integer.parseInt(latestVersion.replace(".", ""));
-            Integer currentNoDot = Integer.parseInt(currentVersion.replace(".", ""));
+            int latestNoDot = Integer.parseInt(latestVersion.replace(".", ""));
+            int currentNoDot = Integer.parseInt(currentVersion.replace(".", ""));
 
-            if (Utility.matchZeros(currentNoDot.toString().length(), latestNoDot.toString()) >
-                    Utility.matchZeros(latestNoDot.toString().length(), currentNoDot.toString())) {
+            if (Utility.matchZeros(Integer.toString(currentNoDot).length(), Integer.toString(latestNoDot)) >
+                    Utility.matchZeros(Integer.toString(latestNoDot).length(), Integer.toString(currentNoDot))) {
                 hasUpdate = true;
                 return CheckResult.AVAILABLE;
             } else {
@@ -161,5 +145,21 @@ public class Updater
     public boolean hasUpdate()
     {
         return hasUpdate;
+    }
+
+    /**
+     * AVAILABLE = There is a update available.
+     * NOT_AVAILABLE = Latest version is installed.
+     * OFFLINE = Unable to connect to api.spigotmc.org.
+     * TIMEOUT = Connection timed out.
+     * UNEXPECTED_ERROR = Something went wrong while checking for updates.
+     */
+    public enum CheckResult
+    {
+        AVAILABLE,
+        NOT_AVAILABLE,
+        OFFLINE,
+        TIMEOUT,
+        UNEXPECTED_ERROR
     }
 }
