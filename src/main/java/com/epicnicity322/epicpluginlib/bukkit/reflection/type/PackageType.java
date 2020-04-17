@@ -1,14 +1,14 @@
-package com.epicnicity322.epicpluginlib.reflection.type;
+package com.epicnicity322.epicpluginlib.bukkit.reflection.type;
 
-import com.epicnicity322.epicpluginlib.reflection.ReflectionUtil;
+import com.epicnicity322.epicpluginlib.bukkit.reflection.ReflectionUtil;
 import org.bukkit.Bukkit;
 
 public enum PackageType
 {
-    MINECRAFT_SERVER("net.minecraft.server." + ReflectionUtil.NMS_VERSION),
+    MINECRAFT_SERVER("net.minecraft.server." + ReflectionUtil.getNmsVersion()),
     CRAFTBUKKIT(Bukkit.getServer().getClass().getPackage().getName());
 
-    private String name;
+    private final String name;
 
     PackageType(String name)
     {
