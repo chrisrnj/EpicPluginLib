@@ -1,9 +1,10 @@
-package com.epicnicity322.epicpluginlib.updater;
+package com.epicnicity322.epicpluginlib.bukkit.updater;
 
-import com.epicnicity322.epicpluginlib.updater.tools.Downloader;
-import com.epicnicity322.epicpluginlib.util.Utility;
+import com.epicnicity322.epicpluginlib.core.tools.Downloader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,14 +12,16 @@ import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 /**
  * Downloads and checks for updates through spiget.org
  */
 public class Updater
 {
-    private File jar;
-    private String currentVersion;
+    private static final @NotNull Pattern versionSeparatorRegex = Pattern.compile("\\.");
+    private final @NotNull File jar;
+    private final @NotNull String currentVersion;
     private String latestVersion;
     private boolean hasUpdate = false;
     private URL VERSION_URL;
@@ -36,7 +39,7 @@ public class Updater
      * @param currentVersion The current version of your plugin. Only numbers and dots allowed!
      * @param id             The id of your plugin in spigotmc.org.
      */
-    public Updater(File jar, String currentVersion, int id)
+    public Updater(@NotNull File jar, @NotNull String currentVersion, int id)
     {
         this.jar = jar;
         this.currentVersion = currentVersion;
@@ -61,7 +64,7 @@ public class Updater
      * @param descriptionFile Your plugin's plugin.yml file. In case your version contains only numbers and dots.
      * @param id              The id of your plugin in spigotmc.org.
      */
-    public Updater(File jar, PluginDescriptionFile descriptionFile, int id)
+    public Updater(@NotNull File jar, @NotNull PluginDescriptionFile descriptionFile, int id)
     {
         this.jar = jar;
         this.currentVersion = descriptionFile.getVersion();
@@ -73,7 +76,34 @@ public class Updater
         }
     }
 
-    public CheckResult check()
+    /**
+     * Checks if a version is greater than the other.
+     *
+     * @param version        The version to check if is greater than greaterVersion.
+     * @param greaterVersion The version to check if version parameter is greater.
+     * @return true if version is greater than greaterVersion.
+     */
+    private static boolean isVersionGreater(String version, String greaterVersion)
+    {
+        String[] versionNodes = versionSeparatorRegex.split(version);
+        String[] greaterNodes = versionSeparatorRegex.split(greaterVersion);
+
+        int length = Math.max(versionNodes.length, greaterNodes.length);
+
+        for (int i = 0; i < length; ++i) {
+            int versionNode = i < versionNodes.length ? Integer.parseInt(versionNodes[i]) : 0;
+            int greaterNode = i < greaterNodes.length ? Integer.parseInt(greaterNodes[i]) : 0;
+
+            if (versionNode < greaterNode)
+                return false;
+            if (versionNode > greaterNode)
+                return true;
+        }
+
+        return false;
+    }
+
+    public @NotNull CheckResult check()
     {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -82,21 +112,15 @@ public class Updater
 
             thread.start();
 
-            if (thread.isAlive()) {
+            if (thread.isAlive())
                 thread.join();
-            }
 
-            if (downloader.getResult() != Downloader.Result.SUCCESS) {
+            if (downloader.getResult() != Downloader.Result.SUCCESS)
                 return CheckResult.valueOf(downloader.getResult().toString());
-            }
 
             latestVersion = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
-            int latestNoDot = Integer.parseInt(latestVersion.replace(".", ""));
-            int currentNoDot = Integer.parseInt(currentVersion.replace(".", ""));
-
-            if (Utility.matchZeros(Integer.toString(currentNoDot).length(), Integer.toString(latestNoDot)) >
-                    Utility.matchZeros(Integer.toString(latestNoDot).length(), Integer.toString(currentNoDot))) {
+            if (isVersionGreater(latestVersion, currentVersion)) {
                 hasUpdate = true;
                 return CheckResult.AVAILABLE;
             } else {
@@ -108,23 +132,26 @@ public class Updater
         }
     }
 
-    public Downloader.Result download()
+    public @NotNull Downloader.Result download()
     {
         try {
             File update = Bukkit.getUpdateFolderFile();
 
-            update.mkdirs();
+            if (update.mkdirs()) {
 
-            Downloader downloader = new Downloader(DOWNLOAD_URL, new FileOutputStream(new File(update, jar.getName())));
-            Thread thread = new Thread(downloader, "Update Downloader");
+                Downloader downloader = new Downloader(DOWNLOAD_URL, new FileOutputStream(new File(update,
+                        jar.getName())));
+                Thread thread = new Thread(downloader, "Update Downloader");
 
-            thread.start();
+                thread.start();
 
-            if (thread.isAlive()) {
-                thread.join();
+                if (thread.isAlive())
+                    thread.join();
+
+                return downloader.getResult();
+            } else {
+                return Downloader.Result.UNEXPECTED_ERROR;
             }
-
-            return downloader.getResult();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,12 +159,12 @@ public class Updater
         return Downloader.Result.UNEXPECTED_ERROR;
     }
 
-    public String getLatestVersion()
+    public @Nullable String getLatestVersion()
     {
         return latestVersion;
     }
 
-    public String getCurrentVersion()
+    public @NotNull String getCurrentVersion()
     {
         return currentVersion;
     }
@@ -147,19 +174,27 @@ public class Updater
         return hasUpdate;
     }
 
-    /**
-     * AVAILABLE = There is a update available.
-     * NOT_AVAILABLE = Latest version is installed.
-     * OFFLINE = Unable to connect to api.spigotmc.org.
-     * TIMEOUT = Connection timed out.
-     * UNEXPECTED_ERROR = Something went wrong while checking for updates.
-     */
     public enum CheckResult
     {
+        /**
+         * There is a update available.
+         */
         AVAILABLE,
+        /**
+         * Latest version is installed.
+         */
         NOT_AVAILABLE,
+        /**
+         * Unable to connect to api.spigotmc.org.
+         */
         OFFLINE,
+        /**
+         * Connection timed out.
+         */
         TIMEOUT,
+        /**
+         * Something went wrong while checking for updates.
+         */
         UNEXPECTED_ERROR
     }
 }
