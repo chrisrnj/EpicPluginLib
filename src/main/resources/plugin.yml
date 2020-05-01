@@ -4,6 +4,6 @@ description: >
   access reflection and check for updates more easily.
 name: EpicPluginLib
 author: Epicnicity322
-main: com.epicnicity322.epicpluginlib.EpicPluginLib
+main: com.epicnicity322.epicpluginlib.bukkit.EpicPluginLib
 version: '1.4'
 website: https://github.com/Epicnicity322/EpicPluginLib
