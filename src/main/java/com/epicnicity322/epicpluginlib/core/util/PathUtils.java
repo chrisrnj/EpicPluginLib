@@ -12,7 +12,8 @@ import java.util.stream.Stream;
 
 public final class PathUtils
 {
-    private static final String lineSeparator = System.getProperty("line.separator");
+    private static final String lineSeparator = ObjectUtils.getOrDefault(System.getProperty("line.separator"), "\n");
+    private static final int lineSeparatorLength = lineSeparator.length();
 
     private PathUtils()
     {
@@ -36,7 +37,8 @@ public final class PathUtils
             lines.forEach(line -> output.append(lineSeparator).append(line));
         }
 
-        return output.toString().substring(lineSeparator.length());
+        // Returning the string without the initial line separator.
+        return output.length() <= lineSeparatorLength ? "" : output.substring(lineSeparatorLength);
     }
 
     /**
