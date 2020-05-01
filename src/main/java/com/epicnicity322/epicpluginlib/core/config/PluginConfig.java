@@ -122,7 +122,7 @@ public class PluginConfig
 
                     for (String keys : lastElement.keySet()) {
                         // Checking if any key of lastElement has the same mother section as firstSection.
-                        if (keys.substring(0, keys.indexOf(".")).equals(firstSection)) {
+                        if ((keys.contains(".") ? keys.substring(0, keys.indexOf(".")) : keys).equals(firstSection)) {
                             lastElement.put(key, value);
                             updateContent();
                             updateYaml();
