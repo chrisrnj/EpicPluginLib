@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ReflectionUtil
+public final class ReflectionUtil
 {
     private static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
     private static Method player_getHandle_method;
@@ -35,6 +35,10 @@ public class ReflectionUtil
             //I'm pretty sure these classes exist so the exception is ignored.
         } catch (ClassNotFoundException ignored) {
         }
+    }
+
+    private ReflectionUtil()
+    {
     }
 
     /**
