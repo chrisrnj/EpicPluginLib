@@ -1,4 +1,4 @@
-# EpicPluginLib
+# EpicPluginLib  [![Travis Status](https://travis-ci.org/Epicnicity322/EpicPluginLib.svg?branch=master)](https://travis-ci.org/Epicnicity322/EpicPluginLib)
 A library that helps you manage the basic functionality of your plugin more easily. This library can read and write yaml configurations, send messages, handle commands, update, log errors, access reflection (only bukkit), and log messages to console. Although this was made for bukkit and sponge plugins, this library can also read and write yaml configurations and log errors for any java program.
 ### EpicPluginLib as a gradle/maven/sbt/leiningen dependency
 EpicPluginLib can be added as dependency through [jitpack](https://jitpack.io/#Epicnicity322/EpicPluginLib) repository.
