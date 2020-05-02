@@ -55,14 +55,3 @@ To add this library as a dependency to your sponge plugin, add this to your @Plu
 ```java
 dependencies = @Dependency(id = "epicpluginlib")
 ```
-E.g.:
-```java
-@Plugin(
-        id = "myplugin",
-        name = "My Plugin",
-        version = "1.0",
-        description = "",
-        dependencies = @Dependency(id = "epicpluginlib"))
-public final class MyPlugin {
-}
-```
