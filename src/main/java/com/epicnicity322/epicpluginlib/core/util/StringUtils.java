@@ -1,11 +1,12 @@
 package com.epicnicity322.epicpluginlib.core.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class StringUtils
-{
-    private StringUtils()
-    {
+import java.util.regex.Pattern;
+
+public final class StringUtils {
+    private StringUtils() {
     }
 
     /**
@@ -75,5 +76,33 @@ public final class StringUtils
         }
 
         return true;
+    }
+
+    private static final @NotNull Pattern versionSeparatorRegex = Pattern.compile("\\.");
+
+    /**
+     * Checks if version is greater than greaterVersion.
+     *
+     * @param version        The version to check if is greater.
+     * @param greaterVersion The version to check if version parameter is greater.
+     * @return true if version is greater than greaterVersion.
+     */
+    public static boolean isVersionGreater(@NotNull String version, @NotNull String greaterVersion) {
+        String[] versionNodes = versionSeparatorRegex.split(version);
+        String[] greaterNodes = versionSeparatorRegex.split(greaterVersion);
+
+        int length = Math.max(versionNodes.length, greaterNodes.length);
+
+        for (int i = 0; i < length; ++i) {
+            int versionNode = i < versionNodes.length ? Integer.parseInt(versionNodes[i]) : 0;
+            int greaterNode = i < greaterNodes.length ? Integer.parseInt(greaterNodes[i]) : 0;
+
+            if (versionNode < greaterNode)
+                return false;
+            if (versionNode > greaterNode)
+                return true;
+        }
+
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package com.epicnicity322.epicpluginlib.bukkit.updater;
 
 import com.epicnicity322.epicpluginlib.core.tools.Downloader;
+import com.epicnicity322.epicpluginlib.core.util.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
@@ -12,14 +13,12 @@ import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Pattern;
 
 /**
  * Downloads and checks for updates through spiget.org
  */
 public class Updater
 {
-    private static final @NotNull Pattern versionSeparatorRegex = Pattern.compile("\\.");
     private final @NotNull File jar;
     private final @NotNull String currentVersion;
     private String latestVersion;
@@ -76,33 +75,6 @@ public class Updater
         }
     }
 
-    /**
-     * Checks if a version is greater than the other.
-     *
-     * @param version        The version to check if is greater than greaterVersion.
-     * @param greaterVersion The version to check if version parameter is greater.
-     * @return true if version is greater than greaterVersion.
-     */
-    private static boolean isVersionGreater(String version, String greaterVersion)
-    {
-        String[] versionNodes = versionSeparatorRegex.split(version);
-        String[] greaterNodes = versionSeparatorRegex.split(greaterVersion);
-
-        int length = Math.max(versionNodes.length, greaterNodes.length);
-
-        for (int i = 0; i < length; ++i) {
-            int versionNode = i < versionNodes.length ? Integer.parseInt(versionNodes[i]) : 0;
-            int greaterNode = i < greaterNodes.length ? Integer.parseInt(greaterNodes[i]) : 0;
-
-            if (versionNode < greaterNode)
-                return false;
-            if (versionNode > greaterNode)
-                return true;
-        }
-
-        return false;
-    }
-
     public @NotNull CheckResult check()
     {
         try {
@@ -120,7 +92,7 @@ public class Updater
 
             latestVersion = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
-            if (isVersionGreater(latestVersion, currentVersion)) {
+            if (StringUtils.isVersionGreater(latestVersion, currentVersion)) {
                 hasUpdate = true;
                 return CheckResult.AVAILABLE;
             } else {
