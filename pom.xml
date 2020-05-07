@@ -6,7 +6,7 @@
 
     <groupId>com.epicnicity322.epicpluginlib</groupId>
     <artifactId>EpicPluginLib</artifactId>
-    <version>1.4</version>
+    <version>1.4.1</version>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>18.0.0</version>
+            <version>19.0.0</version>
         </dependency>
     </dependencies>
 </project>
