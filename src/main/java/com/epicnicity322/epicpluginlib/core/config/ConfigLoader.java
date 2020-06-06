@@ -1,6 +1,26 @@
+/*
+ * Copyright (c) 2020 Christiano Rangel
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.epicnicity322.epicpluginlib.core.config;
 
-import com.timvisee.yamlwrapper.YamlConfiguration;
+import com.epicnicity322.yamlhandler.Configuration;
+import com.epicnicity322.yamlhandler.exceptions.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,9 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-/**
- * Reloads YamlConfiguration instances from {@link PluginConfig}.
- */
 public class ConfigLoader
 {
     private final @NotNull Map<PluginConfig, Collection<String>> configurations;
@@ -27,41 +44,24 @@ public class ConfigLoader
     /**
      * Creates a config loader to save, reload, and get configurations. This instantiation allows you to check for
      * outdated configurations.
+     * <p>
+     * Configurations with the paths with the same file name will have the prefix of the parent file added to their name.
      *
      * @param configurations A map with the configurations and the allowed versions this configuration can have before
      *                       getting outdated.
      */
     public ConfigLoader(@NotNull Map<@NotNull PluginConfig, @NotNull Collection<String>> configurations)
     {
-        Set<PluginConfig> configSet = configurations.keySet();
-
-        for (PluginConfig config : configSet) {
-            if (config == null || configurations.get(config) == null) {
-                throw new NullPointerException();
-            }
-
-            for (PluginConfig config1 : configSet) {
-                if (config != config1 && config.getName().equals(config1.getName())) {
-                    Path parent = config.getPath().getParent();
-                    Path parent1 = config1.getPath().getParent();
-
-                    if (parent1.startsWith(parent)) {
-                        config1.name = parent1.getFileName().toString() + System.getProperty("file.separator") +
-                                config1.getName();
-                    } else {
-                        config.name = parent.getFileName().toString() + System.getProperty("file.separator") +
-                                config.getName();
-                    }
-                }
-            }
-        }
-
         this.configurations = configurations;
+
+        setUniqueNames(configurations.keySet());
     }
 
     /**
      * Creates a config loader to save, load, and get configurations. This instantiation makes so the versions of the
      * configurations in this collection will not be checked.
+     * <p>
+     * Configurations with the paths with the same file name will have the prefix of the parent file added to their name.
      *
      * @param configurations The configurations you want to save, load and get.
      */
@@ -69,10 +69,85 @@ public class ConfigLoader
     {
         this.configurations = new HashMap<>();
 
-        configurations.forEach((pluginConfig) -> {
+        configurations.forEach(pluginConfig -> {
             if (pluginConfig != null)
                 this.configurations.put(pluginConfig, Collections.emptySet());
         });
+
+        setUniqueNames(configurations);
+    }
+
+    private static void setUniqueNames(Collection<PluginConfig> configs)
+    {
+        // Sorting configs with the same name.
+        HashMap<String, HashSet<PluginConfig>> sortedConfigs = new HashMap<>();
+
+        for (PluginConfig config : configs) {
+            String name = config.getPath().getFileName().toString();
+
+            for (PluginConfig config1 : configs) {
+                if (name.equals(config1.getPath().getFileName().toString())) {
+                    HashSet<PluginConfig> configsWithTheSameName;
+
+                    if (sortedConfigs.containsKey(name))
+                        configsWithTheSameName = sortedConfigs.get(name);
+                    else {
+                        configsWithTheSameName = new HashSet<>();
+                        sortedConfigs.put(name, configsWithTheSameName);
+                    }
+
+                    configsWithTheSameName.add(config1);
+                }
+            }
+        }
+
+        // Converting configs with the same name to string and adding the parent path to the name of the configs that have the same name.
+
+        for (Map.Entry<String, HashSet<PluginConfig>> sortedConfigEntry : sortedConfigs.entrySet()) {
+            HashSet<PluginConfig> pathsWithTheSameName = sortedConfigEntry.getValue();
+            HashMap<String, PluginConfig> pathNames = new HashMap<>();
+
+            if (pathsWithTheSameName.size() > 1) {
+                pathsWithTheSameName.forEach(config -> pathNames.put(config.getPath().toAbsolutePath().toString(), config));
+
+                whileSameFirstChar:
+                while (!pathNames.containsKey(sortedConfigEntry.getKey()) && haveTheSameFirstChar(pathNames.keySet())) {
+                    for (Map.Entry<String, PluginConfig> name : new HashSet<>(pathNames.entrySet())) {
+                        if (name.getKey().length() > 1) {
+                            pathNames.remove(name.getKey());
+                            String newName = name.getKey().substring(1);
+                            pathNames.put(newName, name.getValue());
+                            name.getValue().setName(newName);
+                        } else
+                            break whileSameFirstChar;
+                    }
+                }
+            } else {
+                PluginConfig config = pathsWithTheSameName.iterator().next();
+                config.setName(config.getPath().getFileName().toString());
+            }
+        }
+    }
+
+    private static boolean haveTheSameFirstChar(Set<String> strings)
+    {
+        Character c = null;
+
+        for (String s : strings) {
+            if (c == null) {
+                if (s.isEmpty()) {
+                    return false;
+                }
+
+                c = s.charAt(0);
+            } else {
+                if (!s.startsWith(c.toString())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -83,11 +158,9 @@ public class ConfigLoader
      */
     public @Nullable PluginConfig getConfiguration(@NotNull String name)
     {
-        for (PluginConfig config : configurations.keySet()) {
-            if (config.getName().equals(name)) {
+        for (PluginConfig config : configurations.keySet())
+            if (config.getName().equals(name))
                 return config;
-            }
-        }
 
         return null;
     }
@@ -104,6 +177,9 @@ public class ConfigLoader
 
     /**
      * Adds a configuration to be loaded and saved by this {@link ConfigLoader}.
+     * <p>
+     * If this configuration has the same name as others configurations on this loader the name of this configurations
+     * or others on this loader may be changed, so beware.
      *
      * @param config              The configuration to be added.
      * @param nonOutdatedVersions The versions this configuration can have before getting outdated.
@@ -114,10 +190,14 @@ public class ConfigLoader
 
         Collections.addAll(newSet, nonOutdatedVersions);
         configurations.put(config, newSet);
+        setUniqueNames(configurations.keySet());
     }
 
     /**
      * Adds a configuration to be loaded and saved by this {@link ConfigLoader}.
+     * <p>
+     * If this configuration has the same name as others configurations on this loader the name of this configurations
+     * or others on this loader may be changed, so beware.
      *
      * @param config              The configuration to be added.
      * @param nonOutdatedVersions The versions this configuration can have before getting outdated.
@@ -125,23 +205,28 @@ public class ConfigLoader
     public void registerConfiguration(@NotNull PluginConfig config, @NotNull Collection<String> nonOutdatedVersions)
     {
         configurations.put(config, nonOutdatedVersions);
+        setUniqueNames(configurations.keySet());
     }
 
     /**
      * Removes a configuration from being loaded and saved by this {@link ConfigLoader}.
+     * <p>
+     * If this configuration had the same name as others configurations on this loader, the name of configurations on
+     * this loader may be changed, so beware.
      *
      * @param config The registered config in this {@link ConfigLoader} that will be removed.
      */
     public void unregisterConfiguration(@NotNull PluginConfig config)
     {
         configurations.remove(config);
+        setUniqueNames(configurations.keySet());
     }
 
     /**
-     * Loads {@link YamlConfiguration} instances of {@link PluginConfig} that you can get through
-     * {@link PluginConfig#getYamlConfiguration()}.
+     * Loads {@link Configuration} instances of {@link PluginConfig} that you can get through
+     * {@link PluginConfig#getConfiguration()}.
      *
-     * @throws IOException If it was not possible to save this config or update it.
+     * @throws IOException If it was not possible to save this config.
      */
     public void loadConfigurations() throws IOException
     {
@@ -150,10 +235,16 @@ public class ConfigLoader
             boolean save = false;
 
             if (Files.exists(path)) {
-                YamlConfiguration yamlConfiguration = YamlConfiguration.loadFromFile(path.toFile());
-                String version = yamlConfiguration.getString("Version", null);
+                String version;
 
-                if (version != null && !configurations.get(config).contains(version)) {
+                try {
+                    Configuration configuration = PluginConfig.loader.load(path);
+                    version = configuration.getString("Version").orElse(null);
+                } catch (InvalidConfigurationException e) {
+                    version = null;
+                }
+
+                if (version == null || !configurations.get(config).contains(version)) {
                     Files.move(path, path.getParent().resolve("outdated " + path.getFileName().toString()));
                     save = true;
                 }
@@ -162,9 +253,12 @@ public class ConfigLoader
             }
 
             if (save)
-                config.save();
+                config.saveDefault();
 
-            config.yamlConfiguration = YamlConfiguration.loadFromFile(path.toFile());
+            try {
+                config.setConfiguration(PluginConfig.loader.load(path));
+            } catch (Exception ignored) {
+            }
         }
     }
 }
