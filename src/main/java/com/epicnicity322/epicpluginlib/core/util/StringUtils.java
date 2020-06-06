@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 Christiano Rangel
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.epicnicity322.epicpluginlib.core.util;
 
 import org.jetbrains.annotations.NotNull;
@@ -5,8 +24,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-public final class StringUtils {
-    private StringUtils() {
+public final class StringUtils
+{
+    private static final @NotNull Pattern versionSeparatorRegex = Pattern.compile("\\.");
+
+    private StringUtils()
+    {
     }
 
     /**
@@ -78,8 +101,6 @@ public final class StringUtils {
         return true;
     }
 
-    private static final @NotNull Pattern versionSeparatorRegex = Pattern.compile("\\.");
-
     /**
      * Checks if version is greater than greaterVersion.
      *
@@ -87,7 +108,8 @@ public final class StringUtils {
      * @param greaterVersion The version to check if version parameter is greater.
      * @return true if version is greater than greaterVersion.
      */
-    public static boolean isVersionGreater(@NotNull String version, @NotNull String greaterVersion) {
+    public static boolean isVersionGreater(@NotNull String version, @NotNull String greaterVersion)
+    {
         String[] versionNodes = versionSeparatorRegex.split(version);
         String[] greaterNodes = versionSeparatorRegex.split(greaterVersion);
 
