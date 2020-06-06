@@ -25,7 +25,7 @@
 
     <groupId>com.epicnicity322.epicpluginlib</groupId>
     <artifactId>EpicPluginLib</artifactId>
-    <version>1.4.1</version>
+    <version>1.5</version>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -54,8 +54,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <artifactSet>
                                 <includes>
-                                    <include>ninja.leaping.configurate:configurate-hocon</include>
-                                    <include>ninja.leaping.configurate:configurate-yaml</include>
+                                    <include>com.github.Epicnicity322:yaml-handler</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
