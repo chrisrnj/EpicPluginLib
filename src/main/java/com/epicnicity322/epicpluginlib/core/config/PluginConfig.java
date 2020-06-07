@@ -22,7 +22,6 @@ package com.epicnicity322.epicpluginlib.core.config;
 import com.epicnicity322.epicpluginlib.core.util.PathUtils;
 import com.epicnicity322.yamlhandler.Configuration;
 import com.epicnicity322.yamlhandler.YamlConfigurationLoader;
-import com.epicnicity322.yamlhandler.exceptions.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 
@@ -36,10 +35,11 @@ public class PluginConfig
     protected static final @NotNull YamlConfigurationLoader loader = YamlConfigurationLoader.build(2, DumperOptions.FlowStyle.BLOCK, '.');
     private final @NotNull LinkedList<Object> elements = new LinkedList<>();
     private final @NotNull Path path;
+    private boolean loaded;
     private @NotNull String name;
     private @NotNull Configuration configuration;
 
-    public PluginConfig(@NotNull Path path) throws IOException, InvalidConfigurationException
+    public PluginConfig(@NotNull Path path)
     {
         if (Files.isDirectory(path))
             throw new IllegalArgumentException("Path is pointing to a directory.");
@@ -53,10 +53,7 @@ public class PluginConfig
         else
             name = fileName;
 
-        if (Files.exists(path))
-            configuration = loader.load(path);
-        else
-            configuration = new Configuration(loader);
+        configuration = new Configuration(loader);
     }
 
     public void addDefaultComment(@NotNull String comment)
@@ -71,7 +68,7 @@ public class PluginConfig
         if (last instanceof Configuration) {
             Configuration lastConfig = ((Configuration) last);
 
-            if (lastConfig.contains(path.split("\\.")[0])) {
+            if (lastConfig.contains(path.split(Character.toString(lastConfig.getSectionSeparator()))[0])) {
                 lastConfig.set(path, value);
                 return;
             }
@@ -81,6 +78,19 @@ public class PluginConfig
 
         newConfig.set(path, value);
         elements.add(newConfig);
+
+        if (!isLoaded())
+            configuration.set(path, value);
+    }
+
+    public boolean isLoaded()
+    {
+        return loaded;
+    }
+
+    protected final void setLoaded()
+    {
+        this.loaded = true;
     }
 
     public @NotNull Path getPath()
