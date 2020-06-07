@@ -239,12 +239,12 @@ public class ConfigLoader
 
                 try {
                     Configuration configuration = PluginConfig.loader.load(path);
-                    version = configuration.getString("Version").orElse(null);
+                    version = configuration.getString("Version").orElse("");
                 } catch (InvalidConfigurationException e) {
                     version = null;
                 }
 
-                if (version == null || !configurations.get(config).contains(version)) {
+                if (version == null || (!version.equals("") && !configurations.get(config).contains(version))) {
                     Files.move(path, path.getParent().resolve("outdated " + path.getFileName().toString()));
                     save = true;
                 }
@@ -256,6 +256,7 @@ public class ConfigLoader
                 config.saveDefault();
 
             try {
+                config.setLoaded();
                 config.setConfiguration(PluginConfig.loader.load(path));
             } catch (Exception ignored) {
             }
