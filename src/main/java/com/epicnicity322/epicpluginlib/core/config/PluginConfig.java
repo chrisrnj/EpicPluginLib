@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 public class PluginConfig
 {
@@ -68,7 +69,7 @@ public class PluginConfig
         if (last instanceof Configuration) {
             Configuration lastConfig = ((Configuration) last);
 
-            if (lastConfig.contains(path.split(Character.toString(lastConfig.getSectionSeparator()))[0])) {
+            if (lastConfig.contains(path.split(Pattern.quote(Character.toString(lastConfig.getSectionSeparator())))[0])) {
                 lastConfig.set(path, value);
                 return;
             }
