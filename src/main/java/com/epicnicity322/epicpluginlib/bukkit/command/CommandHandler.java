@@ -116,7 +116,6 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
                                                @NotNull String[] args)
     {
         List<String> list = new ArrayList<>();
-        System.out.println("test");
 
         if (args.length == 1) {
             for (Command libCommand : subCommands) {
