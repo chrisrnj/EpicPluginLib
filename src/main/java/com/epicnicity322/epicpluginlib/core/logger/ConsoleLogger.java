@@ -21,10 +21,7 @@ package com.epicnicity322.epicpluginlib.core.logger;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public interface ConsoleLogger<R>
+public interface ConsoleLogger<L, R>
 {
     /**
      * @return The prefix applied to the start of every message.
@@ -39,12 +36,11 @@ public interface ConsoleLogger<R>
     void log(@NotNull String message);
 
     /**
-     * Removes color codes the from message and logs to console with a specific {@link Level} and the prefix using
-     * the server's {@link Logger}.
+     * Removes color codes the from message and logs to console with a specific {@link L} and the prefix.
      *
      * @param message The message to log to console.
      */
-    void log(@NotNull String message, @NotNull Level level);
+    void log(@NotNull String message, @NotNull L level);
 
     /**
      * Sends formatted messages with the prefix to the message receiver.
