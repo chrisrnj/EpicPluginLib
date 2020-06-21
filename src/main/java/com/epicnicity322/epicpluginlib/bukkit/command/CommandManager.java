@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 public final class CommandManager
 {
@@ -39,7 +38,7 @@ public final class CommandManager
      * @param mainCommand The command saved in your plugin.yml that you wanna register.
      * @param subCommands The arguments to be called when the sender uses them.
      */
-    public static void registerCommand(@NotNull PluginCommand mainCommand, @NotNull HashSet<Command> subCommands)
+    public static void registerCommand(@NotNull PluginCommand mainCommand, @NotNull Collection<Command> subCommands)
     {
         registerCommand(mainCommand, subCommands, null, null);
     }
