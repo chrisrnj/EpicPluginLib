@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-public class Logger implements ConsoleLogger<CommandSender>
+public class Logger implements ConsoleLogger<Level, CommandSender>
 {
     private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-fk-o0-9r]");
     private final @NotNull String prefix;
