@@ -67,7 +67,7 @@ public class PluginConfig
         Object last = elements.getLast();
 
         if (last instanceof Configuration) {
-            Configuration lastConfig = ((Configuration) last);
+            Configuration lastConfig = (Configuration) last;
 
             if (lastConfig.contains(path.split(Pattern.quote(Character.toString(lastConfig.getSectionSeparator())))[0])) {
                 lastConfig.set(path, value);
