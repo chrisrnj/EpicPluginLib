@@ -51,16 +51,12 @@ public class Downloader implements Runnable
 
         conn.setConnectTimeout(5000);
         conn.setReadTimeout(5000);
-
         conn.setInstanceFollowRedirects(false);
         conn.connect();
-        InputStream is = conn.getInputStream();
-        is.close();
+        conn.getInputStream().close();
 
-        if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM ||
-                conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
-            return new URL(url, conn.getHeaderField("Location"));
-        }
+        if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP)
+            return getRedirect(new URL(conn.getHeaderField("Location")));
 
         return url;
     }
