@@ -19,7 +19,7 @@
 
 package com.epicnicity322.epicpluginlib.core.util;
 
-import com.epicnicity322.epicpluginlib.core.tools.VersionComparator;
+import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,11 +108,11 @@ public final class StringUtils
      * @param version        The version to check if is greater.
      * @param greaterVersion The version to check if version parameter is greater.
      * @return true if version is greater than greaterVersion.
-     * @deprecated Use {@link com.epicnicity322.epicpluginlib.core.tools.VersionComparator} instead.
+     * @deprecated Use {@link Version} instead.
      */
     @Deprecated
     public static boolean isVersionGreater(@NotNull String version, @NotNull String greaterVersion)
     {
-        return new VersionComparator(version).compareTo(new VersionComparator(greaterVersion)) > 0;
+        return new Version(version).compareTo(new Version(greaterVersion)) > 0;
     }
 }
