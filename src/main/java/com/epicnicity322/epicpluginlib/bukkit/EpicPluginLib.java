@@ -20,6 +20,10 @@
 package com.epicnicity322.epicpluginlib.bukkit;
 
 import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
+import com.epicnicity322.epicpluginlib.bukkit.updater.Updater;
+import com.epicnicity322.epicpluginlib.core.config.ConfigLoader;
+import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
+import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -27,6 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
@@ -64,10 +69,41 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
             }
         }
 
-        if (dependingPlugins == 0)
-            logger.log("Lib enabled but no dependencies found.", Level.WARNING);
-        else
-            logger.log("Lib enabled successfully.");
+        PluginConfig mainConfig = new PluginConfig(getDataFolder().toPath().resolve("config.yml"));
+
+        mainConfig.addDefault("Check for updates", true);
+
+        ConfigLoader configLoader = new ConfigLoader();
+
+        configLoader.registerConfiguration(mainConfig);
+
+        try {
+            configLoader.loadConfigurations();
+
+            if (dependingPlugins == 0)
+                logger.log("Lib enabled but no dependencies found.", Level.WARNING);
+            else
+                logger.log("Lib enabled successfully.");
+        } catch (IOException e) {
+            logger.log("Something went wrong while saving main config, using default values.");
+
+            if (dependingPlugins == 0)
+                logger.log("Lib enabled but no dependencies found.", Level.WARNING);
+            else
+                logger.log("Lib enabled.");
+        }
+
+        System.out.println(mainConfig.getConfiguration());
+
+        if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
+            // Checking for updates:
+            Updater updater = new Updater(getFile(), new Version(getDescription().getVersion()), 80448);
+
+            Updater.CheckResult result = updater.check();
+
+            if (result == Updater.CheckResult.AVAILABLE)
+                Bukkit.getScheduler().runTaskTimer(this, () -> logger.log("EpicPluginLib v" + updater.getLatestVersion() + " is available. Please update."), 0, 36000);
+        }
     }
 
     @Override
