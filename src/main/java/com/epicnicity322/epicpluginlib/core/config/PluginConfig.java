@@ -64,7 +64,7 @@ public class PluginConfig
 
     public void addDefault(@NotNull String path, @NotNull Object value)
     {
-        Object last = elements.getLast();
+        Object last = elements.isEmpty() ? null : elements.getLast();
 
         if (last instanceof Configuration) {
             Configuration lastConfig = (Configuration) last;
