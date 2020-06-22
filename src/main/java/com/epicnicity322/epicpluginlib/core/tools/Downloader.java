@@ -20,7 +20,6 @@
 package com.epicnicity322.epicpluginlib.core.tools;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +52,6 @@ public class Downloader implements Runnable
         conn.setReadTimeout(5000);
         conn.setInstanceFollowRedirects(false);
         conn.connect();
-        conn.getInputStream().close();
 
         if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP)
             return getRedirect(new URL(conn.getHeaderField("Location")));
@@ -67,7 +65,7 @@ public class Downloader implements Runnable
      * @return The result or null if the download didn't start yet.
      * @see Result
      */
-    public @Nullable Result getResult()
+    public Result getResult()
     {
         return result;
     }
