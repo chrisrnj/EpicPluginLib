@@ -23,13 +23,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
-public class VersionComparator implements Comparable<VersionComparator>
+public class Version implements Comparable<Version>
 {
     private static final @NotNull Pattern validVersion = Pattern.compile("^[0-9]+(\\.[0-9]+)+$");
     private static final @NotNull Pattern versionSeparator = Pattern.compile("\\.");
     private final @NotNull String version;
 
-    public VersionComparator(@NotNull String version)
+    public Version(@NotNull String version)
     {
         if (!validVersion.matcher(version).matches())
             throw new IllegalArgumentException("'" + version + "' is not a valid version");
@@ -43,7 +43,7 @@ public class VersionComparator implements Comparable<VersionComparator>
     }
 
     @Override
-    public int compareTo(@NotNull VersionComparator version)
+    public int compareTo(@NotNull Version version)
     {
         String[] versionNodes = versionSeparator.split(getVersion());
         String[] greaterNodes = versionSeparator.split(version.getVersion());
@@ -67,9 +67,15 @@ public class VersionComparator implements Comparable<VersionComparator>
     public boolean equals(Object o)
     {
         if (this == o) return true;
-        if (!(o instanceof VersionComparator)) return false;
+        if (!(o instanceof Version)) return false;
 
-        VersionComparator that = (VersionComparator) o;
+        Version that = (Version) o;
         return compareTo(that) == 0;
+    }
+
+    @Override
+    public String toString()
+    {
+        return version;
     }
 }
