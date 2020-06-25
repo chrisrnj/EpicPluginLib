@@ -93,8 +93,6 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
                 logger.log("Lib enabled.");
         }
 
-        System.out.println(mainConfig.getConfiguration());
-
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
             // Checking for updates:
             Updater updater = new Updater(getFile(), new Version(getDescription().getVersion()), 80448);
