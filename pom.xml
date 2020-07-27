@@ -23,12 +23,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.epicnicity322</groupId>
     <artifactId>EpicPluginLib</artifactId>
-    <version>1.6</version>
+    <description>Allows plugins to extract configurations and languages, handle commands, send messages, report errors,
+        access reflection and check for updates more easily.
+    </description>
+    <groupId>com.epicnicity322</groupId>
+    <name>EpicPluginLib</name>
+    <version>1.6.1</version>
+    <url>https://github.com/Epicnicity322/EpicPluginLib</url>
 
     <build>
         <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
