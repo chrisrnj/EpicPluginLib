@@ -23,6 +23,7 @@ import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
 import com.epicnicity322.epicpluginlib.bukkit.updater.Updater;
 import com.epicnicity322.epicpluginlib.core.config.ConfigLoader;
 import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
+import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.logging.Level;
 
 public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322.epicpluginlib.core.EpicPluginLib
 {
@@ -57,7 +57,7 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
     @Override
     public void onEnable()
     {
-        Logger logger = new Logger("[EpicPluginLib] ");
+        Logger logger = new Logger("[EpicPluginLib] ", getLogger());
         int dependingPlugins = 0;
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
@@ -81,14 +81,14 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
             configLoader.loadConfigurations();
 
             if (dependingPlugins == 0)
-                logger.log("Lib enabled but no dependencies found.", Level.WARNING);
+                logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
             else
                 logger.log("Lib enabled successfully.");
         } catch (IOException e) {
             logger.log("Something went wrong while saving main config, using default values.");
 
             if (dependingPlugins == 0)
-                logger.log("Lib enabled but no dependencies found.", Level.WARNING);
+                logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
             else
                 logger.log("Lib enabled.");
         }

@@ -19,11 +19,11 @@
 
 package com.epicnicity322.epicpluginlib.sponge;
 
+import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.sponge.logger.Logger;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -82,7 +82,7 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
         }
 
         if (dependingPlugins == 0)
-            logger.log("Lib enabled but no dependencies found.", Level.WARN);
+            logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
         else
             logger.log("Lib enabled successfully.");
     }
