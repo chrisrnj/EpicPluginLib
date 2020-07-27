@@ -1,9 +1,7 @@
 api-version: '1.13'
-description: >
-  Allows plugins to extract configurations and languages, handle commands, send messages, report errors,
-  access reflection and check for updates more easily.
-name: EpicPluginLib
+description: '${project.description}'
+name: '${project.name}'
 author: Epicnicity322
 main: com.epicnicity322.epicpluginlib.bukkit.EpicPluginLib
-version: '1.6'
-website: https://github.com/Epicnicity322/EpicPluginLib
+version: '${project.version}'
+website: '${project.url}'
