@@ -19,12 +19,18 @@
 
 package com.epicnicity322.epicpluginlib.core;
 
+import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
 public interface EpicPluginLib
 {
+    /**
+     * The version of EpicPluginLib.
+     */
+    @NotNull Version version = new Version("1.6.1");
+
     /**
      * The folder where temp files will be stored.
      *
