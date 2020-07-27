@@ -21,17 +21,21 @@ package com.epicnicity322.epicpluginlib.sponge.logger;
 
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-public class Logger implements ConsoleLogger<Level, MessageReceiver>
+public class Logger implements ConsoleLogger<MessageReceiver>
 {
     private final @NotNull String prefix;
     private final @NotNull org.slf4j.Logger logger;
 
+    /**
+     * Creates a logger to log colored messages to console.
+     *
+     * @param prefix The string that should be in the start of every message.
+     * @param logger The logger to use on leveled messages.
+     */
     public Logger(@NotNull String prefix, @NotNull org.slf4j.Logger logger)
     {
         this.prefix = prefix;
@@ -51,30 +55,21 @@ public class Logger implements ConsoleLogger<Level, MessageReceiver>
     }
 
     @Override
-    public void log(@NotNull String message, @Nullable Level level)
+    public void log(@NotNull String message, @NotNull Level level)
     {
         message = TextSerializers.FORMATTING_CODE.stripCodes(message);
 
-        if (level == null)
-            logger.info(message);
-        else
-            switch (level) {
-                case DEBUG:
-                    logger.debug(message);
-                    break;
-                case ERROR:
-                    logger.error(message);
-                    break;
-                case TRACE:
-                    logger.trace(message);
-                    break;
-                case WARN:
-                    logger.warn(message);
-                    break;
-                case INFO:
-                    logger.info(message);
-                    break;
-            }
+        switch (level) {
+            case ERROR:
+                logger.error(message);
+                break;
+            case WARN:
+                logger.warn(message);
+                break;
+            case INFO:
+                logger.info(message);
+                break;
+        }
     }
 
     @Override

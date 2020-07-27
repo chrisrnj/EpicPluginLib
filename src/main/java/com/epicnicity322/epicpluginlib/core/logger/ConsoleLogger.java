@@ -21,7 +21,12 @@ package com.epicnicity322.epicpluginlib.core.logger;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ConsoleLogger<L, R>
+/**
+ * A logger to log colored messages or leveled messages to console.
+ *
+ * @param <R> The receiver that will receive messages logged by the method {@link #log(Object receiver, String message)}.
+ */
+public interface ConsoleLogger<R>
 {
     /**
      * @return The prefix applied to the start of every message.
@@ -36,11 +41,12 @@ public interface ConsoleLogger<L, R>
     void log(@NotNull String message);
 
     /**
-     * Removes color codes the from message and logs to console with a specific {@link L} and the prefix.
+     * Removes color codes the from message and logs to console with a specific {@link Level} and the prefix.
      *
      * @param message The message to log to console.
+     * @param level   The level the message should be logged to console.
      */
-    void log(@NotNull String message, @NotNull L level);
+    void log(@NotNull String message, @NotNull Level level);
 
     /**
      * Sends formatted messages with the prefix to the message receiver.
@@ -49,4 +55,11 @@ public interface ConsoleLogger<L, R>
      * @param message  The message to be sent.
      */
     void log(@NotNull R receiver, @NotNull String message);
+
+    enum Level
+    {
+        ERROR,
+        WARN,
+        INFO
+    }
 }

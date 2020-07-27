@@ -24,18 +24,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-public class Logger implements ConsoleLogger<Level, CommandSender>
+public class Logger implements ConsoleLogger<CommandSender>
 {
     private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-fk-o0-9r]");
     private final @NotNull String prefix;
+    private final @NotNull java.util.logging.Logger logger;
 
-    public Logger(@NotNull String prefix)
+    /**
+     * Creates a logger to log colored messages to console.
+     *
+     * @param prefix The string that should be in the start of every message.
+     * @param logger The logger to use on leveled messages, null to use bukkit's default logger.
+     */
+    public Logger(@NotNull String prefix, @Nullable java.util.logging.Logger logger)
     {
         this.prefix = prefix;
+
+        if (logger == null)
+            this.logger = Bukkit.getLogger();
+        else
+            this.logger = logger;
     }
 
     @Override
@@ -51,7 +63,19 @@ public class Logger implements ConsoleLogger<Level, CommandSender>
 
     public void log(@NotNull String message, @NotNull Level level)
     {
-        Bukkit.getLogger().log(level, formatCodes.matcher(message).replaceAll(""));
+        message = formatCodes.matcher(message).replaceAll("");
+
+        switch (level) {
+            case ERROR:
+                logger.severe(message);
+                break;
+            case WARN:
+                logger.warning(message);
+                break;
+            case INFO:
+                logger.info(message);
+                break;
+        }
     }
 
     public void log(@NotNull CommandSender sender, @NotNull String message)
