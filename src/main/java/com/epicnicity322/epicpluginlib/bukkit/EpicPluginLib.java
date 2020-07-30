@@ -25,6 +25,7 @@ import com.epicnicity322.epicpluginlib.core.config.ConfigLoader;
 import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.core.tools.Version;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -102,6 +103,11 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
             if (result == Updater.CheckResult.AVAILABLE)
                 Bukkit.getScheduler().runTaskTimer(this, () -> logger.log("EpicPluginLib v" + updater.getLatestVersion() + " is available. Please update."), 0, 36000);
         }
+
+        Metrics metrics = new Metrics(this, 8337);
+
+        if (metrics.isEnabled())
+            logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 
     @Override

@@ -32,6 +32,13 @@
     <version>1.6.1</version>
     <url>https://github.com/Epicnicity322/EpicPluginLib</url>
 
+    <properties>
+        <version.template.file>
+            src/main/java-templates/com/epicnicity322/epicpluginlib/core/EpicPluginLib.java.template
+        </version.template.file>
+        <version.file>src/main/java/com/epicnicity322/epicpluginlib/core/EpicPluginLib.java</version.file>
+    </properties>
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>
@@ -41,6 +48,29 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>${version.template.file}</file>
+                    <outputFile>${version.file}</outputFile>
+                    <replacements>
+                        <replacement>
+                            <token>#PROJECT_VERSION#</token>
+                            <value>${project.version}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -55,6 +85,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats.bukkit</pattern>
+                            <shadedPattern>com.epicnicity322.epicpluginlib.bukkit.metrics</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -66,6 +104,8 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.github.Epicnicity322:yaml-handler</include>
+                                    <include>org.bstats:bstats-bukkit</include>
+                                    <include>org.bstats:bstats-sponge</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -89,6 +129,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -109,6 +153,16 @@
             <groupId>com.github.Epicnicity322</groupId>
             <artifactId>yaml-handler</artifactId>
             <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-sponge</artifactId>
+            <version>1.7</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>

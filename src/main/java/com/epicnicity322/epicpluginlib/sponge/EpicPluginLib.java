@@ -22,6 +22,7 @@ package com.epicnicity322.epicpluginlib.sponge;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.sponge.logger.Logger;
 import com.google.inject.Inject;
+import org.bstats.sponge.Metrics2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
@@ -36,7 +37,7 @@ import java.nio.file.Path;
 @Plugin(
         id = "epicpluginlib",
         name = "EpicPluginLib",
-        version = "1.4",
+        version = com.epicnicity322.epicpluginlib.core.EpicPluginLib.versionString,
         description = "Allows plugins to extract configurations and languages, handle commands, send messages, report" +
                 " errors, and check for updates more easily.")
 public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core.EpicPluginLib
@@ -53,9 +54,11 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     @Inject
     private PluginContainer container;
 
-    public EpicPluginLib()
+    @Inject
+    public EpicPluginLib(Metrics2.Factory metricsFactory)
     {
         epicPluginLib = this;
+        metricsFactory.make(8342);
     }
 
     /**
@@ -85,6 +88,8 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
             logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
         else
             logger.log("Lib enabled successfully.");
+
+        logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 
     @Override
