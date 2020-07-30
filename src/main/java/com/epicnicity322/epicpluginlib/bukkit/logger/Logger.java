@@ -35,6 +35,16 @@ public class Logger implements ConsoleLogger<CommandSender>
     private final @NotNull java.util.logging.Logger logger;
 
     /**
+     * Creates a logger to log colored messages to console. Leveled messages will be logged using bukkit's default logger.
+     *
+     * @param prefix The string that should be in the start of every message.
+     */
+    public Logger(@NotNull String prefix)
+    {
+        this(prefix, null);
+    }
+
+    /**
      * Creates a logger to log colored messages to console.
      *
      * @param prefix The string that should be in the start of every message.
