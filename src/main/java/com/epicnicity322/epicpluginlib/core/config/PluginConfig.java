@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class PluginConfig
 {
-    protected static final @NotNull YamlConfigurationLoader loader = YamlConfigurationLoader.build(2, DumperOptions.FlowStyle.BLOCK, '.');
+    protected static final @NotNull YamlConfigurationLoader loader = new YamlConfigurationLoader('.', 2, DumperOptions.FlowStyle.BLOCK);
     private final @NotNull LinkedList<Object> elements = new LinkedList<>();
     private final @NotNull Path path;
     private boolean loaded;
