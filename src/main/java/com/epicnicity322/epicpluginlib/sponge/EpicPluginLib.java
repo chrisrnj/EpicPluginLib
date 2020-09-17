@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -72,14 +72,13 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     }
 
     @Listener
-    public void onGameStartedServer(GameStartedServerEvent event)
-    {
+    public void onGameInitialization(GameInitializationEvent event) {
         Logger logger = new Logger("[EpicPluginLib] ", l4jLogger);
         int dependingPlugins = 0;
 
         for (PluginContainer plugin : Sponge.getPluginManager().getPlugins()) {
             if (plugin.getDependency("epicpluginlib").isPresent()) {
-                logger.log("Dependency found: " + plugin + ".");
+                logger.log("Dependency found: " + plugin.getId() + ".");
                 ++dependingPlugins;
             }
         }
@@ -101,6 +100,6 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     @Override
     public @NotNull Path getPath()
     {
-        return container.getSource().get();
+        return container.getSource().orElseThrow(NullPointerException::new);
     }
 }
