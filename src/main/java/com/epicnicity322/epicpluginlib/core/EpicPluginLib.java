@@ -29,7 +29,7 @@ public interface EpicPluginLib
     /**
      * The version of EpicPluginLib as string.
      */
-    @NotNull String versionString = "1.6.2";
+    @NotNull String versionString = "1.6.3";
 
     /**
      * The version of EpicPluginLib.
