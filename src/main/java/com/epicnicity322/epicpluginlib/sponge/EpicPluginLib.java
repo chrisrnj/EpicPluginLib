@@ -22,7 +22,7 @@ package com.epicnicity322.epicpluginlib.sponge;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.sponge.logger.Logger;
 import com.google.inject.Inject;
-import org.bstats.sponge.Metrics2;
+import org.bstats.sponge.MetricsLite2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
@@ -55,8 +55,7 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     private PluginContainer container;
 
     @Inject
-    public EpicPluginLib(Metrics2.Factory metricsFactory)
-    {
+    public EpicPluginLib(MetricsLite2.Factory metricsFactory) {
         epicPluginLib = this;
         metricsFactory.make(8342);
     }
