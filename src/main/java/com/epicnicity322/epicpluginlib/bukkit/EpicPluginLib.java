@@ -20,7 +20,7 @@
 package com.epicnicity322.epicpluginlib.bukkit;
 
 import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
-import com.epicnicity322.epicpluginlib.bukkit.updater.Updater;
+import com.epicnicity322.epicpluginlib.bukkit.updater.UpdateChecker;
 import com.epicnicity322.epicpluginlib.core.config.ConfigLoader;
 import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
@@ -96,12 +96,14 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
 
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
             // Checking for updates:
-            Updater updater = new Updater(getFile(), new Version(getDescription().getVersion()), 80448);
+            UpdateChecker updater = new UpdateChecker(80448, new Version(getDescription().getVersion()));
 
-            Updater.CheckResult result = updater.check();
+            updater.setOnUpdateCheck((result, latest) -> {
+                if (result == UpdateChecker.CheckResult.AVAILABLE)
+                    Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> logger.log("EpicPluginLib v" + latest + " is available. Please update."), 0, 36000);
+            });
 
-            if (result == Updater.CheckResult.AVAILABLE)
-                Bukkit.getScheduler().runTaskTimer(this, () -> logger.log("EpicPluginLib v" + updater.getLatestVersion() + " is available. Please update."), 0, 36000);
+            updater.start();
         }
 
         MetricsLite metrics = new MetricsLite(this, 8337);
