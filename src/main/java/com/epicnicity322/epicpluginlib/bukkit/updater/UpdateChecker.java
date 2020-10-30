@@ -28,16 +28,14 @@ import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.function.BiConsumer;
 
 /**
- * A thread that when executed checks for updates of your plugin on spigotmc.org.
+ * A {@link Runnable} that when executed checks for updates of your plugin on spigotmc.org.
  */
-public class UpdateChecker extends Thread
+public abstract class UpdateChecker implements Runnable
 {
-    private URL url;
     private final @NotNull Version currentVersion;
-    private @Nullable BiConsumer<CheckResult, Version> onUpdateCheck;
+    private URL url;
 
     /**
      * UpdateChecker constructor.
@@ -47,7 +45,6 @@ public class UpdateChecker extends Thread
      */
     public UpdateChecker(int id, @NotNull Version currentVersion)
     {
-        super("Update Checker");
         this.currentVersion = currentVersion;
 
         try {
@@ -55,13 +52,6 @@ public class UpdateChecker extends Thread
         } catch (MalformedURLException ignored) {
             // Never going to happen.
         }
-    }
-
-    @Override
-    public synchronized void start()
-    {
-        if (onUpdateCheck != null)
-            super.start();
     }
 
     @Override
@@ -91,21 +81,16 @@ public class UpdateChecker extends Thread
             checkResult = CheckResult.UNEXPECTED_ERROR;
         }
 
-        if (onUpdateCheck != null)
-            onUpdateCheck.accept(checkResult, latestVersion);
+        onUpdateCheck(checkResult, latestVersion);
     }
 
     /**
-     * Sets a consumer to run when an update is checked.
+     * Runs when an update is checked.
      *
-     * @param onUpdateCheck A consumer of {@link CheckResult} as the result and {@link Version} as the latest version
-     *                      found. {@link Version} can be null.
+     * @param checkResult   The result of the update checking.
+     * @param latestVersion The latest version found on spigotmc.org, null if something wrong happened while checking.
      */
-    public synchronized void setOnUpdateCheck(@NotNull BiConsumer<@NotNull CheckResult, @Nullable Version> onUpdateCheck)
-    {
-        this.onUpdateCheck = onUpdateCheck;
-    }
-
+    public abstract void onUpdateCheck(@NotNull CheckResult checkResult, @Nullable Version latestVersion);
 
     public @NotNull Version getCurrentVersion()
     {
