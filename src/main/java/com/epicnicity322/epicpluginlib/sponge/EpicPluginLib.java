@@ -31,6 +31,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.util.metric.MetricsConfigManager;
 
 import java.nio.file.Path;
 
@@ -55,7 +57,11 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     private PluginContainer container;
 
     @Inject
-    public EpicPluginLib(MetricsLite2.Factory metricsFactory) {
+    private MetricsConfigManager metricsConfigManager;
+
+    @Inject
+    public EpicPluginLib(MetricsLite2.Factory metricsFactory)
+    {
         epicPluginLib = this;
         metricsFactory.make(8342);
     }
@@ -71,7 +77,8 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     }
 
     @Listener
-    public void onGameInitialization(GameInitializationEvent event) {
+    public void onGameInitialization(GameInitializationEvent event)
+    {
         Logger logger = new Logger("[EpicPluginLib] ", l4jLogger);
         int dependingPlugins = 0;
 
@@ -87,7 +94,8 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
         else
             logger.log("Lib enabled successfully.");
 
-        logger.log("EpicPluginLib is using bStats as metrics collector.");
+        if (metricsConfigManager.getGlobalCollectionState() == Tristate.TRUE)
+            logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 
     @Override
