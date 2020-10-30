@@ -94,7 +94,7 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
         else
             logger.log("Lib enabled successfully.");
 
-        if (metricsConfigManager.getGlobalCollectionState() == Tristate.TRUE)
+        if (metricsConfigManager.getCollectionState(container) == Tristate.TRUE)
             logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 
