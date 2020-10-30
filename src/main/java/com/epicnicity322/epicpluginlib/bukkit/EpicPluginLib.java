@@ -95,15 +95,18 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
         }
 
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
+            EpicPluginLib plugin = this;
+
             // Checking for updates:
-            UpdateChecker updater = new UpdateChecker(80448, new Version(getDescription().getVersion()));
-
-            updater.setOnUpdateCheck((result, latest) -> {
-                if (result == UpdateChecker.CheckResult.AVAILABLE)
-                    Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> logger.log("EpicPluginLib v" + latest + " is available. Please update."), 0, 36000);
-            });
-
-            updater.start();
+            new Thread(new UpdateChecker(80448, new Version(getDescription().getVersion()))
+            {
+                @Override
+                public void onUpdateCheck(@NotNull CheckResult checkResult, @Nullable Version latestVersion)
+                {
+                    if (checkResult == UpdateChecker.CheckResult.AVAILABLE)
+                        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> logger.log("EpicPluginLib v" + latestVersion + " is available. Please update."), 0, 36000);
+                }
+            }, "Update Checker").start();
         }
 
         MetricsLite metrics = new MetricsLite(this, 8337);
