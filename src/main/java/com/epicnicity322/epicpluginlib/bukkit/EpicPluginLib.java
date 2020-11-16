@@ -109,10 +109,21 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
             }, "Update Checker").start();
         }
 
-        MetricsLite metrics = new MetricsLite(this, 8337);
+        // bStats libraries were added in 1.8.3, testing if metrics should run.
+        boolean supportsMetrics = false;
 
-        if (metrics.isEnabled())
-            logger.log("EpicPluginLib is using bStats as metrics collector.");
+        try {
+            Class.forName("com.google.gson.JsonElement");
+            supportsMetrics = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+
+        if (supportsMetrics) {
+            MetricsLite metrics = new MetricsLite(this, 8337);
+
+            if (metrics.isEnabled())
+                logger.log("EpicPluginLib is using bStats as metrics collector.");
+        }
     }
 
     @Override
