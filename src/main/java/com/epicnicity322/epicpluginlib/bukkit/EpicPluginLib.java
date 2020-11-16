@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322.epicpluginlib.core.EpicPluginLib
 {
@@ -63,8 +64,11 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             PluginDescriptionFile desc = plugin.getDescription();
+            List<String> depend = desc.getDepend();
+            List<String> softDepend = desc.getSoftDepend();
 
-            if (desc.getDepend().contains("EpicPluginLib") || desc.getSoftDepend().contains("EpicPluginLib")) {
+            // On older versions of bukkit PluginDescriptionFile#getDepend and PluginDescriptionFile#getSoftDepend could be null if empty.
+            if (depend == null ? softDepend != null && softDepend.contains("EpicPluginLib") : depend.contains("EpicPluginLib")) {
                 logger.log("Dependency found: " + plugin.getName() + ".");
                 ++dependingPlugins;
             }
