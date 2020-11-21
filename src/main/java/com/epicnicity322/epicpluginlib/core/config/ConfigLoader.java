@@ -20,6 +20,7 @@
 package com.epicnicity322.epicpluginlib.core.config;
 
 import com.epicnicity322.epicpluginlib.core.tools.Version;
+import com.epicnicity322.epicpluginlib.core.util.PathUtils;
 import com.epicnicity322.yamlhandler.Configuration;
 import com.epicnicity322.yamlhandler.exceptions.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
@@ -235,7 +236,7 @@ public class ConfigLoader
                     }
 
                     if (version == null || (version.compareTo(minAndMaxVersions[0]) < 0 || version.compareTo(minAndMaxVersions[1]) > 0)) {
-                        Files.move(path, path.getParent().resolve("outdated " + path.getFileName().toString()));
+                        Files.move(path, PathUtils.getUniquePath(path.getParent().resolve("outdated " + path.getFileName().toString())));
                         save = true;
                     }
                 }
