@@ -31,6 +31,7 @@ public class Downloader implements Runnable
     private final @NotNull URL url;
     private final @NotNull OutputStream out;
     private Result result;
+    private Exception exception;
 
     /**
      * Creates an instance of {@link Downloader}. Downloads data from a http {@link URL}.
@@ -62,12 +63,23 @@ public class Downloader implements Runnable
     /**
      * The result from the transferring.
      *
-     * @return The result or null if the download didn't start yet.
+     * @return The result or null if {@link Downloader} wasn't run yet.
      * @see Result
      */
-    public Result getResult()
+    public synchronized Result getResult()
     {
         return result;
+    }
+
+    /**
+     * The exception thrown if {@link #getResult()} is not {@link Result#SUCCESS}.
+     *
+     * @return The exception thrown or null if {@link Downloader} wasn't run yet or was successful.
+     * @see #getResult()
+     */
+    public synchronized Exception getException()
+    {
+        return exception;
     }
 
     @Override
@@ -76,27 +88,37 @@ public class Downloader implements Runnable
         try {
             URLConnection conn = getRedirect(url).openConnection();
 
-            conn.setRequestProperty("User-Agent", "Plugin Updater");
+            conn.setRequestProperty("User-Agent", "Plugin Downloader");
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
 
             try (InputStream is = conn.getInputStream()) {
-                byte[] buffer = new byte[8192];
+                byte[] buffer = new byte[4096];
                 int bytesRead;
 
                 while ((bytesRead = is.read(buffer)) > 0) {
                     out.write(buffer, 0, bytesRead);
                 }
 
-                result = Result.SUCCESS;
+                synchronized (this) {
+                    result = Result.SUCCESS;
+                }
             }
         } catch (SocketTimeoutException e) {
-            result = Result.TIMEOUT;
+            synchronized (this) {
+                exception = e;
+                result = Result.TIMEOUT;
+            }
         } catch (UnknownHostException e) {
-            result = Result.OFFLINE;
+            synchronized (this) {
+                exception = e;
+                result = Result.OFFLINE;
+            }
         } catch (IOException e) {
-            e.printStackTrace();
-            result = Result.UNEXPECTED_ERROR;
+            synchronized (this) {
+                exception = e;
+                result = Result.UNEXPECTED_ERROR;
+            }
         }
     }
 
