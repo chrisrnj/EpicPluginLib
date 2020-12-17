@@ -20,10 +20,10 @@
 package com.epicnicity322.epicpluginlib.bukkit;
 
 import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
-import com.epicnicity322.epicpluginlib.bukkit.updater.UpdateChecker;
-import com.epicnicity322.epicpluginlib.core.config.ConfigLoader;
-import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
+import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
+import com.epicnicity322.epicpluginlib.core.config.ConfigurationLoader;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
+import com.epicnicity322.epicpluginlib.core.tools.SpigotUpdateChecker;
 import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.bstats.bukkit.MetricsLite;
 import org.bukkit.Bukkit;
@@ -33,13 +33,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
 public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322.epicpluginlib.core.EpicPluginLib
 {
-    private static @Nullable com.epicnicity322.epicpluginlib.core.EpicPluginLib epicPluginLib;
+    private static @Nullable EpicPluginLib epicPluginLib;
 
     public EpicPluginLib()
     {
@@ -47,11 +46,11 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
     }
 
     /**
-     * Gets an instance of {@link com.epicnicity322.epicpluginlib.core.EpicPluginLib}.
+     * Gets an instance of {@link EpicPluginLib}.
      *
      * @return The instance or null if the lib wasn't loaded by bukkit yet.
      */
-    public static @Nullable com.epicnicity322.epicpluginlib.core.EpicPluginLib getEpicPluginLib()
+    public static @Nullable EpicPluginLib getEpicPluginLib()
     {
         return epicPluginLib;
     }
@@ -74,59 +73,40 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
             }
         }
 
-        PluginConfig mainConfig = new PluginConfig(getDataFolder().toPath().resolve("config.yml"));
-
-        mainConfig.addDefault("Check for updates", true);
-
-        ConfigLoader configLoader = new ConfigLoader();
+        ConfigurationHolder mainConfig = new ConfigurationHolder(getDataFolder().toPath().resolve("config.yml"), "Check for updates: true");
+        ConfigurationLoader configLoader = new ConfigurationLoader();
 
         configLoader.registerConfiguration(mainConfig);
 
-        try {
-            configLoader.loadConfigurations();
-
-            if (dependingPlugins == 0)
-                logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
-            else
-                logger.log("Lib enabled successfully.");
-        } catch (IOException e) {
-            logger.log("Something went wrong while saving main config, using default values.");
-
-            if (dependingPlugins == 0)
-                logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
-            else
-                logger.log("Lib enabled.");
+        if (!configLoader.loadConfigurations().isEmpty()) {
+            logger.log("Something went wrong while loading main config, using default values.");
         }
 
+        if (dependingPlugins == 0) {
+            logger.log("Lib enabled but no dependencies found.", ConsoleLogger.Level.WARN);
+        } else {
+            logger.log("Lib enabled successfully.");
+        }
+
+        // Checking for updates:
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
-            EpicPluginLib plugin = this;
+            SpigotUpdateChecker updateChecker = new SpigotUpdateChecker(80448, new Version(getDescription().getVersion()));
 
-            // Checking for updates:
-            new Thread(new UpdateChecker(80448, new Version(getDescription().getVersion()))
-            {
-                @Override
-                public void onUpdateCheck(@NotNull CheckResult checkResult, @Nullable Version latestVersion)
-                {
-                    if (checkResult == UpdateChecker.CheckResult.AVAILABLE)
-                        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> logger.log("EpicPluginLib v" + latestVersion + " is available. Please update."), 0, 36000);
-                }
-            }, "Update Checker").start();
+            updateChecker.check((available, version) -> {
+                if (available)
+                    Bukkit.getScheduler().runTaskTimerAsynchronously(epicPluginLib, () -> logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
+            });
         }
-
-        // bStats libraries were added in 1.8.3, testing if metrics should run.
-        boolean supportsMetrics = false;
 
         try {
+            // bStats libraries were added in 1.8.3, testing if metrics should run.
             Class.forName("com.google.gson.JsonElement");
-            supportsMetrics = true;
-        } catch (ClassNotFoundException ignored) {
-        }
-
-        if (supportsMetrics) {
             MetricsLite metrics = new MetricsLite(this, 8337);
 
-            if (metrics.isEnabled())
+            if (metrics.isEnabled()) {
                 logger.log("EpicPluginLib is using bStats as metrics collector.");
+            }
+        } catch (ClassNotFoundException ignored) {
         }
     }
 

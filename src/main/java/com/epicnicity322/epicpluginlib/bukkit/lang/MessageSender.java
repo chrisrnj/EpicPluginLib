@@ -19,31 +19,32 @@
 
 package com.epicnicity322.epicpluginlib.bukkit.lang;
 
-import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
+import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.lang.LanguageHolder;
-import com.epicnicity322.epicpluginlib.core.util.ObjectUtils;
+import com.epicnicity322.yamlhandler.Configuration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
 public final class MessageSender extends LanguageHolder<String, CommandSender>
 {
-    private final @NotNull PluginConfig mainConfig;
-    private final @NotNull PluginConfig defaultLanguage;
+    private final @NotNull Supplier<String> locale;
+    private final @NotNull Configuration defaultLanguage;
 
     /**
      * Creates an instance of {@link MessageSender}. Message senders can get and send strings from the plugin's language.
      *
-     * @param mainConfig      Your main configuration containing the key "Language Locale".
-     * @param defaultLanguage The default language to get the keys in case the other language specified in config
-     *                        doesn't exist or doesn't contain the key.
+     * @param locale          The locale of the language to get.
+     * @param prefix          The prefix to be in the start of every message.
+     * @param defaultLanguage The default language to get the keys in case the other language doesn't exist or doesn't
+     *                        contain the key.
      */
-    public MessageSender(@NotNull PluginConfig mainConfig, @NotNull PluginConfig defaultLanguage)
+    public MessageSender(@NotNull Supplier<String> locale, @Nullable Supplier<String> prefix, @NotNull Configuration defaultLanguage)
     {
-        this.mainConfig = mainConfig;
+        this.locale = locale;
         this.defaultLanguage = defaultLanguage;
     }
 
@@ -51,8 +52,7 @@ public final class MessageSender extends LanguageHolder<String, CommandSender>
     public void send(@NotNull CommandSender receiver, boolean prefix, @NotNull String message)
     {
         if (!message.isEmpty()) {
-            receiver.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    (prefix ? get("General.Prefix", "") : "") + message));
+            receiver.sendMessage(ChatColor.translateAlternateColorCodes('&', (prefix ? get("General.Prefix", "") : "") + message));
         }
     }
 
@@ -61,19 +61,22 @@ public final class MessageSender extends LanguageHolder<String, CommandSender>
     {
         String string = get(key, def);
 
-        if (string == null)
+        if (string == null) {
             return null;
-        else
+        } else {
             return ChatColor.translateAlternateColorCodes('&', string);
+        }
     }
 
     @Override
     public String get(@NotNull String key, @Nullable String def)
     {
-        Optional<String> optionalLocale = mainConfig.getConfiguration().getString("Language Locale");
-        PluginConfig language = optionalLocale.map(locale -> ObjectUtils.getOrDefault(getLanguage(locale), defaultLanguage))
-                .orElse(defaultLanguage);
+        ConfigurationHolder language = getLanguage(locale.get());
 
-        return language.getConfiguration().getString(key).orElse(def);
+        if (language == null) {
+            return defaultLanguage.getString(key).orElse(def);
+        } else {
+            return language.getConfiguration().getString(key).orElse(def);
+        }
     }
 }

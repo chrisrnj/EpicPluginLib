@@ -19,7 +19,7 @@
 
 package com.epicnicity322.epicpluginlib.core.lang;
 
-import com.epicnicity322.epicpluginlib.core.config.PluginConfig;
+import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,17 +29,19 @@ import java.util.Map;
 
 public abstract class LanguageHolder<X, Y>
 {
-    private final @NotNull HashMap<String, PluginConfig> languageLocales = new HashMap<>();
+    private final @NotNull HashMap<String, ConfigurationHolder> languageLocales = new HashMap<>();
 
     /**
      * Adds a language to this {@link LanguageHolder}.
      *
      * @param locale   The locale code to be assigned to this language. E.g. "EN".
-     * @param language The {@link PluginConfig} containing the strings and keys.
+     * @param language The {@link ConfigurationHolder} containing the {@link com.epicnicity322.yamlhandler.Configuration} with keys and strings.
      */
-    public void addLanguage(@NotNull String locale, @NotNull PluginConfig language)
+    public void addLanguage(@NotNull String locale, @NotNull ConfigurationHolder language)
     {
-        languageLocales.put(locale, language);
+        synchronized (languageLocales) {
+            languageLocales.put(locale, language);
+        }
     }
 
     /**
@@ -49,7 +51,9 @@ public abstract class LanguageHolder<X, Y>
      */
     public void removeLanguage(@NotNull String locale)
     {
-        languageLocales.remove(locale);
+        synchronized (languageLocales) {
+            languageLocales.remove(locale);
+        }
     }
 
     /**
@@ -57,20 +61,24 @@ public abstract class LanguageHolder<X, Y>
      *
      * @return An unmodifiable {@link Map} containing the locales and its configuration with the strings.
      */
-    public @NotNull Map<String, PluginConfig> getLanguages()
+    public @NotNull Map<String, ConfigurationHolder> getLanguages()
     {
-        return Collections.unmodifiableMap(languageLocales);
+        synchronized (languageLocales) {
+            return Collections.unmodifiableMap(languageLocales);
+        }
     }
 
     /**
      * Gets the language configuration attributed to this locale.
      *
      * @param locale The locale of the language you want to get.
-     * @return A {@link PluginConfig} containing the keys and strings of this locale.
+     * @return A {@link ConfigurationHolder} containing the {@link com.epicnicity322.yamlhandler.Configuration} with keys and strings of this locale.
      */
-    public @Nullable PluginConfig getLanguage(@NotNull String locale)
+    public @Nullable ConfigurationHolder getLanguage(@NotNull String locale)
     {
-        return languageLocales.get(locale);
+        synchronized (languageLocales) {
+            return languageLocales.get(locale);
+        }
     }
 
     /**
