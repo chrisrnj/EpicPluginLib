@@ -29,7 +29,7 @@
     </description>
     <groupId>com.epicnicity322</groupId>
     <name>EpicPluginLib</name>
-    <version>1.6.7</version>
+    <version>1.7</version>
     <url>https://github.com/Epicnicity322/EpicPluginLib</url>
 
     <properties>
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
