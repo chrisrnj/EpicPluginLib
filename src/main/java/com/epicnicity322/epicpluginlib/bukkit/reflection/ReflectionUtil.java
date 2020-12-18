@@ -42,7 +42,7 @@ public final class ReflectionUtil
 
     static {
         try {
-            Class<?> craftPlayer_class = getClass("CraftPlayer", PackageType.CRAFTBUKKIT);
+            Class<?> craftPlayer_class = getClass("CraftPlayer", SubPackageType.ENTITY);
             Class<?> entityPlayer_class = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
             Class<?> packet_class = getClass("Packet", PackageType.MINECRAFT_SERVER);
             Class<?> playerConnection_class = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
