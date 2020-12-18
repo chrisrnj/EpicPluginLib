@@ -19,6 +19,8 @@
 
 package com.epicnicity322.epicpluginlib.bukkit.reflection.type;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum SubPackageType
 {
     ADVANCEMENT,
@@ -34,6 +36,7 @@ public enum SubPackageType
     GENERATOR,
     HELP,
     INVENTORY,
+    LEGACY,
     MAP,
     METADATA,
     PERSISTENCE,
@@ -45,14 +48,14 @@ public enum SubPackageType
     UPDATER,
     UTIL;
 
-    private final String name;
+    private final @NotNull String name;
 
     SubPackageType()
     {
         name = PackageType.CRAFTBUKKIT + "." + name().toLowerCase();
     }
 
-    public String getName()
+    public @NotNull String getName()
     {
         return name;
     }
