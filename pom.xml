@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2020 Christiano Rangel
+  ~ EpicPluginLib - Library with basic utilities for bukkit plugins.
+  ~ Copyright (C) 2021  Christiano Rangel
   ~
-  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
-  ~ of this software and associated documentation files (the "Software"), to deal
-  ~ in the Software without restriction, including without limitation the rights
-  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  ~ copies of the Software, and to permit persons to whom the Software is
-  ~ furnished to do so, subject to the following conditions:
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
   ~
-  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  ~ SOFTWARE.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -29,15 +28,11 @@
     </description>
     <groupId>com.epicnicity322</groupId>
     <name>EpicPluginLib</name>
-    <version>1.7</version>
+    <version>2.0</version>
     <url>https://github.com/Epicnicity322/EpicPluginLib</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.template.file>
-            src/main/java-templates/com/epicnicity322/epicpluginlib/core/EpicPluginLib.java.template
-        </version.template.file>
-        <version.file>src/main/java/com/epicnicity322/epicpluginlib/core/EpicPluginLib.java</version.file>
     </properties>
 
     <build>
@@ -54,10 +49,14 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <encoding>UTF-8</encoding>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
             </plugin>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -72,11 +71,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <file>${version.template.file}</file>
-                    <outputFile>${version.file}</outputFile>
+                    <file>src/main/java/com/epicnicity322/epicpluginlib/core/EpicPluginLibVersion.java.template</file>
+                    <outputFile>src/main/java/com/epicnicity322/epicpluginlib/core/EpicPluginLibVersion.java
+                    </outputFile>
                     <replacements>
                         <replacement>
-                            <token>#PROJECT_VERSION#</token>
+                            <token>#VERSION#</token>
                             <value>${project.version}</value>
                         </replacement>
                     </replacements>
@@ -131,13 +131,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.2.0</version>
+            <version>7.3.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -149,14 +149,14 @@
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit-lite</artifactId>
-            <version>1.7</version>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
-            <artifactId>bstats-sponge-lite</artifactId>
-            <version>1.7</version>
+            <artifactId>bstats-sponge</artifactId>
+            <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
