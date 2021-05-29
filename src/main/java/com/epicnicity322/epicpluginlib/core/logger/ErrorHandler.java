@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ErrorLogger
+public class ErrorHandler
 {
     private final static @NotNull DateTimeFormatter fileNameFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss");
     private final static @NotNull DateTimeFormatter logFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
@@ -42,10 +42,10 @@ public class ErrorLogger
     private final @NotNull String pluginName;
     private final @NotNull String pluginVersion;
     private final @Nullable String website;
-    private final @Nullable Logger logger;
+    private @Nullable Logger logger;
 
-    public ErrorLogger(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
-                       @NotNull Collection<String> authors, @Nullable String website, @Nullable Logger logger)
+    public ErrorHandler(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
+                        @NotNull Collection<String> authors, @Nullable String website, @Nullable Logger logger)
     {
         if (!Files.isDirectory(errorFolder))
             throw new IllegalArgumentException("errorFolder parameter is not a valid directory.");
@@ -62,28 +62,33 @@ public class ErrorLogger
         this.logger = logger;
     }
 
-    public ErrorLogger(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
-                       @NotNull Collection<String> authors, @Nullable String website)
+    public ErrorHandler(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
+                        @NotNull Collection<String> authors, @Nullable String website)
     {
         this(errorFolder, pluginName, pluginVersion, authors, website, null);
     }
 
-    public ErrorLogger(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
-                       @NotNull Collection<String> authors)
+    public ErrorHandler(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
+                        @NotNull Collection<String> authors)
     {
         this(errorFolder, pluginName, pluginVersion, authors, null, null);
     }
 
-    private static String stackTraceToString(Exception exception)
+    private static String stackTraceToString(Throwable throwable)
     {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        exception.printStackTrace(pw);
+        throwable.printStackTrace(pw);
         return sw.toString();
     }
 
-    public void report(@NotNull Exception exception, @NotNull String title)
+    public void setLogger(@NotNull Logger logger)
+    {
+        this.logger = logger;
+    }
+
+    public void report(@NotNull Throwable throwable, @NotNull String title)
     {
         try {
             LocalDateTime localDateTime = LocalDateTime.now();
@@ -98,7 +103,7 @@ public class ErrorLogger
                     "\n - " + pluginName + " v" + pluginVersion +
                     "\n" +
                     "\n" + title +
-                    "\n" + stackTraceToString(exception), error);
+                    "\n" + stackTraceToString(throwable), error);
 
             if (logger != null)
                 logger.log(Level.WARNING, "New log at " + errorFolder.getFileName().toString() + " folder.");
@@ -106,7 +111,7 @@ public class ErrorLogger
             System.out.println("\nSomething went wrong while reporting an error of \"" + pluginName + "\" plugin.");
             System.out.println("Please contact the developer" + (authorsSize > 1 ? "s" : "") + ": " + authors + "\n");
             System.out.println("Error that was being reported:\n");
-            exception.printStackTrace();
+            throwable.printStackTrace();
             System.out.println("\nError that occurred while reporting:\n");
             e.printStackTrace();
             System.out.println("\nPlease read the messages above these errors and report them.\n");
