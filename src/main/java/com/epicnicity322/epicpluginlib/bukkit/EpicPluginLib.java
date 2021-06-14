@@ -29,35 +29,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.List;
 
-public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322.epicpluginlib.core.EpicPluginLib
+public final class EpicPluginLib extends JavaPlugin
 {
-    private static @Nullable EpicPluginLib epicPluginLib;
+    private static final Logger logger = new Logger("[EpicPluginLib] ");
 
     public EpicPluginLib()
     {
-        epicPluginLib = this;
-    }
-
-    /**
-     * Gets an instance of {@link EpicPluginLib}.
-     *
-     * @return The instance or null if the lib wasn't loaded by bukkit yet.
-     */
-    public static @Nullable EpicPluginLib getEpicPluginLib()
-    {
-        return epicPluginLib;
+        logger.setLogger(getLogger());
     }
 
     @Override
     public void onEnable()
     {
-        Logger logger = new Logger("[EpicPluginLib] ", getLogger());
         int dependingPlugins = 0;
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
@@ -93,29 +79,12 @@ public final class EpicPluginLib extends JavaPlugin implements com.epicnicity322
 
             updateChecker.check((available, version) -> {
                 if (available)
-                    Bukkit.getScheduler().runTaskTimerAsynchronously(epicPluginLib, () -> logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
+                    Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
             });
         }
 
-        try {
-            // bStats libraries were added in 1.8.3, testing if metrics should run.
-            Class.forName("com.google.gson.JsonElement");
-            Metrics metrics = new Metrics(this, 8337);
+        Metrics metrics = new Metrics(this, 8337);
 
-            logger.log("EpicPluginLib is using bStats as metrics collector.");
-        } catch (ClassNotFoundException ignored) {
-        }
-    }
-
-    @Override
-    public @NotNull Path getFolder()
-    {
-        return getDataFolder().toPath();
-    }
-
-    @Override
-    public @NotNull Path getPath()
-    {
-        return getFile().toPath();
+        logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 }

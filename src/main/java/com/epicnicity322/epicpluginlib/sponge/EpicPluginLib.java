@@ -20,12 +20,9 @@ package com.epicnicity322.epicpluginlib.sponge;
 
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.sponge.logger.Logger;
+import com.epicnicity322.epicpluginlib.sponge.metrics.Metrics;
 import com.google.inject.Inject;
-import org.bstats.sponge.Metrics;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -33,24 +30,16 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.metric.MetricsConfigManager;
 
-import java.nio.file.Path;
-
 @Plugin(
         id = "epicpluginlib",
         name = "EpicPluginLib",
         version = com.epicnicity322.epicpluginlib.core.EpicPluginLib.versionString,
         description = "Allows plugins to extract configurations and languages, handle commands, send messages, report" +
                 " errors, and check for updates more easily.")
-public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core.EpicPluginLib
+public final class EpicPluginLib
 {
-    private static com.epicnicity322.epicpluginlib.core.EpicPluginLib epicPluginLib;
-
     @Inject
     private org.slf4j.Logger l4jLogger;
-
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    private Path folder;
 
     @Inject
     private PluginContainer container;
@@ -61,18 +50,7 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
     @Inject
     public EpicPluginLib(Metrics.Factory metricsFactory)
     {
-        epicPluginLib = this;
         metricsFactory.make(8342);
-    }
-
-    /**
-     * Gets an instance of {@link com.epicnicity322.epicpluginlib.core.EpicPluginLib}.
-     *
-     * @return The instance or null if the lib wasn't loaded by sponge yet.
-     */
-    public static @Nullable com.epicnicity322.epicpluginlib.core.EpicPluginLib getEpicPluginLib()
-    {
-        return epicPluginLib;
     }
 
     @Listener
@@ -95,17 +73,5 @@ public final class EpicPluginLib implements com.epicnicity322.epicpluginlib.core
 
         if (metricsConfigManager.getCollectionState(container) == Tristate.TRUE)
             logger.log("EpicPluginLib is using bStats as metrics collector.");
-    }
-
-    @Override
-    public @NotNull Path getFolder()
-    {
-        return folder;
-    }
-
-    @Override
-    public @NotNull Path getPath()
-    {
-        return container.getSource().orElseThrow(NullPointerException::new);
     }
 }
