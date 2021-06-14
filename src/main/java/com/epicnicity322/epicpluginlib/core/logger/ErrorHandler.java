@@ -24,13 +24,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ErrorHandler
 {
@@ -42,14 +39,11 @@ public class ErrorHandler
     private final @NotNull String pluginName;
     private final @NotNull String pluginVersion;
     private final @Nullable String website;
-    private @Nullable Logger logger;
+    private @Nullable ConsoleLogger<?> logger;
 
     public ErrorHandler(@NotNull Path errorFolder, @NotNull String pluginName, @NotNull String pluginVersion,
-                        @NotNull Collection<String> authors, @Nullable String website, @Nullable Logger logger)
+                        @NotNull Collection<String> authors, @Nullable String website, @Nullable ConsoleLogger<?> logger)
     {
-        if (!Files.isDirectory(errorFolder))
-            throw new IllegalArgumentException("errorFolder parameter is not a valid directory.");
-
         if (authors.isEmpty())
             throw new IllegalArgumentException("Empty collection of authors.");
 
@@ -83,7 +77,7 @@ public class ErrorHandler
         return sw.toString();
     }
 
-    public void setLogger(@NotNull Logger logger)
+    public void setLogger(@NotNull ConsoleLogger<?> logger)
     {
         this.logger = logger;
     }
@@ -106,7 +100,7 @@ public class ErrorHandler
                     "\n" + stackTraceToString(throwable), error);
 
             if (logger != null)
-                logger.log(Level.WARNING, "New log at " + errorFolder.getFileName().toString() + " folder.");
+                logger.log("New log at " + errorFolder.getFileName().toString() + " folder.", ConsoleLogger.Level.WARN);
         } catch (Exception e) {
             System.out.println("\nSomething went wrong while reporting an error of \"" + pluginName + "\" plugin.");
             System.out.println("Please contact the developer" + (authorsSize > 1 ? "s" : "") + ": " + authors + "\n");
