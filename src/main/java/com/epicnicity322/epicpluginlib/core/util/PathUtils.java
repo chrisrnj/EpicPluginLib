@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class PathUtils
@@ -55,7 +57,7 @@ public final class PathUtils
             lines.forEach(line -> output.append(lineSeparator).append(line));
         }
 
-        // Returning the string without the initial line separator.
+        // Returning the string without the initial line separator that was added above.
         return output.length() <= lineSeparatorLength ? "" : output.substring(lineSeparatorLength);
     }
 
@@ -74,10 +76,10 @@ public final class PathUtils
         if (Files.isDirectory(destination))
             throw new IllegalArgumentException("destination path is a directory.");
 
-        if (!Files.exists(destination)) {
+        if (Files.notExists(destination)) {
             Path parent = destination.getParent();
 
-            if (!Files.exists(parent))
+            if (Files.notExists(parent))
                 Files.createDirectories(parent);
 
             Files.createFile(destination);
@@ -99,6 +101,23 @@ public final class PathUtils
     public static void write(@NotNull String data, @NotNull Path destination) throws IOException
     {
         write(data.getBytes(StandardCharsets.UTF_8), destination);
+    }
+
+    /**
+     * Deletes the file in the path. If the path points to a directory, all files inside this directory are deleted.
+     *
+     * @param path The path to the file or folder to delete.
+     * @throws IOException If failed to delete any file in this path.
+     */
+    public static void deleteAll(@NotNull Path path) throws IOException
+    {
+        if (Files.notExists(path)) return;
+
+        try (Stream<Path> childStream = Files.walk(path)) {
+            for (Path child : childStream.sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
+                Files.delete(child);
+            }
+        }
     }
 
     /**
