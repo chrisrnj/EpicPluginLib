@@ -18,16 +18,10 @@
 
 package com.epicnicity322.epicpluginlib.core.util;
 
-import com.epicnicity322.epicpluginlib.core.tools.Version;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.regex.Pattern;
 
 public final class StringUtils
 {
-    private static final @NotNull Pattern versionSeparatorRegex = Pattern.compile("\\.");
-
     private StringUtils()
     {
     }
@@ -99,19 +93,5 @@ public final class StringUtils
         }
 
         return true;
-    }
-
-    /**
-     * Checks if version is greater than greaterVersion.
-     *
-     * @param version        The version to check if is greater.
-     * @param greaterVersion The version to check if version parameter is greater.
-     * @return true if version is greater than greaterVersion.
-     * @deprecated Use {@link Version} instead.
-     */
-    @Deprecated
-    public static boolean isVersionGreater(@NotNull String version, @NotNull String greaterVersion)
-    {
-        return new Version(version).compareTo(new Version(greaterVersion)) > 0;
     }
 }
