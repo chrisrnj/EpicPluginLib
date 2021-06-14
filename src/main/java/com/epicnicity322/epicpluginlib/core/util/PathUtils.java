@@ -68,7 +68,6 @@ public final class PathUtils
      * @param data        The bytes you want to write into the path.
      * @param destination The file you want to save the string.
      * @throws IOException              If write access was denied for this path.
-     * @throws NullPointerException     If any parameter is null.
      * @throws IllegalArgumentException If destination path points to a directory.
      */
     public static void write(byte[] data, @NotNull Path destination) throws IOException
@@ -95,7 +94,6 @@ public final class PathUtils
      * @param data        The string you want to write into the path.
      * @param destination The file you want to save the string.
      * @throws IOException              If write access was denied for this path.
-     * @throws NullPointerException     If any parameter is null.
      * @throws IllegalArgumentException If destination path points to a directory.
      */
     public static void write(@NotNull String data, @NotNull Path destination) throws IOException
@@ -126,60 +124,67 @@ public final class PathUtils
      *
      * @param path The path to the desired file.
      * @return The same path or a renamed one depending if the file in the end already exists.
-     * @throws NullPointerException If path is null
      */
     public static Path getUniquePath(@NotNull Path path)
     {
-        String fileName = path.getFileName().toString();
-        String extension = fileName.substring(fileName.lastIndexOf("."));
+        String name = path.getFileName().toString();
+        int extensionIndex = name.lastIndexOf('.');
+        String extension = extensionIndex == -1 ? "" : name.substring(extensionIndex);
         Path parentPath = path.getParent();
 
-        long l = 2;
+        long count = 2;
 
         while (Files.exists(path)) {
-            fileName = path.getFileName().toString();
+            name = path.getFileName().toString();
 
-            String fileNameOnly = fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")).trim() :
-                    fileName.trim();
-            String parenthesisPrefix = "";
+            String nameNoExtension = name.contains(".") ? name.substring(0, name.lastIndexOf('.')).trim() : name.trim();
+            String space = "";
 
-            // If a duplicate does not have a space before the parenthesis, then this space will be added by this.
-            if (fileNameOnly.contains(" ") && fileNameOnly.charAt(fileNameOnly.lastIndexOf(" ") + 1) != '(')
-                parenthesisPrefix = " ";
+            // Checking if a space should be added.
+            if (nameNoExtension.contains(" ") && nameNoExtension.charAt(nameNoExtension.lastIndexOf(' ') + 1) != '(')
+                space = " ";
 
-            if (isADuplicate(fileNameOnly)) {
-                l = Long.parseLong(fileNameOnly.substring(fileNameOnly.lastIndexOf("(") + 1).replace(")",
-                        ""));
-                path = parentPath.resolve(fileNameOnly.substring(0, fileNameOnly.lastIndexOf("(")) +
-                        parenthesisPrefix + "(" + (l + 1) + ")" + extension);
+            if (isADuplicate(nameNoExtension)) {
+                count = Long.parseLong(nameNoExtension.substring(nameNoExtension.lastIndexOf('(') + 1, nameNoExtension.length() - 1));
+                path = parentPath.resolve(nameNoExtension.substring(0, nameNoExtension.lastIndexOf('(')) +
+                        space + '(' + (count + 1) + ')' + extension);
             } else {
-                path = parentPath.resolve(fileNameOnly + " (1)" + extension);
+                path = parentPath.resolve(nameNoExtension + " (1)" + extension);
             }
 
-            ++l;
+            ++count;
         }
 
         return path;
     }
 
     /**
-     * This will check if the file name has a duplicate suffix.
+     * Tests if the string has a number in parentheses appended to the end, indicating that it's a duplicate of a file.
      *
-     * @param fileName The name of the desired file.
-     * @return true if the string has a duplicate suffix.
+     * @param string The string to check if it has a number in parentheses.
+     * @return If the string is a duplicate.
      */
-    private static boolean isADuplicate(@NotNull String fileName)
+    private static boolean isADuplicate(@NotNull String string)
     {
-        fileName = fileName.trim();
+        string = string.trim();
+        int length = string.length();
 
-        if (fileName.endsWith(")")) {
-            //The minimum length that a duplicated file name can have is 3, because that name could only look like something like "(2)".
-            if (fileName.length() > 2) {
-                //If the char before parenthesis is an integer.
-                return StringUtils.isNumeric(Character.toString(fileName.charAt(fileName.length() - 2)));
-            }
+        // The minimum length a duplicate is three, because the minimum they can look like is "(1)".
+        if (length < 3) return false;
+
+        if (string.charAt(--length) != ')') return false;
+
+        int openingParenthesisIndex = string.lastIndexOf('(');
+
+        if (openingParenthesisIndex++ == -1) return false;
+
+        for (int i = openingParenthesisIndex; i < length; ++i) {
+            char c = string.charAt(i);
+
+            if (c < '0' || c > '9')
+                return false;
         }
 
-        return false;
+        return true;
     }
 }
