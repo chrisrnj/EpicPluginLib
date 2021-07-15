@@ -29,30 +29,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class ReflectionUtil
 {
-    private static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-    private static Method player_getHandle_method;
-    private static Method playerConnection_sendPacket_method;
-    private static Field entityPlayer_playerConnection_field;
+    private static final String NMS_VERSION;
+    private static final Method player_getHandle_method;
+    private static final Method playerConnection_sendPacket_method;
+    private static final Field entityPlayer_playerConnection_field;
 
     static {
-        try {
-            Class<?> craftPlayer_class = getClass("CraftPlayer", SubPackageType.ENTITY);
-            Class<?> entityPlayer_class = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
-            Class<?> packet_class = getClass("Packet", PackageType.MINECRAFT_SERVER);
-            Class<?> playerConnection_class = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
-
-            playerConnection_sendPacket_method = getMethod(playerConnection_class, "sendPacket", packet_class);
-            player_getHandle_method = getMethod(craftPlayer_class, "getHandle");
-            entityPlayer_playerConnection_field = getField(entityPlayer_class, "playerConnection");
-
-            //I'm pretty sure these classes exist so the exception is ignored.
-        } catch (ClassNotFoundException ignored) {
+        //Checking if version contains NMS_VERSION suffix.
+        if (getClass("org.bukkit.craftbukkit.CraftServer") == null) {
+            NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        } else {
+            NMS_VERSION = "";
         }
+
+        Class<?> craftPlayer_class = getClass("CraftPlayer", SubPackageType.ENTITY);
+        Class<?> entityPlayer_class = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
+        Class<?> packet_class = getClass("Packet", PackageType.MINECRAFT_SERVER);
+        Class<?> playerConnection_class = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
+
+        playerConnection_sendPacket_method = getMethod(playerConnection_class, "sendPacket", packet_class);
+        player_getHandle_method = getMethod(craftPlayer_class, "getHandle");
+        entityPlayer_playerConnection_field = getField(entityPlayer_class, "playerConnection");
     }
 
     private ReflectionUtil()
@@ -65,17 +66,21 @@ public final class ReflectionUtil
      * @param player The player to send the packet.
      * @param packet The packet to send to the player.
      */
-    public static void sendPacket(@NotNull Player player, @NotNull Object packet) throws InvocationTargetException,
-            IllegalAccessException
+    public static void sendPacket(@NotNull Player player, @NotNull Object packet)
     {
-        Object entityPlayer = player_getHandle_method.invoke(player);
-        Object playerConnection = entityPlayer_playerConnection_field.get(entityPlayer);
+        try {
+            Object entityPlayer = player_getHandle_method.invoke(player);
+            Object playerConnection = entityPlayer_playerConnection_field.get(entityPlayer);
 
-        playerConnection_sendPacket_method.invoke(playerConnection, packet);
+            playerConnection_sendPacket_method.invoke(playerConnection, packet);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * Gets the version of minecraft server the bukkit server is running.
+     * Gets the version of minecraft server the bukkit server is running. Empty if this version of bukkit does not have
+     * the NMS version suffix.
      *
      * @return The version of NMS the server is running.
      */
@@ -85,17 +90,30 @@ public final class ReflectionUtil
     }
 
     /**
+     * Gets the class with the specified name or null if this class was not found.
+     *
+     * @param name The name of the class.
+     * @return The class or null if not found.
+     */
+    public static @Nullable Class<?> getClass(@NotNull String name)
+    {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
      * Gets a class in net.minecraft.server or org.bukkit.craftbukkit by name.
      *
      * @param name The name of the class to get.
      * @param type The type of package this class is in.
      * @return The class with this name.
-     * @throws ClassNotFoundException If a class with this name was not found in this package.
      */
-    public static @NotNull Class<?> getClass(@NotNull String name, @NotNull PackageType type) throws
-            ClassNotFoundException
+    public static @Nullable Class<?> getClass(@NotNull String name, @NotNull PackageType type)
     {
-        return Class.forName(type.getName() + "." + name);
+        return getClass(type.getName() + "." + name);
     }
 
     /**
@@ -104,12 +122,10 @@ public final class ReflectionUtil
      * @param name The name of the class to get.
      * @param type The type of package this class is in.
      * @return The class with this name.
-     * @throws ClassNotFoundException If a class with this name was not found in this package.
      */
-    public static @NotNull Class<?> getClass(@NotNull String name, @NotNull SubPackageType type) throws
-            ClassNotFoundException
+    public static @Nullable Class<?> getClass(@NotNull String name, @NotNull SubPackageType type)
     {
-        return Class.forName(type.getName() + "." + name);
+        return getClass(type.getName() + "." + name);
     }
 
     /**
