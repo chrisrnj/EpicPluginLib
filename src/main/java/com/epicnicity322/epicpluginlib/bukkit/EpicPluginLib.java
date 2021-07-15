@@ -87,6 +87,15 @@ public final class EpicPluginLib extends JavaPlugin
 
         Metrics metrics = new Metrics(this, 8337);
 
-        logger.log("EpicPluginLib is using bStats as metrics collector.");
+        boolean bStats = false;
+
+        try {
+            bStats = new YamlConfigurationLoader().load(Paths.get("plugins/bStats/config.yml")).getBoolean("enabled").orElse(false);
+        } catch (Exception ignored) {
+        }
+
+        if (bStats) {
+            logger.log("EpicPluginLib is using bStats as metrics collector.");
+        }
     }
 }
