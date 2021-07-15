@@ -20,26 +20,28 @@ package com.epicnicity322.epicpluginlib.bukkit.reflection.type;
 
 import com.epicnicity322.epicpluginlib.bukkit.reflection.ReflectionUtil;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 public enum PackageType
 {
-    MINECRAFT_SERVER("net.minecraft.server." + ReflectionUtil.getNmsVersion()),
+    // Some versions didn't have nms version suffix.
+    MINECRAFT_SERVER("net.minecraft.server" + (ReflectionUtil.getNmsVersion().isEmpty() ? "" : "." + ReflectionUtil.getNmsVersion())),
     CRAFTBUKKIT(Bukkit.getServer().getClass().getPackage().getName());
 
-    private final String name;
+    private final @NotNull String name;
 
-    PackageType(String name)
+    PackageType(@NotNull String name)
     {
         this.name = name;
     }
 
-    public String getName()
+    public @NotNull String getName()
     {
         return name;
     }
 
     @Override
-    public String toString()
+    public @NotNull String toString()
     {
         return name;
     }
