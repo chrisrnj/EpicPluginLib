@@ -33,27 +33,62 @@ import java.lang.reflect.Method;
 
 public final class ReflectionUtil
 {
+    private static final String CRAFTBUKKIT_VERSION;
     private static final String NMS_VERSION;
-    private static final Method player_getHandle_method;
-    private static final Method playerConnection_sendPacket_method;
-    private static final Field entityPlayer_playerConnection_field;
+    private static Method player_getHandle_method;
+    private static Method playerConnection_sendPacket_method;
+    private static Field entityPlayer_playerConnection_field;
 
     static {
-        //Checking if version contains NMS_VERSION suffix.
+        // Checking if this version contains version suffix on the package.
         if (getClass("org.bukkit.craftbukkit.CraftServer") == null) {
-            NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+            CRAFTBUKKIT_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+
+            if (getClass("net.minecraft.server.MinecraftServer") == null) {
+                NMS_VERSION = CRAFTBUKKIT_VERSION;
+            } else {
+                NMS_VERSION = "";
+            }
         } else {
+            CRAFTBUKKIT_VERSION = "";
             NMS_VERSION = "";
         }
 
-        Class<?> craftPlayer_class = getClass("CraftPlayer", SubPackageType.ENTITY);
-        Class<?> entityPlayer_class = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
-        Class<?> packet_class = getClass("Packet", PackageType.MINECRAFT_SERVER);
-        Class<?> playerConnection_class = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
+        // Setting up reflection for sendPacket method.
+        try {
+            Class<?> craftPlayer_class = getClass("CraftPlayer", SubPackageType.ENTITY);
+            Class<?> entityPlayer_class = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
 
-        playerConnection_sendPacket_method = getMethod(playerConnection_class, "sendPacket", packet_class);
-        player_getHandle_method = getMethod(craftPlayer_class, "getHandle");
-        entityPlayer_playerConnection_field = getField(entityPlayer_class, "playerConnection");
+            if (entityPlayer_class == null) {
+                entityPlayer_class = getClass("net.minecraft.server.level.EntityPlayer");
+            }
+
+            Class<?> packet_class = getClass("Packet", PackageType.MINECRAFT_SERVER);
+
+            if (packet_class == null) {
+                packet_class = getClass("net.minecraft.network.protocol.Packet");
+            }
+
+            Class<?> playerConnection_class = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
+
+            if (playerConnection_class == null) {
+                playerConnection_class = getClass("net.minecraft.server.network.PlayerConnection");
+            }
+
+            playerConnection_sendPacket_method = getMethod(playerConnection_class, "sendPacket", packet_class);
+            player_getHandle_method = getMethod(craftPlayer_class, "getHandle");
+
+            Field entityPlayer_b_field = getField(entityPlayer_class, "playerConnection");
+
+            // In 1.17 this was renamed to b.
+            if (entityPlayer_b_field == null) {
+                entityPlayer_b_field = getField(entityPlayer_class, "b");
+            }
+
+            entityPlayer_playerConnection_field = entityPlayer_b_field;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private ReflectionUtil()
@@ -79,14 +114,25 @@ public final class ReflectionUtil
     }
 
     /**
-     * Gets the version of minecraft server the bukkit server is running. Empty if this version of bukkit does not have
-     * the NMS version suffix.
+     * Gets the version of minecraft server the bukkit server is running. Empty if net.minecraft.server does not have
+     * version suffix.
      *
      * @return The version of NMS the server is running.
      */
     public static @NotNull String getNmsVersion()
     {
         return NMS_VERSION;
+    }
+
+    /**
+     * Gets the version of CraftBukkit the server is running. Empty if org.bukkit.craftbukkit does not have version
+     * suffix.
+     *
+     * @return The version of CraftBukkit the server is running.
+     */
+    public static @NotNull String getCraftBukkitVersion()
+    {
+        return CRAFTBUKKIT_VERSION;
     }
 
     /**
@@ -140,8 +186,7 @@ public final class ReflectionUtil
     {
         Class<?>[] p = DataType.convertToPrimitive(parameterTypes);
 
-        for (Constructor<?> c : (Constructor<?>[]) ArrayUtils.addAll(clazz.getConstructors(),
-                clazz.getDeclaredConstructors()))
+        for (Constructor<?> c : (Constructor<?>[]) ArrayUtils.addAll(clazz.getConstructors(), clazz.getDeclaredConstructors()))
             if (DataType.equalsArray(DataType.convertToPrimitive(c.getParameterTypes()), p))
                 return c;
 
@@ -157,8 +202,7 @@ public final class ReflectionUtil
      * @param parameterTypes The classes of parameters of this method.
      * @return The method matching these parameters and this name or null if not found.
      */
-    public static @Nullable Method getMethod(@NotNull Class<?> clazz, @NotNull String name,
-                                             @NotNull Class<?>... parameterTypes)
+    public static @Nullable Method getMethod(@NotNull Class<?> clazz, @NotNull String name, @NotNull Class<?>... parameterTypes)
     {
         Class<?>[] p = DataType.convertToPrimitive(parameterTypes);
 
