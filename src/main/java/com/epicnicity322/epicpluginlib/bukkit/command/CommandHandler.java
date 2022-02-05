@@ -18,6 +18,8 @@
 
 package com.epicnicity322.epicpluginlib.bukkit.command;
 
+import com.epicnicity322.epicpluginlib.core.tools.Version;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -26,10 +28,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public final class CommandHandler implements CommandExecutor, TabCompleter
 {
+    //Tab completions are already sorted in 1.13+
+    private static final boolean sortCompletions = new Version(Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf("-"))).compareTo(new Version("1.13")) < 0;
     private final @NotNull Collection<Command> subCommands;
     private final @Nullable CommandRunnable onDescription;
     private final @Nullable CommandRunnable onUnknownCommand;
@@ -132,7 +137,7 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
                     }
                 }
             }
-        } else if (args.length != 0) {
+        } else {
             Command libCommand = findCommand(args[0]);
 
             if (libCommand != null) {
@@ -147,6 +152,7 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
             }
         }
 
+        if (sortCompletions) Collections.sort(list);
         return list;
     }
 }
