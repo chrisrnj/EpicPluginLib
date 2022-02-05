@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,11 +93,12 @@ public abstract class Command implements CommandRunnable
     /**
      * The runnable that will run when the sender tries to auto complete the arguments of this sub-command, only the
      * arguments, not the command. The name in {@link #getName()} is auto completed automatically by this library.
+     * Add possible completions to the provided list parameter.
      *
      * @return The runnable to run when the arguments of this command should be auto completed. Null if nothing should
      * happen.
      */
-    protected @Nullable CommandRunnable getTabCompleteRunnable()
+    protected @Nullable TabCompleteRunnable getTabCompleteRunnable()
     {
         return null;
     }

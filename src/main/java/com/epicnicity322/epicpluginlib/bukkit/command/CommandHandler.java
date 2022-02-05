@@ -30,12 +30,11 @@ import java.util.List;
 
 public final class CommandHandler implements CommandExecutor, TabCompleter
 {
-    private final Collection<Command> subCommands;
-    private final CommandRunnable onDescription;
-    private final CommandRunnable onUnknownCommand;
+    private final @NotNull Collection<Command> subCommands;
+    private final @Nullable CommandRunnable onDescription;
+    private final @Nullable CommandRunnable onUnknownCommand;
 
-    protected CommandHandler(@NotNull Collection<Command> subCommands, @Nullable CommandRunnable onDescription,
-                             @Nullable CommandRunnable onUnknownCommand)
+    CommandHandler(@NotNull Collection<Command> subCommands, @Nullable CommandRunnable onDescription, @Nullable CommandRunnable onUnknownCommand)
     {
         this.subCommands = subCommands;
         this.onDescription = onDescription;
@@ -43,8 +42,7 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command,
-                             @NotNull String label, String[] args)
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, String[] args)
     {
         if (args.length == 0) {
             if (onDescription != null)
@@ -110,29 +108,28 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
     }
 
     @Override
-    public @NotNull List<String> onTabComplete(@NotNull CommandSender sender,
-                                               @NotNull org.bukkit.command.Command command, @NotNull String label,
-                                               @NotNull String[] args)
+    public @NotNull List<String> onTabComplete(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String[] args)
     {
-        List<String> list = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
 
         if (args.length == 1) {
-            for (Command libCommand : subCommands) {
-                String permission = libCommand.getPermission();
+            for (Command subCommand : subCommands) {
+                String permission = subCommand.getPermission();
 
                 if (permission == null || sender.hasPermission(permission)) {
-                    String name = libCommand.getName();
+                    String name = subCommand.getName();
 
-                    if (name.startsWith(args[0]))
-                        list.add(name);
+                    if (name.startsWith(args[0])) list.add(name);
 
-                    String[] aliases = libCommand.getAliases();
+                    String[] aliases = subCommand.getAliases();
 
-                    if (aliases != null)
-                        for (String alias : libCommand.getAliases())
-                            if (alias != null)
-                                if (alias.startsWith(args[0]))
-                                    list.add(alias);
+                    if (aliases != null) {
+                        for (String alias : subCommand.getAliases()) {
+                            if (alias != null && alias.startsWith(args[0])) {
+                                list.add(alias);
+                            }
+                        }
+                    }
                 }
             }
         } else if (args.length != 0) {
@@ -142,10 +139,10 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
                 String permission = libCommand.getPermission();
 
                 if (permission == null || sender.hasPermission(permission)) {
-                    CommandRunnable tabCompleteRunnable = libCommand.getTabCompleteRunnable();
+                    TabCompleteRunnable tabCompleteRunnable = libCommand.getTabCompleteRunnable();
 
                     if (tabCompleteRunnable != null)
-                        tabCompleteRunnable.run(label, sender, args);
+                        tabCompleteRunnable.run(list, label, sender, args);
                 }
             }
         }
