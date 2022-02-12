@@ -46,6 +46,16 @@ import java.util.zip.GZIPOutputStream;
 public class Metrics
 {
 
+    private final PluginContainer plugin;
+    private final Logger logger;
+    private final Path configDir;
+    private final int serviceId;
+    private MetricsBase metricsBase;
+    private String serverUUID;
+    private boolean logErrors = false;
+    private boolean logSentData;
+    private boolean logResponseStatusText;
+
     private Metrics(PluginContainer plugin, Logger logger, Path configDir, int serviceId)
     {
         this.plugin = plugin;
@@ -54,24 +64,6 @@ public class Metrics
         this.serviceId = serviceId;
         Sponge.eventManager().registerListeners(plugin, this);
     }
-
-    private final PluginContainer plugin;
-
-    private final Logger logger;
-
-    private final Path configDir;
-
-    private final int serviceId;
-
-    private MetricsBase metricsBase;
-
-    private String serverUUID;
-
-    private boolean logErrors = false;
-
-    private boolean logSentData;
-
-    private boolean logResponseStatusText;
 
     @Listener
     public void startup(ConstructPluginEvent event)
@@ -278,23 +270,23 @@ public class Metrics
         /**
          * Creates a new MetricsBase class instance.
          *
-         * @param platform The platform of the service.
-         * @param serviceId The id of the service.
-         * @param serverUuid The server uuid.
-         * @param enabled Whether or not data sending is enabled.
-         * @param appendPlatformDataConsumer A consumer that receives a {@code JsonObjectBuilder} and
-         *     appends all platform-specific data.
-         * @param appendServiceDataConsumer A consumer that receives a {@code JsonObjectBuilder} and
-         *     appends all service-specific data.
-         * @param submitTaskConsumer A consumer that takes a runnable with the submit task. This can be
-         *     used to delegate the data collection to a another thread to prevent errors caused by
-         *     concurrency. Can be {@code null}.
+         * @param platform                    The platform of the service.
+         * @param serviceId                   The id of the service.
+         * @param serverUuid                  The server uuid.
+         * @param enabled                     Whether or not data sending is enabled.
+         * @param appendPlatformDataConsumer  A consumer that receives a {@code JsonObjectBuilder} and
+         *                                    appends all platform-specific data.
+         * @param appendServiceDataConsumer   A consumer that receives a {@code JsonObjectBuilder} and
+         *                                    appends all service-specific data.
+         * @param submitTaskConsumer          A consumer that takes a runnable with the submit task. This can be
+         *                                    used to delegate the data collection to a another thread to prevent errors caused by
+         *                                    concurrency. Can be {@code null}.
          * @param checkServiceEnabledSupplier A supplier to check if the service is still enabled.
-         * @param errorLogger A consumer that accepts log message and an error.
-         * @param infoLogger A consumer that accepts info log messages.
-         * @param logErrors Whether or not errors should be logged.
-         * @param logSentData Whether or not the sent data should be logged.
-         * @param logResponseStatusText Whether or not the response status text should be logged.
+         * @param errorLogger                 A consumer that accepts log message and an error.
+         * @param infoLogger                  A consumer that accepts info log messages.
+         * @param logErrors                   Whether or not errors should be logged.
+         * @param logSentData                 Whether or not the sent data should be logged.
+         * @param logResponseStatusText       Whether or not the response status text should be logged.
          */
         public MetricsBase(
                 String platform,
@@ -989,7 +981,8 @@ public class Metrics
             }
 
             @Override
-            public String toString() {
+            public String toString()
+            {
                 return value;
             }
         }
