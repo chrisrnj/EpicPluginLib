@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class Logger implements ConsoleLogger<CommandSender>
 {
-    private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-fk-o0-9r]");
+    private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-z0-9]");
     private final @NotNull String prefix;
     private @NotNull java.util.logging.Logger logger;
 
