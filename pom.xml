@@ -31,6 +31,18 @@
     <version>2.2</version>
     <url>https://github.com/Epicnicity322/EpicPluginLib</url>
 
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/Epicnicity322/EpicPluginLib/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>GPL-v3.0</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+        </license>
+    </licenses>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -100,10 +112,6 @@
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
         <repository>
-            <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -119,7 +127,7 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.4.0</version>
+            <version>8.0.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

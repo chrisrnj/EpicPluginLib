@@ -21,15 +21,15 @@ package com.epicnicity322.epicpluginlib.sponge.lang;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.lang.LanguageHolder;
 import com.epicnicity322.yamlhandler.Configuration;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.function.Supplier;
 
-public final class MessageSender extends LanguageHolder<Text, MessageReceiver>
+public final class MessageSender extends LanguageHolder<TextComponent, Audience>
 {
     private final @NotNull Supplier<String> locale;
     private final @NotNull Configuration defaultLanguage;
@@ -49,23 +49,23 @@ public final class MessageSender extends LanguageHolder<Text, MessageReceiver>
     }
 
     @Override
-    public void send(@NotNull MessageReceiver receiver, boolean prefix, @NotNull String message)
+    public void send(@NotNull Audience audience, boolean prefix, @NotNull String message)
     {
         if (!message.isEmpty()) {
-            receiver.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(
+            audience.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
                     (prefix ? get("General.Prefix", "") : "") + message));
         }
     }
 
     @Override
-    public Text getColored(@NotNull String key, @Nullable String def)
+    public TextComponent getColored(@NotNull String key, @Nullable String def)
     {
         String string = get(key, def);
 
         if (string == null)
             return null;
         else
-            return TextSerializers.FORMATTING_CODE.deserialize(string);
+            return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
     }
 
     @Override

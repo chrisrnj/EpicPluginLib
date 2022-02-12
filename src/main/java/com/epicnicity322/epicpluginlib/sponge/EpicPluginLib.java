@@ -24,44 +24,37 @@ import com.epicnicity322.epicpluginlib.sponge.metrics.Metrics;
 import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.metric.MetricsConfigManager;
+import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
-@Plugin(
-        id = "epicpluginlib",
-        name = "EpicPluginLib",
-        version = com.epicnicity322.epicpluginlib.core.EpicPluginLib.versionString,
-        description = "Allows plugins to extract configurations and languages, handle commands, send messages, report" +
-                " errors, and check for updates more easily.")
+@Plugin("epicpluginlib")
 public final class EpicPluginLib
 {
-    @Inject
-    private org.slf4j.Logger l4jLogger;
+    private final org.apache.logging.log4j.Logger l4jLogger;
+    private final PluginContainer container;
+    private final MetricsConfigManager metricsConfigManager;
 
     @Inject
-    private PluginContainer container;
-
-    @Inject
-    private MetricsConfigManager metricsConfigManager;
-
-    @Inject
-    public EpicPluginLib(Metrics.Factory metricsFactory)
+    public EpicPluginLib(Metrics.Factory metricsFactory, org.apache.logging.log4j.Logger l4jLogger, PluginContainer container, MetricsConfigManager metricsConfigManager)
     {
+        this.l4jLogger = l4jLogger;
+        this.container = container;
+        this.metricsConfigManager = metricsConfigManager;
         metricsFactory.make(8342);
     }
 
     @Listener
-    public void onGameInitialization(GameInitializationEvent event)
+    public void onConstructPlugin(ConstructPluginEvent event)
     {
         Logger logger = new Logger("[EpicPluginLib] ", l4jLogger);
         int dependingPlugins = 0;
 
-        for (PluginContainer plugin : Sponge.getPluginManager().getPlugins()) {
-            if (plugin.getDependency("epicpluginlib").isPresent()) {
-                logger.log("Dependency found: " + plugin.getId() + ".");
+        for (PluginContainer plugin : Sponge.pluginManager().plugins()) {
+            if (plugin.metadata().dependency("epicpluginlib").isPresent()) {
+                logger.log("Dependency found: " + plugin.metadata().id() + ".");
                 ++dependingPlugins;
             }
         }
@@ -71,7 +64,7 @@ public final class EpicPluginLib
         else
             logger.log("Lib enabled successfully.");
 
-        if (metricsConfigManager.getCollectionState(container) == Tristate.TRUE)
+        if (metricsConfigManager.collectionState(container) == Tristate.TRUE)
             logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 }

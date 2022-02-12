@@ -1,0 +1,26 @@
+{
+  "loader": {
+    "name": "java_plain",
+    "version": "1.0"
+  },
+  "license": "GPL-v3.0",
+  "plugins": [
+    {
+      "id": "epicpluginlib",
+      "name": "${project.name}",
+      "entrypoint": "com.epicnicity322.epicpluginlib.sponge.EpicPluginLib",
+      "description": "Allows plugins to extract configurations and languages, handle commands, send messages, report errors, access reflection and check for updates more easily.",
+      "version": "${project.version}",
+      "links": {
+        "source": "${project.url}",
+        "issues": "${project.issueManagement.url}"
+      },
+      "contributors": [
+        {
+          "name": "Epicnicity322",
+          "description": "Main developer"
+        }
+      ]
+    }
+  ]
+}

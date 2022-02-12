@@ -19,15 +19,17 @@
 package com.epicnicity322.epicpluginlib.sponge.logger;
 
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
-public class Logger implements ConsoleLogger<MessageReceiver>
+import java.util.regex.Pattern;
+
+public class Logger implements ConsoleLogger<Audience>
 {
+    private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-z0-9]");
     private final @NotNull String prefix;
-    private final @NotNull org.slf4j.Logger logger;
+    private final @NotNull org.apache.logging.log4j.Logger logger;
 
     /**
      * Creates a logger to log colored messages to console.
@@ -35,7 +37,7 @@ public class Logger implements ConsoleLogger<MessageReceiver>
      * @param prefix The string that should be in the start of every message.
      * @param logger The logger to use on leveled messages.
      */
-    public Logger(@NotNull String prefix, @NotNull org.slf4j.Logger logger)
+    public Logger(@NotNull String prefix, @NotNull org.apache.logging.log4j.Logger logger)
     {
         this.prefix = prefix;
         this.logger = logger;
@@ -50,30 +52,30 @@ public class Logger implements ConsoleLogger<MessageReceiver>
     @Override
     public void log(@NotNull String message)
     {
-        log(Sponge.getServer().getConsole(), message);
+        log(message, Level.INFO);
     }
 
     @Override
     public void log(@NotNull String message, @NotNull Level level)
     {
-        message = TextSerializers.FORMATTING_CODE.stripCodes(message);
+        message = formatCodes.matcher(message).replaceAll("");
 
         switch (level) {
-            case ERROR:
-                logger.error(message);
+            case INFO:
+                logger.info(message);
                 break;
             case WARN:
                 logger.warn(message);
                 break;
-            case INFO:
-                logger.info(message);
+            case ERROR:
+                logger.error(message);
                 break;
         }
     }
 
     @Override
-    public void log(@NotNull MessageReceiver receiver, @NotNull String message)
+    public void log(@NotNull Audience audience, @NotNull String message)
     {
-        receiver.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(prefix + message));
+        audience.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(prefix + message));
     }
 }
