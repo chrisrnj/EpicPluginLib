@@ -63,7 +63,7 @@ public final class ZipUtils
                 if (Files.isDirectory(path)) {
                     Files.createDirectories(pathInZip);
                 } else {
-                    Files.copy(path, pathInZip, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(path, pathInZip, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                 }
             }
         }
