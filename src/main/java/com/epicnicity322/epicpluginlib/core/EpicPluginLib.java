@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package com.epicnicity322.epicpluginlib.core;
 
 import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -48,4 +49,56 @@ public interface EpicPluginLib
      * @return The jar of {@link EpicPluginLib}
      */
     @NotNull Path getPath();
+
+    enum Platform
+    {
+        BUKKIT,
+        SPONGE,
+        UNKNOWN;
+
+        private static final @NotNull Platform platform;
+        private static final @NotNull Version version;
+
+        static {
+            if (getClass("org.bukkit.Bukkit") != null) {
+                platform = BUKKIT;
+                version = BukkitVersion.getVersion();
+            } else if (getClass("org.spongepowered.api.Sponge") != null) {
+                platform = SPONGE;
+                version = SpongeVersion.getVersion();
+            } else {
+                platform = UNKNOWN;
+                version = new Version("0.0");
+            }
+        }
+
+        private static @Nullable Class<?> getClass(String name)
+        {
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
+        }
+
+        /**
+         * Gets the current platform EpicPluginLib is running on.
+         *
+         * @return The enum referencing to the platform EpicPluginLib was initialized on.
+         */
+        public static @NotNull Platform getPlatform()
+        {
+            return platform;
+        }
+
+        /**
+         * Gets the version of the current platform EpicPluginLib is running on.
+         *
+         * @return The version of the platform EpicPluginLib is running, 0.0 in case platform is {@link #UNKNOWN}.
+         */
+        public static @NotNull Version getVersion()
+        {
+            return version;
+        }
+    }
 }
