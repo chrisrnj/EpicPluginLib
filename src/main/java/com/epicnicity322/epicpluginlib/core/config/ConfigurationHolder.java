@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 package com.epicnicity322.epicpluginlib.core.config;
 
 import com.epicnicity322.yamlhandler.Configuration;
-import com.epicnicity322.yamlhandler.YamlConfigurationLoader;
 import com.epicnicity322.yamlhandler.exceptions.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +33,6 @@ import java.util.Objects;
  */
 public class ConfigurationHolder
 {
-    private static final @NotNull YamlConfigurationLoader loader = new YamlConfigurationLoader();
     private final @NotNull Path path;
     private final @NotNull String contents;
     private final @NotNull Configuration defaultConfiguration;
@@ -43,7 +41,7 @@ public class ConfigurationHolder
     public ConfigurationHolder(@NotNull Path path, @NotNull String contents)
     {
         try {
-            this.defaultConfiguration = loader.load(contents);
+            this.defaultConfiguration = ConfigurationLoader.loader.load(contents);
         } catch (InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }

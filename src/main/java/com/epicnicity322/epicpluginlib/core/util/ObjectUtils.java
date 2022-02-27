@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@ public final class ObjectUtils
      * true even if the number is greater than {@link Long#MAX_VALUE} and lower than {@link Long#MIN_VALUE}.
      *
      * @param value The object to check if is numeric.
-     * @return false if value is null or isn't  numeric.
+     * @return false if value is null or isn't numeric.
      */
     public static boolean isNumeric(@Nullable Object value)
     {
-        if (value == null)
-            return false;
+        if (value == null) return false;
+        if (value instanceof Number) return true;
 
         String string = value.toString();
 
