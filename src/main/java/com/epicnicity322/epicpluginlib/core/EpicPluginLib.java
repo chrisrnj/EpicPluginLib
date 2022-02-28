@@ -22,35 +22,22 @@ import com.epicnicity322.epicpluginlib.core.tools.Version;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
-
-public interface EpicPluginLib
+public final class EpicPluginLib
 {
     /**
      * The version of EpicPluginLib as string.
      */
-    @NotNull String versionString = EpicPluginLibVersion.version;
-
+    public static final @NotNull String versionString = EpicPluginLibVersion.version;
     /**
      * The version of EpicPluginLib.
      */
-    @NotNull Version version = new Version(versionString);
+    public static final @NotNull Version version = new Version(versionString);
 
-    /**
-     * The folder where temp files will be stored.
-     *
-     * @return The data folder of {@link EpicPluginLib}
-     */
-    @NotNull Path getFolder();
+    private EpicPluginLib()
+    {
+    }
 
-    /**
-     * The path to the jar of {@link EpicPluginLib}.
-     *
-     * @return The jar of {@link EpicPluginLib}
-     */
-    @NotNull Path getPath();
-
-    enum Platform
+    public enum Platform
     {
         BUKKIT,
         SPONGE,
