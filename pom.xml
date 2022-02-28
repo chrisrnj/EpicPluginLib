@@ -50,7 +50,7 @@
     </properties>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>${project.name}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -97,6 +97,19 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.epicnicity322.epicpluginlib.core.EpicPluginLib</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
