@@ -34,11 +34,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.nio.file.Paths;
 import java.util.List;
 
-public final class EpicPluginLib extends JavaPlugin
+public final class EpicPluginLibBukkit extends JavaPlugin
 {
     private static final Logger logger = new Logger("[EpicPluginLib] ");
 
-    public EpicPluginLib()
+    public EpicPluginLibBukkit()
     {
         logger.setLogger(getLogger());
     }
@@ -66,7 +66,7 @@ public final class EpicPluginLib extends JavaPlugin
         configLoader.registerConfiguration(mainConfig);
 
         if (!configLoader.loadConfigurations().isEmpty()) {
-            logger.log("Something went wrong while loading main config, using default values.");
+            logger.log("Something went wrong while loading main config, using default values.", ConsoleLogger.Level.WARN);
         }
 
         if (dependingPlugins == 0) {

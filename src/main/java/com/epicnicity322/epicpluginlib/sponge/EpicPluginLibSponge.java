@@ -31,14 +31,14 @@ import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 @Plugin("epicpluginlib")
-public final class EpicPluginLib
+public final class EpicPluginLibSponge
 {
     private final org.apache.logging.log4j.Logger l4jLogger;
     private final PluginContainer container;
     private final MetricsConfigManager metricsConfigManager;
 
     @Inject
-    public EpicPluginLib(Metrics.Factory metricsFactory, org.apache.logging.log4j.Logger l4jLogger, PluginContainer container, MetricsConfigManager metricsConfigManager)
+    public EpicPluginLibSponge(Metrics.Factory metricsFactory, org.apache.logging.log4j.Logger l4jLogger, PluginContainer container, MetricsConfigManager metricsConfigManager)
     {
         this.l4jLogger = l4jLogger;
         this.container = container;
