@@ -8,7 +8,7 @@
     {
       "id": "epicpluginlib",
       "name": "${project.name}",
-      "entrypoint": "com.epicnicity322.epicpluginlib.sponge.EpicPluginLib",
+      "entrypoint": "com.epicnicity322.epicpluginlib.sponge.EpicPluginLibSponge",
       "description": "Allows plugins to extract configurations and languages, handle commands, send messages, report errors, access reflection and check for updates more easily.",
       "version": "${project.version}",
       "links": {

@@ -2,6 +2,6 @@ api-version: '1.13'
 description: '${project.description}'
 name: '${project.name}'
 author: Epicnicity322
-main: com.epicnicity322.epicpluginlib.bukkit.EpicPluginLib
+main: com.epicnicity322.epicpluginlib.bukkit.EpicPluginLibBukkit
 version: '${project.version}'
 website: '${project.url}'
