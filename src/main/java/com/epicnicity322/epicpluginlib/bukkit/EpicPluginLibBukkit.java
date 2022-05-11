@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@ package com.epicnicity322.epicpluginlib.bukkit;
 
 import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
 import com.epicnicity322.epicpluginlib.bukkit.metrics.Metrics;
+import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationLoader;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.core.tools.SpigotUpdateChecker;
-import com.epicnicity322.epicpluginlib.core.tools.Version;
 import com.epicnicity322.yamlhandler.YamlConfigurationLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -77,7 +77,7 @@ public final class EpicPluginLibBukkit extends JavaPlugin
 
         // Checking for updates:
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
-            SpigotUpdateChecker updateChecker = new SpigotUpdateChecker(80448, new Version(getDescription().getVersion()));
+            SpigotUpdateChecker updateChecker = new SpigotUpdateChecker(80448, EpicPluginLib.version);
 
             updateChecker.check((available, version) -> {
                 if (available)
