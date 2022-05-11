@@ -34,7 +34,7 @@ public enum DataType
     DOUBLE(double.class, Double.class),
     BOOLEAN(boolean.class, Boolean.class);
 
-    private static final HashMap<Class<?>, DataType> CLASS_MAP = new HashMap<>();
+    private static final @NotNull HashMap<Class<?>, DataType> CLASS_MAP = new HashMap<>();
 
     static {
         for (DataType t : values()) {
@@ -43,10 +43,10 @@ public enum DataType
         }
     }
 
-    private final Class<?> primitive;
-    private final Class<?> reference;
+    private final @NotNull Class<?> primitive;
+    private final @NotNull Class<?> reference;
 
-    DataType(Class<?> primitive, Class<?> reference)
+    DataType(@NotNull Class<?> primitive, @NotNull Class<?> reference)
     {
         this.primitive = primitive;
         this.reference = reference;
@@ -126,25 +126,22 @@ public enum DataType
     }
 
     /**
-     * Checks if two arrays have the same elements.
+     * Checks if two {@link Class} arrays have the same classes or similar classes.
      *
      * @param a1 The first array.
      * @param a2 The second array.
      * @return If the arrays are the same or have similar classes.
      */
-    public static boolean equalsArray(Class<?>[] a1, Class<?>[] a2)
+    public static boolean equalsArray(@Nullable Class<?>[] a1, @Nullable Class<?>[] a2)
     {
-        if (a1 == null || a2 == null || a1.length != a2.length) {
-            return false;
-        }
+        if (a1 == a2) return true;
+        if (a1 == null || a2 == null || a1.length != a2.length) return false;
 
         for (int i = 0; i < a1.length; ++i) {
             Class<?> c1 = a1[i];
             Class<?> c2 = a2[i];
 
-            if (!c1.equals(c2) && !c1.isAssignableFrom(c2)) {
-                return false;
-            }
+            if (c1 != c2 && (c1 == null || c2 == null || !c1.isAssignableFrom(c2))) return false;
         }
 
         return true;
@@ -155,7 +152,7 @@ public enum DataType
      *
      * @return A primitive class.
      */
-    public Class<?> getPrimitive()
+    public @NotNull Class<?> getPrimitive()
     {
         return primitive;
     }
@@ -165,7 +162,7 @@ public enum DataType
      *
      * @return A reference class.
      */
-    public Class<?> getReference()
+    public @NotNull Class<?> getReference()
     {
         return reference;
     }
