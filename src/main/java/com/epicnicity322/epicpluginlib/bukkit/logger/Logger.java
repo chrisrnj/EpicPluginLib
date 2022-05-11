@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class Logger implements ConsoleLogger<CommandSender>
 {
-    private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-z0-9]");
+    private static final @NotNull Pattern formatCodes = Pattern.compile("&[a-z\\d]");
     private final @NotNull String prefix;
     private @NotNull java.util.logging.Logger logger;
 
@@ -65,9 +65,12 @@ public class Logger implements ConsoleLogger<CommandSender>
         return prefix;
     }
 
-    public void setLogger(@NotNull java.util.logging.Logger logger)
+    public void setLogger(@Nullable java.util.logging.Logger logger)
     {
-        this.logger = logger;
+        if (logger == null)
+            this.logger = Bukkit.getLogger();
+        else
+            this.logger = logger;
     }
 
     public void log(@NotNull String message)
