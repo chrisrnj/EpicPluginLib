@@ -26,17 +26,17 @@ import com.epicnicity322.epicpluginlib.core.config.ConfigurationLoader;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.core.tools.SpigotUpdateChecker;
 import com.epicnicity322.yamlhandler.YamlConfigurationLoader;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Paths;
 import java.util.List;
 
 public final class EpicPluginLibBukkit extends JavaPlugin
 {
-    private static final Logger logger = new Logger("[EpicPluginLib] ");
+    private static final @NotNull Logger logger = new Logger("[EpicPluginLib] ");
 
     public EpicPluginLibBukkit()
     {
@@ -48,7 +48,7 @@ public final class EpicPluginLibBukkit extends JavaPlugin
     {
         int dependingPlugins = 0;
 
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+        for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
             PluginDescriptionFile desc = plugin.getDescription();
             List<String> depend = desc.getDepend();
             List<String> softDepend = desc.getSoftDepend();
@@ -80,13 +80,20 @@ public final class EpicPluginLibBukkit extends JavaPlugin
             SpigotUpdateChecker updateChecker = new SpigotUpdateChecker(80448, EpicPluginLib.version);
 
             updateChecker.check((available, version) -> {
-                if (available)
-                    Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
+                if (!available) return;
+
+                // Update available alerting task.
+                getServer().getScheduler().runTaskTimerAsynchronously(this, task -> {
+                    configLoader.loadConfigurations();
+                    if (!mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
+                        task.cancel();
+                    }
+                    logger.log("EpicPluginLib v" + version + " is available. Please update.");
+                }, 0, 36000);
             });
         }
 
         Metrics metrics = new Metrics(this, 8337);
-
         boolean bStats = false;
 
         try {
@@ -94,8 +101,6 @@ public final class EpicPluginLibBukkit extends JavaPlugin
         } catch (Exception ignored) {
         }
 
-        if (bStats) {
-            logger.log("EpicPluginLib is using bStats as metrics collector.");
-        }
+        if (bStats) logger.log("EpicPluginLib is using bStats as metrics collector.");
     }
 }
