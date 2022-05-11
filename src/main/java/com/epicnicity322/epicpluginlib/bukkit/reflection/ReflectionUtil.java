@@ -21,23 +21,22 @@ package com.epicnicity322.epicpluginlib.bukkit.reflection;
 import com.epicnicity322.epicpluginlib.bukkit.reflection.type.DataType;
 import com.epicnicity322.epicpluginlib.bukkit.reflection.type.PackageType;
 import com.epicnicity322.epicpluginlib.bukkit.reflection.type.SubPackageType;
-import org.apache.commons.lang.ArrayUtils;
+import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.util.Objects;
 
 public final class ReflectionUtil
 {
-    private static final String CRAFTBUKKIT_VERSION;
-    private static final String NMS_VERSION;
-    private static Method player_getHandle_method;
-    private static Method playerConnection_sendPacket_method;
-    private static Field entityPlayer_playerConnection_field;
+    private static final @NotNull String CRAFTBUKKIT_VERSION;
+    private static final @NotNull String NMS_VERSION;
+    private static final @NotNull Method method_CraftPlayer_getHandle;
+    private static final @NotNull Method method_PlayerConnection_sendPacket;
+    private static final @NotNull Field field_EntityPlayer_playerConnection;
 
     static {
         // Checking if this version contains version suffix on the package.
@@ -54,40 +53,27 @@ public final class ReflectionUtil
             NMS_VERSION = "";
         }
 
-        // Setting up reflection for sendPacket method.
+        // Finding equivalents of PlayerConnection#sendPacket on the current version.
         try {
-            Class<?> craftPlayer_class = getClass("CraftPlayer", SubPackageType.ENTITY);
-            Class<?> entityPlayer_class = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
+            Class<?> class_CraftPlayer = Objects.requireNonNull(getClass("CraftPlayer", SubPackageType.ENTITY));
 
-            if (entityPlayer_class == null) {
-                entityPlayer_class = getClass("net.minecraft.server.level.EntityPlayer");
-            }
+            Class<?> class_EntityPlayer = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
+            if (class_EntityPlayer == null)
+                class_EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
 
-            Class<?> packet_class = getClass("Packet", PackageType.MINECRAFT_SERVER);
+            Class<?> class_Packet = getClass("Packet", PackageType.MINECRAFT_SERVER);
+            if (class_Packet == null)
+                class_Packet = Class.forName("net.minecraft.network.protocol.Packet");
 
-            if (packet_class == null) {
-                packet_class = getClass("net.minecraft.network.protocol.Packet");
-            }
+            Class<?> class_PlayerConnection = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
+            if (class_PlayerConnection == null)
+                class_PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
 
-            Class<?> playerConnection_class = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
-
-            if (playerConnection_class == null) {
-                playerConnection_class = getClass("net.minecraft.server.network.PlayerConnection");
-            }
-
-            playerConnection_sendPacket_method = getMethod(playerConnection_class, "sendPacket", packet_class);
-            player_getHandle_method = getMethod(craftPlayer_class, "getHandle");
-
-            Field entityPlayer_b_field = getField(entityPlayer_class, "playerConnection");
-
-            // In 1.17 this was renamed to b.
-            if (entityPlayer_b_field == null) {
-                entityPlayer_b_field = getField(entityPlayer_class, "b");
-            }
-
-            entityPlayer_playerConnection_field = entityPlayer_b_field;
+            method_CraftPlayer_getHandle = Objects.requireNonNull(getMethod(class_CraftPlayer, "getHandle"));
+            method_PlayerConnection_sendPacket = Objects.requireNonNull(findMethodByParameterTypes(class_PlayerConnection, class_Packet));
+            field_EntityPlayer_playerConnection = Objects.requireNonNull(findFieldByType(class_EntityPlayer, class_PlayerConnection));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not find equivalent of PlayerConnection#sendPacket", e);
         }
     }
 
@@ -96,7 +82,8 @@ public final class ReflectionUtil
     }
 
     /**
-     * Sends a net.minecraft.server packet to a player.
+     * Sends a net.minecraft.server packet to a player. In order to be compatible with all versions, reflection is used
+     * to find the equivalent of PlayerConnection#sendPacket method in the current version.
      *
      * @param player The player to send the packet.
      * @param packet The packet to send to the player.
@@ -104,20 +91,23 @@ public final class ReflectionUtil
     public static void sendPacket(@NotNull Player player, @NotNull Object packet)
     {
         try {
-            Object entityPlayer = player_getHandle_method.invoke(player);
-            Object playerConnection = entityPlayer_playerConnection_field.get(entityPlayer);
+            Object entityPlayer = method_CraftPlayer_getHandle.invoke(player);
+            Object playerConnection = field_EntityPlayer_playerConnection.get(entityPlayer);
 
-            playerConnection_sendPacket_method.invoke(playerConnection, packet);
+            method_PlayerConnection_sendPacket.invoke(playerConnection, packet);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Gets the version of minecraft server the bukkit server is running. Empty if net.minecraft.server does not have
-     * version suffix.
+     * Gets the version suffix of the Minecraft Server package.
+     * <p>
+     * The suffix might be blank depending on the server version the lib is running. For example: in versions newer or
+     * equal to 1.17 there is no suffix, so this is subject to change in any version. Use {@link EpicPluginLib.Platform#getVersion()}
+     * if you're looking for the running server version.
      *
-     * @return The version of NMS the server is running.
+     * @return The suffix of net.minecraft.server package, blank if there isn't one.
      */
     public static @NotNull String getNmsVersion()
     {
@@ -125,10 +115,13 @@ public final class ReflectionUtil
     }
 
     /**
-     * Gets the version of CraftBukkit the server is running. Empty if org.bukkit.craftbukkit does not have version
-     * suffix.
+     * Gets the version suffix of the CraftBukkit package.
+     * <p>
+     * The suffix might be blank depending on the version of CraftBukkit the lib is running. For example: in versions
+     * older than 1.4.5 there was no suffix, so this is subject to change in any version. Use {@link EpicPluginLib.Platform#getVersion()}
+     * if you're looking for the running server version.
      *
-     * @return The version of CraftBukkit the server is running.
+     * @return The suffix of org.bukkit.craftbukkit package, blank if there isn't one.
      */
     public static @NotNull String getCraftBukkitVersion()
     {
@@ -186,29 +179,122 @@ public final class ReflectionUtil
     {
         Class<?>[] p = DataType.convertToPrimitive(parameterTypes);
 
-        for (Constructor<?> c : (Constructor<?>[]) ArrayUtils.addAll(clazz.getConstructors(), clazz.getDeclaredConstructors()))
-            if (DataType.equalsArray(DataType.convertToPrimitive(c.getParameterTypes()), p))
+        for (Constructor<?> c : clazz.getDeclaredConstructors())
+            if (DataType.equalsArray(DataType.convertToPrimitive(c.getParameterTypes()), p)) {
+                trySetAccessible(c);
                 return c;
+            }
 
         return null;
     }
 
     /**
-     * Gets a method declared or not of a class without differentiating whether its parameters are references or
-     * primitives.
+     * Gets a method of a class, regardless of its access modifier and class variable. If a method with the same name
+     * and parameters is found, it is automatically set to accessible.
+     * <p>
+     * Primitive and reference parameter types are considered the same when looking for the method.
      *
-     * @param clazz          The class where the methods are.
+     * @param clazz          The class to look for the method.
      * @param name           The name of the method.
-     * @param parameterTypes The classes of parameters of this method.
-     * @return The method matching these parameters and this name or null if not found.
+     * @param parameterTypes The parameter types of the method.
+     * @return A method with the specified parameters and name, if found.
      */
     public static @Nullable Method getMethod(@NotNull Class<?> clazz, @NotNull String name, @NotNull Class<?>... parameterTypes)
     {
         Class<?>[] p = DataType.convertToPrimitive(parameterTypes);
 
-        for (Method m : (Method[]) ArrayUtils.addAll(clazz.getMethods(), clazz.getDeclaredMethods()))
-            if (m.getName().equals(name) && DataType.equalsArray(DataType.convertToPrimitive(m.getParameterTypes()), p))
+        for (Method m : clazz.getDeclaredMethods())
+            if (m.getName().equals(name) && DataType.equalsArray(DataType.convertToPrimitive(m.getParameterTypes()), p)) {
+                trySetAccessible(m);
                 return m;
+            }
+
+        return null;
+    }
+
+    /**
+     * Finds the first {@link Method} of a class that returns the specified {@link Class} type, this is for both static
+     * and non-static methods.
+     *
+     * @param clazz      The class to look for the method.
+     * @param methodType The class type the method returns.
+     * @return A method returning the specified type, if found.
+     * @see #findMethodByType(Class, Class, boolean)
+     */
+    public static @Nullable Method findMethodByType(@NotNull Class<?> clazz, @NotNull Class<?> methodType)
+    {
+        for (Method method : clazz.getDeclaredMethods())
+            if (method.getReturnType() == methodType) {
+                trySetAccessible(method);
+                return method;
+            }
+
+        return null;
+    }
+
+    /**
+     * Finds the first {@link Method} of a class that returns the specified {@link Class} type.
+     *
+     * @param clazz      The class to look for the method.
+     * @param methodType The class type the method returns.
+     * @param isStatic   true to look only for static methods, false otherwise.
+     * @return A method returning the specified type, if found.
+     */
+    public static @Nullable Method findMethodByType(@NotNull Class<?> clazz, @NotNull Class<?> methodType, boolean isStatic)
+    {
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getReturnType() != methodType) continue;
+            if (isStatic == Modifier.isStatic(method.getModifiers())) {
+                trySetAccessible(method);
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the first {@link Method} of a class that has the matching parameter types, this is for both static and
+     * non-static methods.
+     *
+     * @param clazz          The class to look for the method.
+     * @param parameterTypes The parameter types of the method.
+     * @return A method with the specified parameters.
+     * @see #findMethodByParameterTypes(Class, boolean, Class[])
+     */
+    public static @Nullable Method findMethodByParameterTypes(@NotNull Class<?> clazz, @Nullable Class<?>... parameterTypes)
+    {
+        Class<?>[] p = DataType.convertToPrimitive(parameterTypes);
+
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (DataType.equalsArray(DataType.convertToPrimitive(method.getParameterTypes()), p)) {
+                trySetAccessible(method);
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the first {@link Method} of a class that has the matching parameter types.
+     *
+     * @param clazz          The class to look for the method.
+     * @param isStatic       true to look only for static methods, false otherwise.
+     * @param parameterTypes The parameter types of the method.
+     * @return A method with the specified parameters.
+     */
+    public static @Nullable Method findMethodByParameterTypes(@NotNull Class<?> clazz, boolean isStatic, @Nullable Class<?>... parameterTypes)
+    {
+        Class<?>[] p = DataType.convertToPrimitive(parameterTypes);
+
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (!DataType.equalsArray(DataType.convertToPrimitive(method.getParameterTypes()), p)) continue;
+            if (isStatic == Modifier.isStatic(method.getModifiers())) {
+                trySetAccessible(method);
+                return method;
+            }
+        }
 
         return null;
     }
@@ -222,13 +308,62 @@ public final class ReflectionUtil
      */
     public static @Nullable Field getField(@NotNull Class<?> clazz, @NotNull String name)
     {
-        for (Field field : (Field[]) ArrayUtils.addAll(clazz.getFields(), clazz.getDeclaredFields()))
+        for (Field field : clazz.getDeclaredFields())
             if (field.getName().equals(name)) {
-                field.setAccessible(true);
-
+                trySetAccessible(field);
                 return field;
             }
 
         return null;
+    }
+
+    /**
+     * Finds the first {@link Field} of a class that has the specified {@link Class} type, this is for both static and
+     * non-static fields.
+     *
+     * @param clazz     The class to look for the field.
+     * @param fieldType The class type the field is.
+     * @return A field with the specified type, if found.
+     * @see #findFieldByType(Class, Class, boolean)
+     */
+    public static @Nullable Field findFieldByType(@NotNull Class<?> clazz, @NotNull Class<?> fieldType)
+    {
+        for (Field field : clazz.getDeclaredFields())
+            if (field.getType() == fieldType) {
+                trySetAccessible(field);
+                return field;
+            }
+
+        return null;
+    }
+
+    /**
+     * Finds the first {@link Field} of a class that has the specified {@link Class} type.
+     *
+     * @param clazz     The class to look for the field.
+     * @param fieldType The class type the field is.
+     * @param isStatic  true to look only for static fields, false otherwise.
+     * @return A field with the specified type, if found.
+     */
+    public static @Nullable Field findFieldByType(@NotNull Class<?> clazz, @NotNull Class<?> fieldType, boolean isStatic)
+    {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType() != fieldType) continue;
+            if (isStatic == Modifier.isStatic(field.getModifiers())) {
+                trySetAccessible(field);
+                return field;
+            }
+        }
+
+        return null;
+    }
+
+    private static void trySetAccessible(@NotNull AccessibleObject object)
+    {
+        try {
+            object.setAccessible(true);
+        } catch (Exception ignored) {
+            // Alternative of AccessibleObject#trySetAccessible for Java 8
+        }
     }
 }
