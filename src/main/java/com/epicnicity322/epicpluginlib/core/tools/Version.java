@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class Version implements Comparable<Version>
 {
-    private static final @NotNull Pattern validVersion = Pattern.compile("^[0-9]+(\\.[0-9]+)+$");
+    private static final @NotNull Pattern validVersion = Pattern.compile("^\\d+(\\.\\d+)+$");
     private static final @NotNull Pattern versionSeparator = Pattern.compile("\\.");
     private final @NotNull String version;
 
@@ -46,7 +46,6 @@ public class Version implements Comparable<Version>
     {
         String[] versionNodes = versionSeparator.split(getVersion());
         String[] greaterNodes = versionSeparator.split(version.getVersion());
-
         int length = Math.max(versionNodes.length, greaterNodes.length);
 
         for (int i = 0; i < length; ++i) {
@@ -73,7 +72,7 @@ public class Version implements Comparable<Version>
     }
 
     @Override
-    public String toString()
+    public @NotNull String toString()
     {
         return version;
     }
