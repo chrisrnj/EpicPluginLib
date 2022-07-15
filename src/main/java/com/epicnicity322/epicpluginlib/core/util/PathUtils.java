@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2022  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
@@ -32,7 +33,7 @@ import java.util.stream.Stream;
 
 public final class PathUtils
 {
-    private static final String lineSeparator = ObjectUtils.getOrDefault(System.getProperty("line.separator"), "\n");
+    private static final @NotNull String lineSeparator = ObjectUtils.getOrDefault(System.getProperty("line.separator"), "\n");
     private static final int lineSeparatorLength = lineSeparator.length();
 
     private PathUtils()
@@ -119,72 +120,118 @@ public final class PathUtils
     }
 
     /**
-     * Checks if the file in the end of the path already exists. If so, then this will rename the path by adding
-     * "(1)" (Or a greater number depending on how many duplicates are in the parent folder) to the end of the file name.
+     * Gets a unique path if the specified path already exists.
+     * <p>
+     * If the path exists, a suffix of "(1)" is added to the name of the current path. And if that already exists, then
+     * the number in parentheses is increased subsequently until a non-existing path
+     * ({@link Files#notExists(Path, LinkOption...)}) is found.
      *
-     * @param path The path to the desired file.
-     * @return The same path or a renamed one depending if the file in the end already exists.
+     * @param path A unique/non-existing path.
+     * @return The path or a path with different name if it already exists.
+     * @throws UnsupportedOperationException If the path has no name or no parent.
      */
-    public static Path getUniquePath(@NotNull Path path)
+    public static @NotNull Path getUniquePath(@NotNull Path path)
     {
-        String name = path.getFileName().toString();
-        int extensionIndex = name.lastIndexOf('.');
-        String extension = extensionIndex == -1 ? "" : name.substring(extensionIndex);
+        if (path.getFileName() == null || path.getParent() == null)
+            throw new UnsupportedOperationException("Path \"" + path + "\" has either no name or no parent.");
+
         Path parentPath = path.getParent();
 
-        long count = 2;
-
+        // Adding suffix or increasing count if path already exists.
         while (Files.exists(path)) {
-            name = path.getFileName().toString();
+            String nameWithExtension = path.getFileName().toString();
+            int extensionIndex = nameWithExtension.lastIndexOf('.');
+            String name = extensionIndex == -1 ? nameWithExtension : nameWithExtension.substring(0, extensionIndex);
+            String extension = extensionIndex == -1 ? "" : nameWithExtension.substring(extensionIndex);
+            Long duplicateCount = getDuplicateCount(name);
 
-            String nameNoExtension = name.contains(".") ? name.substring(0, name.lastIndexOf('.')).trim() : name.trim();
-            String space = "";
-
-            // Checking if a space should be added.
-            if (nameNoExtension.contains(" ") && nameNoExtension.charAt(nameNoExtension.lastIndexOf(' ') + 1) != '(')
-                space = " ";
-
-            if (isADuplicate(nameNoExtension)) {
-                count = Long.parseLong(nameNoExtension.substring(nameNoExtension.lastIndexOf('(') + 1, nameNoExtension.length() - 1));
-                path = parentPath.resolve(nameNoExtension.substring(0, nameNoExtension.lastIndexOf('(')) +
-                        space + '(' + (count + 1) + ')' + extension);
+            // If the path already is a duplicate, then increase number enclosed in parentheses.
+            if (duplicateCount != null) {
+                path = parentPath.resolve(name.substring(0, name.lastIndexOf('(')) + '(' + (duplicateCount + 1) + ')' + extension);
             } else {
-                path = parentPath.resolve(nameNoExtension + " (1)" + extension);
+                path = parentPath.resolve(name + " (1)" + extension);
             }
-
-            ++count;
         }
 
         return path;
     }
 
     /**
-     * Tests if the string has a number in parentheses appended to the end, indicating that it's a duplicate of a file.
+     * Creates a directory in the specified path, if one does not already exist.
+     * <p>
+     * If a regular file ({@link Files#isRegularFile(Path, LinkOption...)}) exists in the destination of the path, then
+     * the folder will be created in a new path with the suffix " (1)". And if that already exists as a regular file,
+     * then the number in parentheses is increased subsequently until an existing directory or a non-existing path
+     * ({@link Files#notExists(Path, LinkOption...)}) is found.
+     * <p>
+     * This method always returns an existing directory. Whether it already existed, or it was just created.
      *
-     * @param string The string to check if it has a number in parentheses.
-     * @return If the string is a duplicate.
+     * @param path The path to create a directory/find a directory.
+     * @return The directory path. Different from the specified path in case a regular file exists in the destination path.
+     * @throws IOException                   If failed to create a directory in the specified path or new path.
+     * @throws UnsupportedOperationException If the path has no name or no parent.
      */
-    private static boolean isADuplicate(@NotNull String string)
+    public static @NotNull Path getDirectory(@NotNull Path path) throws IOException
+    {
+        // Creating directory if path does not exist.
+        if (Files.notExists(path)) {
+            Files.createDirectories(path);
+            return path;
+        }
+
+        if (path.getFileName() == null || path.getParent() == null)
+            throw new UnsupportedOperationException("Path \"" + path + "\" has either no name or no parent.");
+
+        Path parentPath = path.getParent();
+
+        // Adding suffix or increasing count if path already exists, and it's a regular file rather than a directory.
+        while (!Files.isDirectory(path)) {
+            String name = path.getFileName().toString();
+            Long duplicateCount = getDuplicateCount(name);
+
+            // If the path already is a duplicate, then increase number enclosed in parentheses.
+            if (duplicateCount != null) {
+                path = parentPath.resolve(name.substring(0, name.lastIndexOf('(')) + '(' + (duplicateCount + 1) + ')');
+            } else {
+                path = parentPath.resolve(name + " (1)");
+            }
+
+            if (Files.notExists(path)) {
+                Files.createDirectories(path);
+                return path;
+            }
+        }
+
+        return path;
+    }
+
+    /**
+     * Gets the number enclosed in parentheses at the end of a file name. If the name has no such parentheses and valid
+     * {@link Long} number, then null is returned.
+     *
+     * @param string The string to get number from.
+     * @return The number enclosed in parentheses, or null if not present.
+     */
+    private static @Nullable Long getDuplicateCount(@NotNull String string)
     {
         string = string.trim();
         int length = string.length();
 
-        // The minimum length a duplicate is three, because the minimum they can look like is "(1)".
-        if (length < 3) return false;
+        // The minimum length a duplicate can have is three, because the minimum they can look like is "(1)".
+        if (length < 3) return null;
 
-        if (string.charAt(--length) != ')') return false;
+        if (string.charAt(--length) != ')') return null;
 
         int openingParenthesisIndex = string.lastIndexOf('(');
 
-        if (openingParenthesisIndex++ == -1) return false;
+        if (openingParenthesisIndex == -1) return null;
 
-        for (int i = openingParenthesisIndex; i < length; ++i) {
-            char c = string.charAt(i);
+        String count = string.substring(++openingParenthesisIndex, length);
 
-            if (c < '0' || c > '9')
-                return false;
+        try {
+            return Long.parseLong(count);
+        } catch (NumberFormatException e) {
+            return null;
         }
-
-        return true;
     }
 }
