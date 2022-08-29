@@ -51,10 +51,27 @@ public final class MessageSender extends LanguageHolder<TextComponent, Audience>
     @Override
     public void send(@NotNull Audience audience, boolean prefix, @NotNull String message)
     {
-        if (!message.isEmpty()) {
-            audience.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                    (prefix ? get("General.Prefix", "") : "") + message));
+        if (message.isEmpty()) return;
+
+        // Messages starting with '<' could have message-specific properties.
+        if (message.charAt(0) == '<') {
+            int spaceIndex = message.indexOf(' ');
+            if (spaceIndex != -1) {
+                String[] properties = message.substring(0, spaceIndex).split(">");
+
+                for (String property : properties) {
+                    if (property.equals("<noprefix")) {
+                        prefix = false;
+                    } else break;
+                    //TODO: Add cooldown property.
+                }
+
+                message = message.substring(spaceIndex + 1);
+            }
         }
+
+        audience.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
+                (prefix ? get("General.Prefix", "") : "") + message));
     }
 
     @Override

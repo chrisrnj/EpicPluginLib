@@ -30,6 +30,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -37,10 +38,17 @@ import java.util.List;
 public final class EpicPluginLibBukkit extends JavaPlugin
 {
     private static final @NotNull Logger logger = new Logger("[EpicPluginLib] ");
+    private static @Nullable EpicPluginLibBukkit instance;
 
     public EpicPluginLibBukkit()
     {
+        instance = this;
         logger.setLogger(getLogger());
+    }
+
+    public static @Nullable EpicPluginLibBukkit getInstance()
+    {
+        return instance;
     }
 
     @Override
