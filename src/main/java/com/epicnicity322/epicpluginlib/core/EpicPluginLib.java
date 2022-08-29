@@ -36,6 +36,10 @@ public final class EpicPluginLib
      */
     public static final @NotNull Version version = new Version(versionString);
 
+    private EpicPluginLib()
+    {
+    }
+
     public static void main(String[] args)
     {
         System.out.println("I am a library, not an application!");
@@ -55,10 +59,6 @@ public final class EpicPluginLib
         }
 
         System.exit(0);
-    }
-
-    private EpicPluginLib()
-    {
     }
 
     public enum Platform
