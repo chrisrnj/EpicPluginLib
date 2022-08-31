@@ -18,7 +18,6 @@
 
 package com.epicnicity322.epicpluginlib.sponge.lang;
 
-import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.lang.LanguageHolder;
 import com.epicnicity322.yamlhandler.Configuration;
 import net.kyori.adventure.audience.Audience;
@@ -26,74 +25,42 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.entity.living.player.Player;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class MessageSender extends LanguageHolder<TextComponent, Audience>
 {
-    private final @NotNull Supplier<String> locale;
-    private final @NotNull Configuration defaultLanguage;
+    public MessageSender(@NotNull Supplier<String> currentLocale, @NotNull Configuration defaultLanguage)
+    {
+        super(currentLocale, defaultLanguage);
+    }
 
-    /**
-     * Creates an instance of {@link com.epicnicity322.epicpluginlib.bukkit.lang.MessageSender}. Message senders can get and send strings from the plugin's language.
-     *
-     * @param locale          The locale of the language to get.
-     * @param prefix          The prefix to be in the start of every message.
-     * @param defaultLanguage The default language to get the keys in case the other language doesn't exist or doesn't
-     *                        contain the key.
-     */
+    @Deprecated
     public MessageSender(@NotNull Supplier<String> locale, @Nullable Supplier<String> prefix, @NotNull Configuration defaultLanguage)
     {
-        this.locale = locale;
-        this.defaultLanguage = defaultLanguage;
+        super(locale, defaultLanguage);
     }
 
     @Override
-    public void send(@NotNull Audience audience, boolean prefix, @NotNull String message)
+    protected void sendMessage(@NotNull TextComponent message, @NotNull Audience receiver)
     {
-        if (message.isEmpty()) return;
+        receiver.sendMessage(message);
+    }
 
-        // Messages starting with '<' could have message-specific properties.
-        if (message.charAt(0) == '<') {
-            int spaceIndex = message.indexOf(' ');
-            if (spaceIndex != -1) {
-                String[] properties = message.substring(0, spaceIndex).split(">");
+    @Override
+    protected @NotNull TextComponent translateColorCodes(@NotNull String message)
+    {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+    }
 
-                for (String property : properties) {
-                    if (property.equals("<noprefix")) {
-                        prefix = false;
-                    } else break;
-                    //TODO: Add cooldown property.
-                }
-
-                message = message.substring(spaceIndex + 1);
-            }
+    @Override
+    protected @Nullable UUID receiverUUID(@NotNull Audience receiver)
+    {
+        if (receiver instanceof Player) {
+            return ((Player) receiver).uniqueId();
         }
-
-        audience.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                (prefix ? get("General.Prefix", "") : "") + message));
-    }
-
-    @Override
-    public TextComponent getColored(@NotNull String key, @Nullable String def)
-    {
-        String string = get(key, def);
-
-        if (string == null)
-            return null;
-        else
-            return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
-    }
-
-    @Override
-    public String get(@NotNull String key, @Nullable String def)
-    {
-        ConfigurationHolder language = getLanguage(locale.get());
-
-        if (language == null) {
-            return defaultLanguage.getString(key).orElse(def);
-        } else {
-            return language.getConfiguration().getString(key).orElse(def);
-        }
+        return null;
     }
 }
