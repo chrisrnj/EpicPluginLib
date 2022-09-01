@@ -63,4 +63,23 @@ public final class MessageSender extends LanguageHolder<TextComponent, Audience>
         }
         return null;
     }
+
+    @Override
+    public void send(@NotNull Audience receiver, boolean prefix, @Nullable String message)
+    {
+        super.send(receiver, prefix, message);
+    }
+
+    @Override
+    public TextComponent getColored(@NotNull String key, @Nullable String def)
+    {
+        return super.getColored(key, def);
+    }
+
+    @Deprecated
+    @Override
+    public String get(@NotNull String key, @Nullable String def)
+    {
+        return super.get(key, def);
+    }
 }

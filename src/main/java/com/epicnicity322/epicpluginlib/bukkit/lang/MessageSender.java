@@ -62,4 +62,23 @@ public final class MessageSender extends LanguageHolder<String, CommandSender>
         }
         return null;
     }
+
+    @Override
+    public void send(@NotNull CommandSender receiver, boolean prefix, @Nullable String message)
+    {
+        super.send(receiver, prefix, message);
+    }
+
+    @Override
+    public @NotNull String getColored(@NotNull String key)
+    {
+        return super.getColored(key);
+    }
+
+    @Deprecated
+    @Override
+    public String get(@NotNull String key, @Nullable String def)
+    {
+        return super.get(key, def);
+    }
 }
