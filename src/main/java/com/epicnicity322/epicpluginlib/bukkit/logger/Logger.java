@@ -81,7 +81,7 @@ public class Logger implements ConsoleLogger<CommandSender>
     public void log(@NotNull String message, @NotNull Level level)
     {
         if (logger == Bukkit.getLogger()) {
-            message = prefix + " " + message;
+            message = prefix + message;
         }
 
         message = formatCodes.matcher(message).replaceAll("");
