@@ -34,9 +34,9 @@ public final class ReflectionUtil
 {
     private static final @NotNull String CRAFTBUKKIT_VERSION;
     private static final @NotNull String NMS_VERSION;
-    private static final @NotNull Method method_CraftPlayer_getHandle;
-    private static final @NotNull Method method_PlayerConnection_sendPacket;
-    private static final @NotNull Field field_EntityPlayer_playerConnection;
+    private static final Method method_CraftPlayer_getHandle;
+    private static final Method method_PlayerConnection_sendPacket;
+    private static final Field field_EntityPlayer_playerConnection;
 
     static {
         // Checking if this version contains version suffix on the package.
@@ -54,6 +54,9 @@ public final class ReflectionUtil
         }
 
         // Finding equivalents of PlayerConnection#sendPacket on the current version.
+        Method method_CraftPlayer_getHandle1 = null;
+        Method method_PlayerConnection_sendPacket1 = null;
+        Field field_EntityPlayer_playerConnection1 = null;
         try {
             Class<?> class_CraftPlayer = Objects.requireNonNull(getClass("CraftPlayer", SubPackageType.ENTITY));
 
@@ -69,12 +72,15 @@ public final class ReflectionUtil
             if (class_PlayerConnection == null)
                 class_PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
 
-            method_CraftPlayer_getHandle = Objects.requireNonNull(getMethod(class_CraftPlayer, "getHandle"));
-            method_PlayerConnection_sendPacket = Objects.requireNonNull(findMethodByParameterTypes(class_PlayerConnection, class_Packet));
-            field_EntityPlayer_playerConnection = Objects.requireNonNull(findFieldByType(class_EntityPlayer, class_PlayerConnection));
+            method_CraftPlayer_getHandle1 = Objects.requireNonNull(getMethod(class_CraftPlayer, "getHandle"));
+            method_PlayerConnection_sendPacket1 = Objects.requireNonNull(findMethodByParameterTypes(class_PlayerConnection, class_Packet));
+            field_EntityPlayer_playerConnection1 = Objects.requireNonNull(findFieldByType(class_EntityPlayer, class_PlayerConnection));
         } catch (Exception e) {
-            throw new RuntimeException("Could not find equivalent of PlayerConnection#sendPacket", e);
+            new Exception("Could not find equivalent of PlayerConnection#sendPacket. Does the server have NMS?", e).printStackTrace();
         }
+        method_CraftPlayer_getHandle = method_CraftPlayer_getHandle1;
+        method_PlayerConnection_sendPacket = method_PlayerConnection_sendPacket1;
+        field_EntityPlayer_playerConnection = field_EntityPlayer_playerConnection1;
     }
 
     private ReflectionUtil()
@@ -87,15 +93,21 @@ public final class ReflectionUtil
      *
      * @param player The player to send the packet.
      * @param packet The packet to send to the player.
+     * @throws UnsupportedOperationException If PlayerConnection#sendPacket could not be found in the running server.
+     * @throws RuntimeException              If there was an issue invoking the methods or getting the playerConnection field.
      */
     public static void sendPacket(@NotNull Player player, @NotNull Object packet)
     {
+        if (method_CraftPlayer_getHandle == null) {
+            throw new UnsupportedOperationException("Packet could not be sent because the equivalent of PlayerConnection#sendPacket could not be found.");
+        }
+
         try {
             Object entityPlayer = method_CraftPlayer_getHandle.invoke(player);
             Object playerConnection = field_EntityPlayer_playerConnection.get(entityPlayer);
 
             method_PlayerConnection_sendPacket.invoke(playerConnection, packet);
-        } catch (Exception e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
