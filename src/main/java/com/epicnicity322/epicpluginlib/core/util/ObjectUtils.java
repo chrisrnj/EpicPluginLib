@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2022  Christiano Rangel
+ * Copyright (C) 2023  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,12 @@
 
 package com.epicnicity322.epicpluginlib.core.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 public final class ObjectUtils
 {
@@ -74,5 +79,49 @@ public final class ObjectUtils
         }
 
         return true;
+    }
+
+    /**
+     * Splits a collection into a {@link HashMap} having the key as the page number, and value as a list that have the
+     * size of maxPerPage.
+     * <p>
+     * If you use an empty collection or set maxPerPage to a value lower than or equal to 0, a map with one page will be
+     * returned, but this page will have no entries.
+     *
+     * @param collection The collection to split.
+     * @param maxPerPage The amount you want each page to have.
+     * @param <T>        The type of the collection to split.
+     * @return The map consisting of the pages.
+     */
+    public static <T> @NotNull HashMap<Integer, ArrayList<T>> splitIntoPages(@NotNull Collection<T> collection, int maxPerPage)
+    {
+        if (collection.isEmpty() || maxPerPage <= 0) {
+            // Return 1 page with no entries.
+            HashMap<Integer, ArrayList<T>> emptyPage = new HashMap<>(1);
+            emptyPage.put(1, new ArrayList<>(0));
+            return emptyPage;
+        }
+
+        // pageAmount must always round up.
+        int pageAmount = (int) Math.ceil(collection.size() / (double) maxPerPage);
+        HashMap<Integer, ArrayList<T>> pages = new HashMap<>(pageAmount);
+
+        int count = 0;
+        int page = 1;
+        ArrayList<T> list = new ArrayList<>(maxPerPage);
+
+        for (T t : collection) {
+            list.add(t);
+
+            if (++count == maxPerPage) {
+                pages.put(page++, list);
+                list = new ArrayList<>(maxPerPage);
+                count = 0;
+            }
+        }
+
+        if (!list.isEmpty()) pages.put(page, list);
+
+        return pages;
     }
 }
