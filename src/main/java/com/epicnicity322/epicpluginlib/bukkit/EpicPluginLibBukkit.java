@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2022  Christiano Rangel
+ * Copyright (C) 2023  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,13 @@ import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationLoader;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
-import com.epicnicity322.epicpluginlib.core.tools.SpigotUpdateChecker;
+import com.epicnicity322.epicpluginlib.core.tools.GitHubUpdateChecker;
 import com.epicnicity322.yamlhandler.YamlConfigurationLoader;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -37,10 +38,25 @@ import java.util.List;
 public final class EpicPluginLibBukkit extends JavaPlugin
 {
     private static final @NotNull Logger logger = new Logger("[EpicPluginLib] ");
+    private static @Nullable EpicPluginLibBukkit instance;
 
     public EpicPluginLibBukkit()
     {
+        instance = this;
         logger.setLogger(getLogger());
+    }
+
+    public static @Nullable EpicPluginLibBukkit getInstance()
+    {
+        return instance;
+    }
+
+    /**
+     * @return EpicPluginLib's logger.
+     */
+    public static @NotNull Logger logger()
+    {
+        return logger;
     }
 
     @Override
@@ -77,23 +93,18 @@ public final class EpicPluginLibBukkit extends JavaPlugin
 
         // Checking for updates:
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
-            SpigotUpdateChecker updateChecker = new SpigotUpdateChecker(80448, EpicPluginLib.version);
+            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("Epicnicity322/EpicPluginLib", EpicPluginLib.version);
 
             updateChecker.check((available, version) -> {
                 if (!available) return;
 
                 // Update available alerting task.
-                getServer().getScheduler().runTaskTimerAsynchronously(this, task -> {
-                    configLoader.loadConfigurations();
-                    if (!mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
-                        task.cancel();
-                    }
-                    logger.log("EpicPluginLib v" + version + " is available. Please update.");
-                }, 0, 36000);
+                getServer().getScheduler().runTaskTimerAsynchronously(this, task ->
+                        logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
             });
         }
 
-        Metrics metrics = new Metrics(this, 8337);
+        new Metrics(this, 8337);
         boolean bStats = false;
 
         try {
