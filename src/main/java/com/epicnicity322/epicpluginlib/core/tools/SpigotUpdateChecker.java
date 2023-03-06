@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2023  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ public class SpigotUpdateChecker
     /**
      * Checks if an update is available at spigotmc.org.
      *
-     * @param onCheck A {@link BiConsumer} to run when check for updates, with {@link Boolean} as if the update is available, and {@link Version} as the latest version.
+     * @param onCheck A {@link BiConsumer} that is applied when the latest version is fetched, with {@link Boolean} as if the update is available, and {@link Version} as the latest version.
      * @see #check(BiConsumer onCheck, BiConsumer onError)
      */
     public void check(@NotNull BiConsumer<Boolean, Version> onCheck)
@@ -87,8 +87,8 @@ public class SpigotUpdateChecker
     /**
      * Checks if an update is available at spigotmc.org.
      *
-     * @param onCheck A {@link BiConsumer} to run when check for updates, with {@link Boolean} as if the update is available, and {@link Version} as the latest version.
-     * @param onError A {@link BiConsumer} to run when something went wrong while connecting to spigotmc.org, as {@link com.epicnicity322.epicpluginlib.core.tools.Downloader.Result} as the result, and {@link Exception} as  the exception that was thrown.
+     * @param onCheck A {@link BiConsumer} that is applied when the latest version is fetched, with {@link Boolean} as if the update is available, and {@link Version} as the latest version.
+     * @param onError A {@link BiConsumer} that is applied when an error happens, as {@link com.epicnicity322.epicpluginlib.core.tools.Downloader.Result} as the result, and {@link Exception} as  the exception that was thrown.
      */
     public void check(@NotNull BiConsumer<Boolean, Version> onCheck, @Nullable BiConsumer<Downloader.Result, Exception> onError)
     {
