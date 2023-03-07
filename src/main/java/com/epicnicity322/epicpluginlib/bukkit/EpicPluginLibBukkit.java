@@ -33,11 +33,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class EpicPluginLibBukkit extends JavaPlugin
 {
     private static final @NotNull Logger logger = new Logger("[EpicPluginLib] ");
+    private static final @NotNull ArrayList<Runnable> onDisable = new ArrayList<>(1);
     private static @Nullable EpicPluginLibBukkit instance;
 
     public EpicPluginLibBukkit()
@@ -57,6 +59,11 @@ public final class EpicPluginLibBukkit extends JavaPlugin
     public static @NotNull Logger logger()
     {
         return logger;
+    }
+
+    public static void runOnDisable(@NotNull Runnable runnable)
+    {
+        onDisable.add(runnable);
     }
 
     @Override
@@ -113,5 +120,18 @@ public final class EpicPluginLibBukkit extends JavaPlugin
         }
 
         if (bStats) logger.log("EpicPluginLib is using bStats as metrics collector.");
+    }
+
+    @Override
+    public void onDisable()
+    {
+        for (Runnable r : onDisable) {
+            try {
+                r.run();
+            } catch (Throwable t) {
+                logger.log("Something went wrong while disabling EpicPluginLib:", ConsoleLogger.Level.ERROR);
+                t.printStackTrace();
+            }
+        }
     }
 }

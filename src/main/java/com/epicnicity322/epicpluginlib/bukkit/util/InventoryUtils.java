@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -95,6 +96,20 @@ public final class InventoryUtils
             }
         }
     };
+
+    static {
+        // Prevent stealing items by closing the inventory once the server disables.
+        EpicPluginLibBukkit.runOnDisable(() -> {
+            for (UUID id : openInventories.keySet()) {
+                Player player = Bukkit.getPlayer(id);
+                if (player == null) continue;
+                player.closeInventory();
+            }
+
+            openInventories.clear();
+            onClose.clear();
+        });
+    }
 
     private InventoryUtils()
     {
