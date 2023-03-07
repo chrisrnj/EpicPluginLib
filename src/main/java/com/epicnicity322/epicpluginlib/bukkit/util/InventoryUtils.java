@@ -106,7 +106,7 @@ public final class InventoryUtils
      * If the material is from an item that has {@link ItemMeta}, the name is set to blank and the flag
      * {@link ItemFlag#HIDE_ATTRIBUTES} is added.
      * <p>
-     * If you input a index that is greater than the inventories size or lower than 0, the operation is aborted and
+     * If you input an index that is greater than the inventories size or lower than 0, the operation is aborted and
      * nothing is filled.
      *
      * @param inventory  The inventory to fill.
@@ -172,23 +172,52 @@ public final class InventoryUtils
 
     /**
      * Creates an {@link ItemStack} based on the {@link Material} specified in the provided configuration.
-     * The item can be set to glowing if "Path.Glowing" is true.
-     * The item's name and lore will be got from the provided language in the path "Path.Display Name" and "Path.Lore".
+     * <p>
+     * The item's material and whether it will be glowing properties will be got from the provided config, in the path
+     * "Path.Material" and "Path.Glowing". (If the material is not found, or it does not have an {@link ItemMeta}, {@link Material#STONE} is used.)
+     * <p>
+     * The item's name and lore will be got from the provided language in the path "Path.Display Name" and "Path.Lore"
+     * (The variable "{@literal <line>}" can be used to break a line).
      *
      * @param configPath The path to get material, glowing, display name and lore.
      * @param config     The config to look for the material and glowing paths.
      * @param lang       The language to look for display name and lore paths.
      * @return An item stack as specified in the plugin's configuration.
+     * @see #getItemStack(String, Configuration, MessageSender, String...)
      */
     public static @NotNull ItemStack getItemStack(@NotNull String configPath, @NotNull Configuration config, @NotNull MessageSender lang)
+    {
+        return getItemStack(configPath, config, lang, (String) null);
+    }
+
+    /**
+     * Creates an {@link ItemStack} based on the {@link Material} specified in the provided configuration.
+     * <p>
+     * The item's material and whether it will be glowing properties will be got from the provided config, in the path
+     * "Path.Material" and "Path.Glowing". (If the material is not found, or it does not have an {@link ItemMeta}, {@link Material#STONE} is used.)
+     * <p>
+     * The item's name and lore will be got from the provided language in the path "Path.Display Name" and "Path.Lore"
+     * (The variable "{@literal <line>}" can be used to break a line).
+     * <p>
+     * The variables in the name and lore will be replaced according to the "variables" array, the variables are
+     * set according to the index, so "{@literal <var0>}" will be replaced to the first string, "{@literal <var1>}" to
+     * the second, etc...
+     *
+     * @param configPath The path to get material, glowing, display name and lore.
+     * @param config     The config to look for the material and glowing paths.
+     * @param lang       The language to look for display name and lore paths.
+     * @param variables  The variables to replace in the item's name and lore.
+     * @return An item stack as specified in the plugin's configuration.
+     */
+    public static @NotNull ItemStack getItemStack(@NotNull String configPath, @NotNull Configuration config, @NotNull MessageSender lang, @Nullable String... variables)
     {
         Material material = Material.matchMaterial(config.getString(configPath + ".Material").orElse("STONE"));
         if (material == null || material.isAir()) material = Material.STONE;
         ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        itemMeta.setDisplayName(lang.getColored(configPath + ".Display Name"));
-        itemMeta.setLore(Arrays.asList(lang.getColored(configPath + ".Lore").split("<line>")));
+        itemMeta.setDisplayName(replaceVar(lang.getColored(configPath + ".Display Name"), variables));
+        itemMeta.setLore(Arrays.asList(replaceVar(lang.getColored(configPath + ".Lore"), variables).split("<line>")));
 
         if (config.getBoolean(configPath + ".Glowing").orElse(false))
             itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -197,6 +226,16 @@ public final class InventoryUtils
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;
+    }
+
+    private static @NotNull String replaceVar(@NotNull String string, @Nullable String... variables)
+    {
+        if (variables == null) return string;
+        for (int i = 0; i < variables.length; ++i) {
+            String var = variables[i];
+            if (var != null) string = string.replace("<var" + i + ">", var);
+        }
+        return string;
     }
 
     /**
