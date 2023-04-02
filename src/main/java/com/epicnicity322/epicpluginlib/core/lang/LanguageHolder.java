@@ -47,6 +47,36 @@ public abstract class LanguageHolder<X, Y>
         this.defaultLanguage = defaultLanguage;
     }
 
+    /**
+     * Creates a simple, platform-independent language. This language should be used as a placeholder, you should use
+     * your  platform's {@link LanguageHolder} implementing class as soon as it's available.
+     *
+     * @param currentLocale   The locale code to be assigned to this language. E.g. "EN_US".
+     * @param defaultLanguage The {@link ConfigurationHolder} containing the {@link com.epicnicity322.yamlhandler.Configuration} with keys and strings.
+     */
+    public static @NotNull LanguageHolder<?, ?> simpleLanguage(@NotNull Supplier<String> currentLocale, @NotNull Configuration defaultLanguage)
+    {
+        return new LanguageHolder<Object, Object>(currentLocale, defaultLanguage)
+        {
+            @Override
+            protected void sendMessage(@NotNull Object message, @NotNull Object receiver)
+            {
+            }
+
+            @Override
+            protected @NotNull Object translateColorCodes(@NotNull String message)
+            {
+                return message;
+            }
+
+            @Override
+            protected @Nullable UUID receiverUUID(@NotNull Object receiver)
+            {
+                return null;
+            }
+        };
+    }
+
     protected abstract void sendMessage(@NotNull X message, @NotNull Y receiver);
 
     protected abstract @NotNull X translateColorCodes(@NotNull String message);
