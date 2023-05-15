@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2022  Christiano Rangel
+ * Copyright (C) 2023  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class Command implements CommandRunnable
 {
+    private @Nullable String[] aliases;
+
     /**
      * @return The name of the command.
      */
@@ -35,7 +37,17 @@ public abstract class Command implements CommandRunnable
      */
     public @Nullable String[] getAliases()
     {
-        return null;
+        return aliases;
+    }
+
+    /**
+     * Sets the alternative names of this command.
+     *
+     * @param aliases The new aliases of this command. Null to remove all aliases.
+     */
+    public void setAliases(@Nullable String... aliases)
+    {
+        this.aliases = aliases;
     }
 
     /**
@@ -61,7 +73,7 @@ public abstract class Command implements CommandRunnable
     /**
      * If this command should have the same case in the name and aliases to be triggered.
      *
-     * @return If this command is case sensitive.
+     * @return If this command is case-sensitive.
      */
     public boolean isCaseSensitive()
     {
@@ -69,10 +81,10 @@ public abstract class Command implements CommandRunnable
     }
 
     /**
-     * The runnable that will run when the sender sends this command and doesn't has the permission
+     * The runnable that will run when the sender sends this command and doesn't have the permission
      * {@link #getPermission()}.
      *
-     * @return The runnable to run when sender doesn't has the permission. Null if nothing should happen.
+     * @return The runnable to run when sender doesn't have the permission. Null if nothing should happen.
      */
     protected @Nullable CommandRunnable getNoPermissionRunnable()
     {
