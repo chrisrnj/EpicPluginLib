@@ -63,14 +63,12 @@ public final class InventoryUtils
             Consumer<InventoryClickEvent> button = buttons.get(event.getRawSlot());
 
             if (button != null) {
-                Bukkit.getScheduler().runTask(EpicPluginLibBukkit.getInstance(), () -> {
-                    try {
-                        button.accept(event);
-                    } catch (Throwable t) {
-                        EpicPluginLibBukkit.logger().log("Failed to accept GUI click:");
-                        t.printStackTrace();
-                    }
-                });
+                try {
+                    button.accept(event);
+                } catch (Throwable t) {
+                    EpicPluginLibBukkit.logger().log("Failed to accept GUI click:");
+                    t.printStackTrace();
+                }
             }
         }
 
@@ -85,14 +83,12 @@ public final class InventoryUtils
                 Consumer<InventoryCloseEvent> runnable = onClose.remove(player.getUniqueId());
 
                 if (runnable != null)
-                    Bukkit.getScheduler().runTask(EpicPluginLibBukkit.getInstance(), () -> {
-                        try {
-                            runnable.accept(event);
-                        } catch (Throwable t) {
-                            EpicPluginLibBukkit.logger().log("Failed to accept GUI close:");
-                            t.printStackTrace();
-                        }
-                    });
+                    try {
+                        runnable.accept(event);
+                    } catch (Throwable t) {
+                        EpicPluginLibBukkit.logger().log("Failed to accept GUI close:");
+                        t.printStackTrace();
+                    }
             }
         }
     };
