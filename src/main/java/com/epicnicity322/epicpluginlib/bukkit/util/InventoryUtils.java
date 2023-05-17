@@ -121,7 +121,7 @@ public final class InventoryUtils
      * If the material is from an item that has {@link ItemMeta}, the name is set to blank and the flag
      * {@link ItemFlag#HIDE_ATTRIBUTES} is added.
      * <p>
-     * If you input an index that is greater than the inventories size or lower than 0, the operation is aborted and
+     * If you input an index that is greater than the inventory's size or lower than 0, the operation is aborted and
      * nothing is filled.
      *
      * @param inventory  The inventory to fill.
@@ -158,7 +158,7 @@ public final class InventoryUtils
      * If the material is from an item that has {@link ItemMeta}, the name is set to blank and the flag
      * {@link ItemFlag#HIDE_ATTRIBUTES} is added.
      * <p>
-     * If you input an index that is greater than the inventories size or lower than 0, the operation is aborted and
+     * If you input an index that is greater than the inventory's size or lower than 0, the operation is aborted and
      * nothing is filled.
      *
      * @param inventory  The inventory to fill.
@@ -254,7 +254,7 @@ public final class InventoryUtils
     }
 
     /**
-     * Opens an inventory that can't have its items moved/stolen.
+     * Opens an inventory that can't have any items moved/stolen.
      * This inventory is closed when EpicPluginLib is disabled.
      *
      * @param inventory The inventory to open.
@@ -302,10 +302,9 @@ public final class InventoryUtils
         EpicPluginLibBukkit instance = EpicPluginLibBukkit.getInstance();
         if (instance == null || !instance.isEnabled()) throw new IllegalStateException("EpicPluginLib is not loaded.");
 
-        player.openInventory(inventory);
+        if (!inventory.getViewers().contains(player)) player.openInventory(inventory);
 
-        if (openInventories.isEmpty())
-            Bukkit.getPluginManager().registerEvents(inventoryListener, instance);
+        if (openInventories.isEmpty()) Bukkit.getPluginManager().registerEvents(inventoryListener, instance);
 
         if (buttons == null) buttons = Collections.emptyMap();
 
