@@ -329,7 +329,7 @@ public final class InventoryUtils
      * @param lineBreak                What to use at the end of every line.
      * @return The formatted lore text.
      */
-    private static @NotNull String breakLore(@NotNull String lore, int maxCharactersPerLine, int maxLines, int lengthAlreadyInFirstLine, @NotNull String lineBreak)
+    public static @NotNull String breakLore(@NotNull String lore, int maxCharactersPerLine, int maxLines, int lengthAlreadyInFirstLine, @NotNull String lineBreak)
     {
         // Removing double spaces.
         lore = lore.replaceAll("  +", " ");
