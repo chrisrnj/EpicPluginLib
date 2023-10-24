@@ -100,7 +100,7 @@ public final class EpicPluginLibBukkit extends JavaPlugin
 
         // Checking for updates:
         if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
-            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("Epicnicity322/EpicPluginLib", EpicPluginLib.version);
+            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.version);
 
             updateChecker.check((available, version) -> {
                 if (!available) return;

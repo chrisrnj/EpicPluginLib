@@ -28,12 +28,12 @@
     </description>
     <groupId>com.epicnicity322</groupId>
     <name>EpicPluginLib</name>
-    <version>2.5</version>
-    <url>https://github.com/Epicnicity322/EpicPluginLib</url>
+    <version>2.5.1</version>
+    <url>https://github.com/chrisrnj/EpicPluginLib</url>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/Epicnicity322/EpicPluginLib/issues</url>
+        <url>https://github.com/chrisrnj/EpicPluginLib/issues</url>
     </issueManagement>
 
     <licenses>
@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
@@ -134,7 +134,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20-R0.1-SNAPSHOT</version>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.yaml</groupId>
@@ -157,7 +157,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Epicnicity322</groupId>
+            <groupId>com.github.chrisrnj</groupId>
             <artifactId>yaml-handler</artifactId>
             <version>1.4</version>
             <scope>compile</scope>
