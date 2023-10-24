@@ -82,13 +82,12 @@ public final class InventoryUtils
 
                 Consumer<InventoryCloseEvent> runnable = onClose.remove(player.getUniqueId());
 
-                if (runnable != null)
-                    try {
-                        runnable.accept(event);
-                    } catch (Throwable t) {
-                        EpicPluginLibBukkit.logger().log("Failed to accept GUI close:");
-                        t.printStackTrace();
-                    }
+                if (runnable != null) try {
+                    runnable.accept(event);
+                } catch (Throwable t) {
+                    EpicPluginLibBukkit.logger().log("Failed to accept GUI close:");
+                    t.printStackTrace();
+                }
             }
         }
     };
@@ -306,5 +305,70 @@ public final class InventoryUtils
 
         openInventories.put(player.getUniqueId(), buttons);
         InventoryUtils.onClose.put(player.getUniqueId(), onClose);
+    }
+
+    /**
+     * Breaks lines automatically of a text to make it fit in an item's lore. This is useful to make so the lore doesn't
+     * clip through the edge of the player's screen.
+     * <p>
+     * If a line's length is greater than the maxCharactersPerLine, the line breaks.
+     * <p>
+     * Here's an example of how the final lore will look like if the maxCharactersPerLine limit is 35 and maxLines is 5:
+     * <blockquote>
+     * Lorem ipsum dolor sit amet,<br>
+     * consectetur adipiscing elit, sed do<br>
+     * eiusmod tempor incididunt ut labore<br>
+     * et dolore magna aliqua. Ut enim ad<br>
+     * minim veniam, quis nostrud...
+     * </blockquote>
+     *
+     * @param lore                     The text to break lines.
+     * @param maxCharactersPerLine     The max characters each line of the text is allowed to have. Usually the lore can have up to 40 characters without clipping through the screen.
+     * @param maxLines                 The max lines the text will have, a "..." will be appended to the end if the text has more than this limit. Use -1 for no limit.
+     * @param lengthAlreadyInFirstLine If you want to place this text after something already in the lore, specify the length of the line here to format properly.
+     * @param lineBreak                What to use at the end of every line.
+     * @return The formatted lore text.
+     */
+    private static @NotNull String breakLore(@NotNull String lore, int maxCharactersPerLine, int maxLines, int lengthAlreadyInFirstLine, @NotNull String lineBreak)
+    {
+        // Removing double spaces.
+        lore = lore.replaceAll("  +", " ");
+
+        String[] words = lore.split(" ");
+        if (words.length == 0) return lore;
+
+        StringBuilder builder = new StringBuilder();
+        int currentLineLength = lengthAlreadyInFirstLine;
+        int lineCount = 1;
+
+        for (String word : words) {
+            if (currentLineLength + word.length() > maxCharactersPerLine) {
+                if (maxLines != -1 && ++lineCount > maxLines) {
+                    // Removing space and putting "..." at the end.
+                    switch (builder.charAt(builder.length() - 2)) {
+                        case ',':
+                        case '.':
+                        case '!':
+                        case '?':
+                        case ':':
+                        case ';':
+                            break;
+                        default:
+                            builder.deleteCharAt(builder.length() - 1);
+                    }
+
+                    builder.append("...").append(' ');
+                    break;
+                }
+
+                builder.append(lineBreak);
+                currentLineLength = 0;
+            }
+
+            currentLineLength += word.length() + 1;
+            builder.append(word).append(' ');
+        }
+
+        return builder.substring(0, builder.length() - 1);
     }
 }
