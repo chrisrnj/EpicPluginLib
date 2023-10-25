@@ -41,9 +41,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public final class InventoryUtils
 {
+    private static final @NotNull Pattern loreLineBreaker = Pattern.compile("<line>|\\n");
     private static final @NotNull HashMap<UUID, Map<Integer, Consumer<InventoryClickEvent>>> openInventories = new HashMap<>();
     private static final @NotNull HashMap<UUID, Consumer<InventoryCloseEvent>> onClose = new HashMap<>();
     private static final @NotNull Listener inventoryListener = new Listener()
@@ -207,7 +209,7 @@ public final class InventoryUtils
      * "Path.Material" and "Path.Glowing". (If the material is not found, or it does not have an {@link ItemMeta}, {@link Material#STONE} is used.)
      * <p>
      * The item's name and lore will be got from the provided language in the path "Path.Display Name" and "Path.Lore"
-     * (The variable "{@literal <line>}" can be used to break a line).
+     * (The variable "{@literal <line>}" or "\n" can be used to break a line).
      * <p>
      * The variables in the name and lore will be replaced according to the "variables" array, the variables are
      * set according to the index, so "{@literal <var0>}" will be replaced to the first string, "{@literal <var1>}" to
@@ -227,7 +229,7 @@ public final class InventoryUtils
         ItemMeta itemMeta = itemStack.getItemMeta();
 
         itemMeta.setDisplayName(replaceVar(lang.getColored(configPath + ".Display Name"), variables));
-        itemMeta.setLore(Arrays.asList(replaceVar(lang.getColored(configPath + ".Lore"), variables).split("<line>")));
+        itemMeta.setLore(Arrays.asList(loreLineBreaker.split(replaceVar(lang.getColored(configPath + ".Lore"), variables))));
 
         if (config.getBoolean(configPath + ".Glowing").orElse(false))
             itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -254,7 +256,7 @@ public final class InventoryUtils
      *
      * @param inventory The inventory to open.
      * @param player    The player to open the inventory to.
-     * @throws IllegalStateException If PlayMoreSounds is not loaded.
+     * @throws IllegalStateException If EpicPluginLib is not loaded.
      * @see #openInventory(Inventory inventory, Map buttons, HumanEntity player, Consumer onClose)
      */
     public static void openInventory(@NotNull Inventory inventory, @NotNull HumanEntity player)
@@ -271,7 +273,7 @@ public final class InventoryUtils
      * @param inventory The inventory to open.
      * @param buttons   The map with the number of the slot that when clicked will run the {@link Runnable}.
      * @param player    The player to open the inventory to.
-     * @throws IllegalStateException If PlayMoreSounds is not loaded.
+     * @throws IllegalStateException If EpicPluginLib is not loaded.
      * @see #openInventory(Inventory inventory, Map buttons, HumanEntity player, Consumer onClose)
      */
     public static void openInventory(@NotNull Inventory inventory, @NotNull Map<Integer, Consumer<InventoryClickEvent>> buttons, @NotNull HumanEntity player)
@@ -290,7 +292,7 @@ public final class InventoryUtils
      * @param buttons   The map with the number of the slot that when clicked will run the {@link Runnable}.
      * @param player    The player to open the inventory to.
      * @param onClose   The runnable to run when the inventory is closed.
-     * @throws IllegalStateException If PlayMoreSounds is not loaded.
+     * @throws IllegalStateException If EpicPluginLib is not loaded.
      */
     public static void openInventory(@NotNull Inventory inventory, @Nullable Map<Integer, Consumer<InventoryClickEvent>> buttons, @NotNull HumanEntity player, @Nullable Consumer<InventoryCloseEvent> onClose)
     {
