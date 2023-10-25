@@ -63,12 +63,11 @@ public final class EpicPluginLib
 
     public enum Platform
     {
-        BUKKIT,
-        SPONGE,
-        UNKNOWN;
+        BUKKIT, SPONGE, UNKNOWN;
 
         private static final @NotNull Platform platform;
         private static final @NotNull Version version;
+        private static final boolean paper = getClass("com.destroystokyo.paper.ParticleBuilder") != null;
 
         static {
             if (getClass("org.bukkit.Bukkit") != null) {
@@ -90,6 +89,16 @@ public final class EpicPluginLib
             } catch (ClassNotFoundException e) {
                 return null;
             }
+        }
+
+        /**
+         * Whether "com.destroystokyo.paper.ParticleBuilder" class was found.
+         *
+         * @return Whether this server is running a version of the Paper fork.
+         */
+        public static boolean isPaper()
+        {
+            return paper;
         }
 
         /**
