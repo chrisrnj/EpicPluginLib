@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2023  Christiano Rangel
+ * Copyright (C) 2024  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package com.epicnicity322.epicpluginlib.bukkit.util;
 
 import com.epicnicity322.epicpluginlib.bukkit.EpicPluginLibBukkit;
 import com.epicnicity322.epicpluginlib.bukkit.lang.MessageSender;
+import com.epicnicity322.epicpluginlib.core.util.StringUtils;
 import com.epicnicity322.yamlhandler.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -330,47 +331,11 @@ public final class InventoryUtils
      * @param lengthAlreadyInFirstLine If you want to place this text after something already in the lore, specify the length of the line here to format properly.
      * @param lineBreak                What to use at the end of every line.
      * @return The formatted lore text.
+     * @deprecated Moved to {@link StringUtils#breakLore(String, int, int, int, String)} due to no dependency in bukkit API.
      */
+    @Deprecated
     public static @NotNull String breakLore(@NotNull String lore, int maxCharactersPerLine, int maxLines, int lengthAlreadyInFirstLine, @NotNull String lineBreak)
     {
-        // Removing double spaces.
-        lore = lore.replaceAll("  +", " ");
-
-        String[] words = lore.split(" ");
-        if (words.length == 0) return lore;
-
-        StringBuilder builder = new StringBuilder();
-        int currentLineLength = lengthAlreadyInFirstLine;
-        int lineCount = 1;
-
-        for (String word : words) {
-            if (currentLineLength + word.length() > maxCharactersPerLine) {
-                if (maxLines != -1 && ++lineCount > maxLines) {
-                    // Removing space and putting "..." at the end.
-                    switch (builder.charAt(builder.length() - 2)) {
-                        case ',':
-                        case '.':
-                        case '!':
-                        case '?':
-                        case ':':
-                        case ';':
-                            break;
-                        default:
-                            builder.deleteCharAt(builder.length() - 1);
-                    }
-
-                    builder.append("...").append(' ');
-                    break;
-                }
-
-                builder.append(lineBreak);
-                currentLineLength = 0;
-            }
-
-            currentLineLength += word.length() + 1;
-            builder.append(word).append(' ');
-        }
-
-        return builder.substring(0, builder.length() - 1);
+        return StringUtils.breakLore(lore, maxCharactersPerLine, maxLines, lengthAlreadyInFirstLine, lineBreak);
     }
 }
