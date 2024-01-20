@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2022  Christiano Rangel
+ * Copyright (C) 2024  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,16 +65,22 @@ public final class ReflectionUtil
                 class_EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
 
             Class<?> class_Packet = getClass("Packet", PackageType.MINECRAFT_SERVER);
-            if (class_Packet == null)
-                class_Packet = Class.forName("net.minecraft.network.protocol.Packet");
+            if (class_Packet == null) class_Packet = Class.forName("net.minecraft.network.protocol.Packet");
 
             Class<?> class_PlayerConnection = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
             if (class_PlayerConnection == null)
                 class_PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
 
             method_CraftPlayer_getHandle1 = Objects.requireNonNull(getMethod(class_CraftPlayer, "getHandle"));
-            method_PlayerConnection_sendPacket1 = Objects.requireNonNull(findMethodByParameterTypes(class_PlayerConnection, class_Packet));
             field_EntityPlayer_playerConnection1 = Objects.requireNonNull(findFieldByType(class_EntityPlayer, class_PlayerConnection));
+
+            // Finding send packet method.
+            for (Method m : class_PlayerConnection.getMethods()) {
+                if (m.getReturnType() == Void.TYPE && DataType.equalsArray(m.getParameterTypes(), new Class[]{class_Packet})) {
+                    method_PlayerConnection_sendPacket1 = m;
+                    break;
+                }
+            }
         } catch (Exception e) {
             new Exception("Could not find equivalent of PlayerConnection#sendPacket. Does the server have NMS?", e).printStackTrace();
         }
