@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2023  Christiano Rangel
+ * Copyright (C) 2024  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -129,6 +130,7 @@ public final class InputGetterUtil
      * @param inputItem The item to set in the first slot of the anvil.
      * @param onInput   The consumer to be accepted once the player types in the input.
      * @return Whether the anvil inventory opened successfully.
+     * @throws IllegalStateException If EpicPluginLib is not loaded.
      * @see #askInput(HumanEntity, ItemStack, Consumer) Use this method to always ensure the input is asked for correctly.
      */
     public static boolean askAnvilInput(@NotNull HumanEntity player, @NotNull ItemStack inputItem, @NotNull Consumer<String> onInput)
@@ -137,12 +139,18 @@ public final class InputGetterUtil
 
         InventoryView view = player.openAnvil(null, true);
         if (view == null) return false;
+        Inventory anvil = view.getTopInventory();
+
+        if (anvil.getType() != InventoryType.ANVIL) {
+            player.closeInventory();
+            return false;
+        }
 
         view.setItem(0, inputItem);
 
         AtomicBoolean ignoreClose = new AtomicBoolean(false);
 
-        InventoryUtils.openInventory(view.getTopInventory(), Collections.singletonMap(2, event -> {
+        InventoryUtils.openInventory(anvil, Collections.singletonMap(2, event -> {
             ItemStack item = event.getCurrentItem();
             ItemMeta meta = item == null ? null : item.getItemMeta();
             String input = meta == null ? "" : meta.getDisplayName();
