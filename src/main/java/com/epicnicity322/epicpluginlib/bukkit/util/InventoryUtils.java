@@ -81,6 +81,7 @@ public final class InventoryUtils
             HumanEntity player = event.getPlayer();
 
             if (openInventories.remove(player.getUniqueId()) != null) {
+                player.closeInventory(); // Sometimes inventory close event is called without the inventory actually closing.
                 if (openInventories.isEmpty()) HandlerList.unregisterAll(this);
 
                 Consumer<InventoryCloseEvent> runnable = onClose.remove(player.getUniqueId());
@@ -300,7 +301,8 @@ public final class InventoryUtils
         EpicPluginLibBukkit instance = EpicPluginLibBukkit.getInstance();
         if (instance == null || !instance.isEnabled()) throw new IllegalStateException("EpicPluginLib is not loaded.");
 
-        if (!inventory.getViewers().contains(player)) player.openInventory(inventory);
+        // Opening inventory if it isn't open, returning if inventory could not be open.
+        if (!inventory.getViewers().contains(player)) if (player.openInventory(inventory) == null) return;
 
         if (openInventories.isEmpty()) Bukkit.getPluginManager().registerEvents(inventoryListener, instance);
 
