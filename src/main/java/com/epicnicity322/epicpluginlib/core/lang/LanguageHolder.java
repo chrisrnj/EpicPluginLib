@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2022  Christiano Rangel
+ * Copyright (C) 2024  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -270,9 +270,9 @@ public abstract class LanguageHolder<X, Y>
         ConfigurationHolder language = getLanguage(currentLocale.get());
 
         if (language == null) {
-            return defaultLanguage.getString(key).orElse("[Key not found]");
+            return defaultLanguage.getString(key).orElse("[Key not found: " + key + "]");
         } else {
-            return language.getConfiguration().getString(key).orElseGet(() -> defaultLanguage.getString(key).orElse("[Key not found]"));
+            return language.getConfiguration().getString(key).orElseGet(() -> defaultLanguage.getString(key).orElse("[Key not found: " + key + "]"));
         }
     }
 
