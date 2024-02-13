@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2023  Christiano Rangel
+ * Copyright (C) 2024  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ public final class EpicPluginLib
         private static final @NotNull Platform platform;
         private static final @NotNull Version version;
         private static final boolean paper = getClass("com.destroystokyo.paper.ParticleBuilder") != null;
+        private static final boolean folia = getClass("io.papermc.paper.threadedregions.RegionizedServer") != null;
 
         static {
             if (getClass("org.bukkit.Bukkit") != null) {
@@ -99,6 +100,16 @@ public final class EpicPluginLib
         public static boolean isPaper()
         {
             return paper;
+        }
+
+        /**
+         * Whether "io.papermc.paper.threadedregions.RegionizedServer" class was found.
+         *
+         * @return Whether this server is running a version of the Folia fork.
+         */
+        public static boolean isFolia()
+        {
+            return folia;
         }
 
         /**

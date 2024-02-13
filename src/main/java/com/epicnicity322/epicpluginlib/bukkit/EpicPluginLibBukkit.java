@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2023  Christiano Rangel
+ * Copyright (C) 2024  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ import java.util.List;
 public final class EpicPluginLibBukkit extends JavaPlugin
 {
     private static final @NotNull Logger logger = new Logger("[EpicPluginLib] ");
-    private static final @NotNull ArrayList<Runnable> onDisable = new ArrayList<>(1);
+    private static final @NotNull ArrayList<Runnable> onDisable = new ArrayList<>(2);
     private static @Nullable EpicPluginLibBukkit instance;
 
     public EpicPluginLibBukkit()
@@ -106,8 +106,13 @@ public final class EpicPluginLibBukkit extends JavaPlugin
                 if (!available) return;
 
                 // Update available alerting task.
-                getServer().getScheduler().runTaskTimerAsynchronously(this, task ->
-                        logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
+                if (EpicPluginLib.Platform.isFolia()) {
+                    getServer().getGlobalRegionScheduler().runAtFixedRate(this, task ->
+                            logger.log("EpicPluginLib v" + version + " is available. Please update."), 1, 36000);
+                } else {
+                    getServer().getScheduler().runTaskTimerAsynchronously(this, task ->
+                            logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
+                }
             });
         }
 

@@ -1,7 +1,8 @@
 api-version: '1.13'
-description: '${project.description}'
-name: '${project.name}'
 author: Epicnicity322
+description: '${project.description}'
+folia-supported: true
 main: com.epicnicity322.epicpluginlib.bukkit.EpicPluginLibBukkit
+name: '${project.name}'
 version: '${project.version}'
 website: '${project.url}'
