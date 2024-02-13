@@ -103,6 +103,7 @@ public final class InventoryUtils
             for (UUID id : openInventories.keySet()) {
                 Player player = Bukkit.getPlayer(id);
                 if (player == null) continue;
+                player.getOpenInventory().getTopInventory().clear();
                 player.closeInventory();
             }
 
