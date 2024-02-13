@@ -81,7 +81,6 @@ public final class InventoryUtils
             HumanEntity player = event.getPlayer();
 
             if (openInventories.remove(player.getUniqueId()) != null) {
-                player.closeInventory(); // Sometimes inventory close event is called without the inventory actually closing.
                 if (openInventories.isEmpty()) HandlerList.unregisterAll(this);
 
                 Consumer<InventoryCloseEvent> runnable = onClose.remove(player.getUniqueId());
@@ -92,6 +91,8 @@ public final class InventoryUtils
                     EpicPluginLibBukkit.logger().log("Failed to accept GUI close:");
                     t.printStackTrace();
                 }
+
+                player.closeInventory(); // Sometimes inventory close event is called without the inventory actually closing.
             }
         }
     };
