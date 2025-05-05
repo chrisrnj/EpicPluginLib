@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2025  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,10 @@ public final class CommandManager
      * Register a {@link PluginCommand} executor and tab completer and handles this command's arguments by using
      * {@link Command}.
      *
-     * @param mainCommand The command saved in your plugin.yml that you wanna register.
+     * @param mainCommand The command saved in your plugin.yml that you want to register.
      * @param subCommands The arguments to be called when the sender uses them.
      */
-    public static void registerCommand(@NotNull PluginCommand mainCommand, @NotNull Collection<Command> subCommands)
+    public static void registerCommand(@NotNull PluginCommand mainCommand, @NotNull Collection<? extends Command> subCommands)
     {
         registerCommand(mainCommand, subCommands, null, null);
     }
@@ -46,13 +46,13 @@ public final class CommandManager
      * Register a {@link PluginCommand} executor and tab completer and handles this command's arguments by using
      * {@link Command}.
      *
-     * @param mainCommand            The command saved in your plugin.yml that you wanna register.
+     * @param mainCommand            The command saved in your plugin.yml that you want to register.
      * @param subCommands            The arguments to be called when the sender uses them.
      * @param descriptionRunnable    When the command has 0 arguments, this will run.
      * @param unknownCommandRunnable When the command could not be found, this will run.
      * @throws IllegalArgumentException If @param subCommands is empty.
      */
-    public static void registerCommand(@NotNull PluginCommand mainCommand, @NotNull Collection<Command> subCommands,
+    public static void registerCommand(@NotNull PluginCommand mainCommand, @NotNull Collection<? extends Command> subCommands,
                                        @Nullable CommandRunnable descriptionRunnable,
                                        @Nullable CommandRunnable unknownCommandRunnable)
     {
