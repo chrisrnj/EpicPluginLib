@@ -47,11 +47,10 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, String[] args)
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String @NotNull [] args)
     {
         if (args.length == 0) {
-            if (onDescription != null)
-                onDescription.run(label, sender, args);
+            if (onDescription != null) onDescription.run(label, sender, args);
 
             return true;
         }
@@ -59,8 +58,7 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
         Command libCommand = findCommand(args[0]);
 
         if (libCommand == null) {
-            if (onUnknownCommand != null)
-                onUnknownCommand.run(label, sender, args);
+            if (onUnknownCommand != null) onUnknownCommand.run(label, sender, args);
         } else {
             String permission = libCommand.getPermission();
 
@@ -70,14 +68,12 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
                 } else {
                     CommandRunnable notEnoughArgsRunnable = libCommand.getNotEnoughArgsRunnable();
 
-                    if (notEnoughArgsRunnable != null)
-                        notEnoughArgsRunnable.run(label, sender, args);
+                    if (notEnoughArgsRunnable != null) notEnoughArgsRunnable.run(label, sender, args);
                 }
             } else {
                 CommandRunnable noPermissionRunnable = libCommand.getNoPermissionRunnable();
 
-                if (noPermissionRunnable != null)
-                    noPermissionRunnable.run(label, sender, args);
+                if (noPermissionRunnable != null) noPermissionRunnable.run(label, sender, args);
             }
         }
 
@@ -101,11 +97,9 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
             } else {
                 String[] aliases = command.getAliases();
 
-                if (aliases != null)
-                    for (String alias : aliases)
-                        if (alias != null)
-                            if (caseSensitive ? arg.equals(alias) : arg.equalsIgnoreCase(alias))
-                                return command;
+                if (aliases == null) continue;
+                for (String alias : aliases)
+                    if (caseSensitive ? arg.equals(alias) : arg.equalsIgnoreCase(alias)) return command;
             }
         }
 
@@ -113,7 +107,7 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String[] args)
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String @NotNull [] args)
     {
         ArrayList<String> list = null;
 
