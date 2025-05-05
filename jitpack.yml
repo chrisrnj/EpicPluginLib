@@ -1,10 +1,7 @@
-jdk:
-  - openjdk21
-
 before_install:
   - sdk update
   - sdk list java
-  - sdk install 21.0.7-tem
+  - sdk install java 21.0.7-tem
   - sdk use java 21.0.7-tem
   - sdk install maven
   - mvn -v
