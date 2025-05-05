@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2024  Christiano Rangel
+ * Copyright (C) 2025  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import com.epicnicity322.epicpluginlib.bukkit.reflection.type.DataType;
 import com.epicnicity322.epicpluginlib.bukkit.reflection.type.PackageType;
 import com.epicnicity322.epicpluginlib.bukkit.reflection.type.SubPackageType;
 import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,27 +31,11 @@ import java.util.Objects;
 
 public final class ReflectionUtil
 {
-    private static final @NotNull String CRAFTBUKKIT_VERSION;
-    private static final @NotNull String NMS_VERSION;
     private static final Method method_CraftPlayer_getHandle;
     private static final Method method_PlayerConnection_sendPacket;
     private static final Field field_EntityPlayer_playerConnection;
 
     static {
-        // Checking if this version contains version suffix on the package.
-        if (getClass("org.bukkit.craftbukkit.CraftServer") == null) {
-            CRAFTBUKKIT_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
-            if (getClass("net.minecraft.server.MinecraftServer") == null) {
-                NMS_VERSION = CRAFTBUKKIT_VERSION;
-            } else {
-                NMS_VERSION = "";
-            }
-        } else {
-            CRAFTBUKKIT_VERSION = "";
-            NMS_VERSION = "";
-        }
-
         // Finding equivalents of PlayerConnection#sendPacket on the current version.
         Method method_CraftPlayer_getHandle1 = null;
         Method method_PlayerConnection_sendPacket1 = null;
@@ -129,7 +112,7 @@ public final class ReflectionUtil
      */
     public static @NotNull String getNmsVersion()
     {
-        return NMS_VERSION;
+        return NMSVersion.NMS_VERSION;
     }
 
     /**
@@ -143,7 +126,7 @@ public final class ReflectionUtil
      */
     public static @NotNull String getCraftBukkitVersion()
     {
-        return CRAFTBUKKIT_VERSION;
+        return NMSVersion.CRAFTBUKKIT_VERSION;
     }
 
     /**
@@ -154,11 +137,7 @@ public final class ReflectionUtil
      */
     public static @Nullable Class<?> getClass(@NotNull String name)
     {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
+        return NMSVersion.getClass(name);
     }
 
     /**

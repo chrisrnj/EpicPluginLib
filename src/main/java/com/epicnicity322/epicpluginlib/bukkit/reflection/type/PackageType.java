@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2021  Christiano Rangel
+ * Copyright (C) 2025  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 
 package com.epicnicity322.epicpluginlib.bukkit.reflection.type;
 
-import com.epicnicity322.epicpluginlib.bukkit.reflection.ReflectionUtil;
+import com.epicnicity322.epicpluginlib.bukkit.reflection.NMSVersion;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 public enum PackageType
 {
     // Some versions didn't have nms version suffix.
-    MINECRAFT_SERVER("net.minecraft.server" + (ReflectionUtil.getNmsVersion().isEmpty() ? "" : "." + ReflectionUtil.getNmsVersion())),
+    MINECRAFT_SERVER("net.minecraft.server" + (NMSVersion.NMS_VERSION.isEmpty() ? "" : '.' + NMSVersion.NMS_VERSION)),
     CRAFTBUKKIT(Bukkit.getServer().getClass().getPackage().getName());
 
     private final @NotNull String name;
