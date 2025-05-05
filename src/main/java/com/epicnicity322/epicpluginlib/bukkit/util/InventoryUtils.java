@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2024  Christiano Rangel
+ * Copyright (C) 2025  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("deprecation") // Spigot does not have kyori adventure api, using ChatColor.
 public final class InventoryUtils
 {
     private static final @NotNull Pattern loreLineBreaker = Pattern.compile("<line>|\\n");
@@ -236,7 +237,7 @@ public final class InventoryUtils
         itemMeta.setLore(Arrays.asList(loreLineBreaker.split(replaceVar(lang.getColored(configPath + ".Lore"), variables))));
 
         if (config.getBoolean(configPath + ".Glowing").orElse(false))
-            itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
+            itemMeta.addEnchant(Enchantment.LURE, 1, true);
 
         itemMeta.addItemFlags(ItemFlag.values());
 
