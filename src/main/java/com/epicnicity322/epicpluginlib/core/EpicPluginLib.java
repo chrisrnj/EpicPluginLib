@@ -1,6 +1,6 @@
 /*
  * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2024  Christiano Rangel
+ * Copyright (C) 2025  Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,10 +48,10 @@ public final class EpicPluginLib
         JLabel textArea = new JLabel(" I am a library, not an application!");
 
         frame.add(textArea);
-        frame.setVisible(true);
         frame.setSize(210, 60);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
 
         try {
             Thread.sleep(7500);
