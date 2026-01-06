@@ -1,6 +1,6 @@
 /*
- * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2024  Christiano Rangel
+ * EpicPluginLib - Library with basic utilities for Minecraft plugins.
+ * Copyright (C) 2024-2026 Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,11 @@
 
 package com.epicnicity322.epicpluginlib.core.util;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.StringTokenizer;
 
 public final class StringUtils
 {
@@ -34,6 +37,7 @@ public final class StringUtils
      * @param defaultValue The string to be returned if the value is null or empty.
      * @return The string or the default string. Null only if defaultValue is null and value didn't pass the test.
      */
+    @Contract("null,_ -> param2")
     public static @Nullable String getOrDefault(@Nullable String value, @Nullable String defaultValue)
     {
         return value == null || value.isEmpty() ? defaultValue : value;
@@ -46,26 +50,25 @@ public final class StringUtils
      * @param toCount The char you want to count in the string.
      * @return The amount of this char in the string.
      */
-    public static int count(String string, char toCount)
+    public static int count(@NotNull String string, char toCount)
     {
         int count = 0, length = string.length();
 
-        for (int i = 0; i < length; ++i)
-            if (string.charAt(i) == toCount) ++count;
+        for (int i = 0; i < length; i++)
+            if (string.charAt(i) == toCount) count++;
 
         return count;
     }
 
     /**
-     * Checks if a string is a number. This will return true doesn't matter the number length so you might not want to
-     * use this if you want to fail when number is greater than {@link Integer#MAX_VALUE} or lower than
-     * {@link Integer#MIN_VALUE}. This was not written by me, you can find the original code made by Jonas Klemming on
-     * Stack Overflow.
+     * Checks if a string is a valid decimal number. This will return true doesn't matter the number length so you might
+     * not want to use this if you want to fail when number is greater than {@link Long#MAX_VALUE} or lower than
+     * {@link Long#MIN_VALUE}.
      *
      * @param value The string you want to check if is a number.
      * @return true if the string is a number.
-     * @see <a href="https://stackoverflow.com/a/237204">StackOverFlow original answer</a>
      */
+    @Contract("null -> false")
     public static boolean isNumeric(@Nullable String value)
     {
         if (value == null) return false;
@@ -82,10 +85,15 @@ public final class StringUtils
             i = 1;
         }
 
-        for (; i < length; ++i) {
+        boolean decimal = false;
+
+        for (; i < length; i++) {
             char c = value.charAt(i);
 
-            if (c < '0' || c > '9') return false;
+            if (c == '.') {
+                if (decimal) return false;
+                decimal = true;
+            } else if (c < '0' || c > '9') return false;
         }
 
         return true;
@@ -115,17 +123,14 @@ public final class StringUtils
      */
     public static @NotNull String breakLore(@NotNull String lore, int maxCharactersPerLine, int maxLines, int lengthAlreadyInFirstLine, @NotNull String lineBreak)
     {
-        // Removing double spaces.
-        lore = lore.replaceAll("  +", " ");
-
-        String[] words = lore.split(" ");
-        if (words.length == 0) return lore;
-
+        StringTokenizer tokenizer = new StringTokenizer(lore, " ");
         StringBuilder builder = new StringBuilder();
         int currentLineLength = lengthAlreadyInFirstLine;
         int lineCount = 1;
 
-        for (String word : words) {
+        while (tokenizer.hasMoreTokens()) {
+            String word = tokenizer.nextToken();
+
             if (currentLineLength + word.length() > maxCharactersPerLine) {
                 if (maxLines != -1 && ++lineCount > maxLines) {
                     // Removing space and putting "..." at the end.

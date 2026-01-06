@@ -1,6 +1,6 @@
 /*
- * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2023  Christiano Rangel
+ * EpicPluginLib - Library with basic utilities for Minecraft plugins.
+ * Copyright (C) 2023-2026 Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 package com.epicnicity322.epicpluginlib.core.util;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,41 +45,18 @@ public final class ObjectUtils
     }
 
     /**
-     * Converts object to string and checks if it's a number. This doesn't check for number length so this will return
-     * true even if the number is greater than {@link Long#MAX_VALUE} and lower than {@link Long#MIN_VALUE}.
+     * Converts object to string and checks if it's a valid decimal number. This doesn't check for number length so this
+     * will return true even if the number is greater than {@link Long#MAX_VALUE} and lower than {@link Long#MIN_VALUE}.
      *
      * @param value The object to check if is numeric.
      * @return false if value is null or isn't numeric.
      */
+    @Contract("null -> false")
     public static boolean isNumeric(@Nullable Object value)
     {
         if (value == null) return false;
         if (value instanceof Number) return true;
-
-        String string = value.toString();
-
-        int length = string.length();
-
-        if (length == 0)
-            return false;
-
-        int i = 0;
-
-        if (string.charAt(0) == '-') {
-            if (length == 1)
-                return false;
-
-            i = 1;
-        }
-
-        for (; i < length; ++i) {
-            char c = string.charAt(i);
-
-            if (c < '0' || c > '9')
-                return false;
-        }
-
-        return true;
+        return StringUtils.isNumeric(value.toString());
     }
 
     /**
