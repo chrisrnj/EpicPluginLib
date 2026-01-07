@@ -1,6 +1,6 @@
 /*
- * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2025  Christiano Rangel
+ * EpicPluginLib - Library with basic utilities for Minecraft plugins.
+ * Copyright (C) 2025-2026 Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,5 +22,5 @@ import org.jetbrains.annotations.NotNull;
 
 class EpicPluginLibVersion
 {
-    static final @NotNull String version = "2.8";
+    static final @NotNull String version = "3.0";
 }
