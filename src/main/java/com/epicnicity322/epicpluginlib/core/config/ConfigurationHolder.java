@@ -29,10 +29,10 @@ import java.util.Objects;
 
 /**
  * A class that holds the default configuration and a changing configuration instance that is loaded by
- * {@link ConfigurationLoader}.
+ * {@link ConfigurationManager}.
  *
- * @see ConfigurationLoader
- * @see #ConfigurationHolder(Path, ConfigurationLoader, String)
+ * @see ConfigurationManager
+ * @see #ConfigurationHolder(Path, ConfigurationManager, String)
  */
 public class ConfigurationHolder
 {
@@ -47,7 +47,7 @@ public class ConfigurationHolder
      *
      * @param path     The path of the configuration.
      * @param contents The contents of this config, used for the default config.
-     * @see #ConfigurationHolder(Path, ConfigurationLoader, String)
+     * @see #ConfigurationHolder(Path, ConfigurationManager, String)
      */
     public ConfigurationHolder(@NotNull Path path, @NotNull String contents)
     {
@@ -56,14 +56,14 @@ public class ConfigurationHolder
 
     /**
      * Creates a ConfigurationHolder that loads the default config using the {@link YamlConfigurationLoader} from the
-     * specified {@link ConfigurationLoader}.
+     * specified {@link ConfigurationManager}.
      *
      * @param path     The path of the configuration.
      * @param manager  The manager to get the {@link YamlConfigurationLoader} from.
      * @param contents The contents of this config, used for the default config.
      * @see #ConfigurationHolder(Path, YamlConfigurationLoader, String)
      */
-    public ConfigurationHolder(@NotNull Path path, @NotNull ConfigurationLoader manager, @NotNull String contents)
+    public ConfigurationHolder(@NotNull Path path, @NotNull ConfigurationManager manager, @NotNull String contents)
     {
         this(path, manager.loader, contents);
     }
@@ -88,27 +88,27 @@ public class ConfigurationHolder
         configuration = defaultConfiguration;
     }
 
-    public @NotNull Path getPath()
+    public @NotNull Path path()
     {
         return path;
     }
 
-    public @NotNull String getContents()
+    public @NotNull String contents()
     {
         return contents;
     }
 
-    public @NotNull Configuration getDefaultConfiguration()
+    public @NotNull Configuration defaultConfig()
     {
         return defaultConfiguration;
     }
 
-    public synchronized @NotNull Configuration getConfiguration()
+    public synchronized @NotNull Configuration config()
     {
         return configuration;
     }
 
-    synchronized final void setConfiguration(@NotNull Configuration configuration)
+    synchronized final void setConfig(@NotNull Configuration configuration)
     {
         this.configuration = configuration;
     }

@@ -1,6 +1,6 @@
 /*
- * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2023  Christiano Rangel
+ * EpicPluginLib - Library with basic utilities for Minecraft plugins.
+ * Copyright (C) 2023-2026 Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ package com.epicnicity322.epicpluginlib.sponge;
 
 import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
-import com.epicnicity322.epicpluginlib.core.config.ConfigurationLoader;
+import com.epicnicity322.epicpluginlib.core.config.ConfigurationManager;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
 import com.epicnicity322.epicpluginlib.core.tools.GitHubUpdateChecker;
 import com.epicnicity322.epicpluginlib.sponge.logger.Logger;
@@ -71,7 +71,7 @@ public final class EpicPluginLibSponge
             }
         }
 
-        ConfigurationLoader configLoader = new ConfigurationLoader();
+        ConfigurationManager configLoader = new ConfigurationManager();
 
         configLoader.registerConfiguration(mainConfig);
         if (!configLoader.loadConfigurations().isEmpty()) {
@@ -84,7 +84,7 @@ public final class EpicPluginLibSponge
             logger.log("Lib enabled successfully.");
 
         // Checking for updates:
-        if (mainConfig.getConfiguration().getBoolean("Check for updates").orElse(true)) {
+        if (mainConfig.config().getBoolean("Check for updates").orElse(true)) {
             GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.version);
 
             updateChecker.check((available, version) -> {

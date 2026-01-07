@@ -1,6 +1,6 @@
 /*
- * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2024  Christiano Rangel
+ * EpicPluginLib - Library with basic utilities for Minecraft plugins.
+ * Copyright (C) 2024-2026 Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,7 +272,7 @@ public abstract class LanguageHolder<X, Y>
         if (language == null) {
             return defaultLanguage.getString(key).orElse("[Key not found: " + key + "]");
         } else {
-            return language.getConfiguration().getString(key).orElseGet(() -> defaultLanguage.getString(key).orElse("[Key not found: " + key + "]"));
+            return language.config().getString(key).orElseGet(() -> defaultLanguage.getString(key).orElse("[Key not found: " + key + "]"));
         }
     }
 
@@ -294,7 +294,7 @@ public abstract class LanguageHolder<X, Y>
         if (language == null) {
             return defaultLanguage.getString(key).orElse(def);
         } else {
-            return language.getConfiguration().getString(key).orElse(def);
+            return language.config().getString(key).orElse(def);
         }
     }
 }
