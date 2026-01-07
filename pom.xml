@@ -159,9 +159,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.chrisrnj</groupId>
-            <artifactId>yaml-handler</artifactId>
-            <version>1.4</version>
+            <groupId>com.github.chrisrnj.yaml-handler</groupId>
+            <artifactId>yamlhandler-bukkit</artifactId>
+            <version>1.5.1</version>
             <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->

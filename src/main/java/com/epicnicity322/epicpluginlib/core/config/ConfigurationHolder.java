@@ -1,6 +1,6 @@
 /*
- * EpicPluginLib - Library with basic utilities for bukkit plugins.
- * Copyright (C) 2022  Christiano Rangel
+ * EpicPluginLib - Library with basic utilities for Minecraft plugins.
+ * Copyright (C) 2022-2026 Christiano Rangel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package com.epicnicity322.epicpluginlib.core.config;
 
 import com.epicnicity322.yamlhandler.Configuration;
 import com.epicnicity322.yamlhandler.exceptions.InvalidConfigurationException;
+import com.epicnicity322.yamlhandler.loaders.YamlConfigurationLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +28,11 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * A holder for your {@link Configuration} default and updated instance.
+ * A class that holds the default configuration and a changing configuration instance that is loaded by
+ * {@link ConfigurationLoader}.
  *
  * @see ConfigurationLoader
+ * @see #ConfigurationHolder(Path, ConfigurationLoader, String)
  */
 public class ConfigurationHolder
 {
@@ -38,10 +41,44 @@ public class ConfigurationHolder
     private final @NotNull Configuration defaultConfiguration;
     private @NotNull Configuration configuration;
 
+    /**
+     * Creates a new ConfigurationHolder, and loads the default config from the specified contents using a new
+     * {@link YamlConfigurationLoader}.
+     *
+     * @param path     The path of the configuration.
+     * @param contents The contents of this config, used for the default config.
+     * @see #ConfigurationHolder(Path, ConfigurationLoader, String)
+     */
     public ConfigurationHolder(@NotNull Path path, @NotNull String contents)
     {
+        this(path, new YamlConfigurationLoader(), contents);
+    }
+
+    /**
+     * Creates a ConfigurationHolder that loads the default config using the {@link YamlConfigurationLoader} from the
+     * specified {@link ConfigurationLoader}.
+     *
+     * @param path     The path of the configuration.
+     * @param manager  The manager to get the {@link YamlConfigurationLoader} from.
+     * @param contents The contents of this config, used for the default config.
+     * @see #ConfigurationHolder(Path, YamlConfigurationLoader, String)
+     */
+    public ConfigurationHolder(@NotNull Path path, @NotNull ConfigurationLoader manager, @NotNull String contents)
+    {
+        this(path, manager.loader, contents);
+    }
+
+    /**
+     * Creates a ConfigurationHolder that uses a specific {@link YamlConfigurationLoader} for the default config.
+     *
+     * @param path     The path of the configuration.
+     * @param loader   The specific loader used for loading the default config.
+     * @param contents The contents of this config, used for the default config.
+     */
+    public ConfigurationHolder(@NotNull Path path, @NotNull YamlConfigurationLoader loader, @NotNull String contents)
+    {
         try {
-            this.defaultConfiguration = ConfigurationLoader.loader.load(contents);
+            this.defaultConfiguration = loader.load(contents);
         } catch (InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -76,6 +113,13 @@ public class ConfigurationHolder
         this.configuration = configuration;
     }
 
+    /**
+     * Tests whether the specified object is a {@link ConfigurationHolder} and that it has the same {@link #path()}
+     * as this one.
+     *
+     * @param other the reference object with which to compare.
+     * @return Whether the object is a {@link ConfigurationHolder} with same path.
+     */
     @Override
     public boolean equals(@Nullable Object other)
     {
