@@ -22,12 +22,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>EpicPluginLib</artifactId>
-    <description>Allows plugins to extract configurations and languages, handle commands, send messages, report errors,
-        access reflection and check for updates more easily.
-    </description>
     <groupId>com.epicnicity322</groupId>
+    <artifactId>EpicPluginLib</artifactId>
+    <packaging>pom</packaging>
     <name>EpicPluginLib</name>
+    <description>Allows plugins to extract configurations and languages, handle commands, send messages, report errors, access reflection and check for updates more easily.
+    </description>
+    <modules>
+        <module>bukkit</module>
+        <module>common</module>
+        <module>core</module>
+        <module>sponge</module>
+    </modules>
     <version>3.0</version>
     <url>https://github.com/chrisrnj/EpicPluginLib</url>
 
@@ -44,8 +50,14 @@
     </licenses>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <bukkit.version>1.21.11-R0.1-SNAPSHOT</bukkit.version>
+        <sponge.version>18.0.0-SNAPSHOT</sponge.version>
+        <bstats.version>3.1.0</bstats.version>
+        <yaml-handler.version>f17f51aa56</yaml-handler.version>
+        <gson.version>2.13.2</gson.version>
+        <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
+        <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+        <maven.compiler.release>8</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -58,59 +70,15 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>replacer</artifactId>
-                <version>1.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <file>src/main/java/com/epicnicity322/epicpluginlib/core/EpicPluginLibVersion.java.template</file>
-                    <outputFile>src/main/java/com/epicnicity322/epicpluginlib/core/EpicPluginLibVersion.java
-                    </outputFile>
-                    <replacements>
-                        <replacement>
-                            <token>#VERSION#</token>
-                            <value>${project.version}</value>
-                        </replacement>
-                    </replacements>
-                </configuration>
-            </plugin>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.1</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
                 <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.5.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>com.epicnicity322.epicpluginlib.core.EpicPluginLib</mainClass>
-                        </manifest>
-                    </archive>
+                    <compilerArgs>
+                        <arg>-Xpkginfo:always</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
@@ -118,52 +86,12 @@
 
     <repositories>
         <repository>
-            <id>paper-repo</id>
-            <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-        <repository>
-            <id>sponge-repo</id>
-            <name>Sponge Maven Repository</name>
-            <url>https://repo.spongepowered.org/maven</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>18.0.0-SNAPSHOT</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.chrisrnj.yaml-handler</groupId>
-            <artifactId>yamlhandler-bukkit</artifactId>
-            <version>1.5.1</version>
-            <scope>compile</scope>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
