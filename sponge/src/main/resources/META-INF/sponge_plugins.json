@@ -7,12 +7,12 @@
   "plugins": [
     {
       "id": "epicpluginlib",
-      "name": "${project.name}",
+      "name": "${project.parent.name}",
       "entrypoint": "com.epicnicity322.epicpluginlib.sponge.EpicPluginLibSponge",
       "description": "${project.description}",
       "version": "${project.version}",
       "links": {
-        "source": "${project.url}",
+        "source": "${project.parent.url}",
         "issues": "${project.issueManagement.url}"
       },
       "contributors": [
