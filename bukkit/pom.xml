@@ -66,12 +66,6 @@
             <groupId>com.epicnicity322</groupId>
             <artifactId>epicpluginlib-core</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.chrisrnj.yaml-handler</groupId>
-                    <artifactId>yamlhandler-common</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -85,6 +79,7 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>${bstats.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
