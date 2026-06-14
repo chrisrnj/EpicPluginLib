@@ -88,9 +88,27 @@ public class ConfigurationHolder
         configuration = defaultConfiguration;
     }
 
+    /**
+     * @deprecated Use {@link #path()}
+     */
+    @Deprecated
+    public @NotNull Path getPath()
+    {
+        return path();
+    }
+
     public @NotNull Path path()
     {
         return path;
+    }
+
+    /**
+     * @deprecated Use {@link #contents()}
+     */
+    @Deprecated
+    public @NotNull String getContents()
+    {
+        return contents();
     }
 
     public @NotNull String contents()
@@ -98,9 +116,27 @@ public class ConfigurationHolder
         return contents;
     }
 
+    /**
+     * @deprecated Use {@link #defaultConfig()}
+     */
+    @Deprecated
+    public @NotNull Configuration getDefaultConfiguration()
+    {
+        return defaultConfig();
+    }
+
     public @NotNull Configuration defaultConfig()
     {
         return defaultConfiguration;
+    }
+
+    /**
+     * @deprecated Use {@link #config()}
+     */
+    @Deprecated
+    public synchronized @NotNull Configuration getConfiguration()
+    {
+        return config();
     }
 
     public synchronized @NotNull Configuration config()
