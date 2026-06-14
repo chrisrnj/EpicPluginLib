@@ -1,6 +1,6 @@
 language: java
 
-jdk: openjdk21
+jdk: openjdk25
 
 script: mvn clean install
 
