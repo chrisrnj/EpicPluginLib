@@ -79,7 +79,7 @@ public final class EpicPluginLibBukkit extends JavaPlugin
             List<String> depend = desc.getDepend();
             List<String> softDepend = desc.getSoftDepend();
 
-            // On older versions of bukkit PluginDescriptionFile#getDepend and PluginDescriptionFile#getSoftDepend could be null if empty.
+            //noinspection ConstantValue - On older versions of bukkit PluginDescriptionFile#getDepend and PluginDescriptionFile#getSoftDepend could be null if empty.
             if (depend == null ? softDepend != null && softDepend.contains("EpicPluginLib") : depend.contains("EpicPluginLib")) {
                 logger.log("Dependency found: " + plugin.getName() + ".");
                 ++dependingPlugins;
