@@ -18,6 +18,7 @@
 
 package com.epicnicity322.epicpluginlib.bukkit.scheduler;
 
+import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.scheduler.Scheduled;
 import com.epicnicity322.epicpluginlib.core.scheduler.TaskFactory;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -35,7 +36,8 @@ import java.util.function.Consumer;
  * A class containing implementations of TaskFactory for Folia API.
  * <p>
  * Although this is intended for folia, use for Paper is encouraged as well, as it will work fine either on Paper or
- * Folia servers.
+ * Folia servers. You can check if the server supports the new scheduler using the method
+ * {@link EpicPluginLib.Platform#hasThreadedRegions()}.
  * <p>
  * <b>Available Schedulers:</b>
  * <ul>

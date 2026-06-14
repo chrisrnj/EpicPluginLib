@@ -88,6 +88,7 @@ public final class EpicPluginLib
         private static final @NotNull ComparableVersion version;
         private static final boolean paper = getClass("com.destroystokyo.paper.ParticleBuilder") != null;
         private static final boolean folia = getClass("io.papermc.paper.threadedregions.RegionizedServer") != null;
+        private static final boolean hasThreadedRegions = getClass("io.papermc.paper.threadedregions.scheduler.AsyncScheduler") != null;
 
         static {
             if (getClass("org.bukkit.Bukkit") != null) {
@@ -129,6 +130,18 @@ public final class EpicPluginLib
         public static boolean isFolia()
         {
             return folia;
+        }
+
+        /**
+         * Whether the server has an implementation of the new Paper scheduler.
+         * <p>
+         * This may be used to test whether Folia schedulers can be used interoperable between Paper and Folia servers.
+         *
+         * @return Whether "io.papermc.paper.threadedregions.scheduler.AsyncScheduler" class is found.
+         */
+        public static boolean hasThreadedRegions()
+        {
+            return hasThreadedRegions;
         }
 
         /**

@@ -103,7 +103,7 @@ public final class EpicPluginLibBukkit extends JavaPlugin
 
         // Checking for updates:
         if (mainConfig.config().getBoolean("Check for updates").orElse(true)) {
-            TaskFactory.Async taskFactory = EpicPluginLib.Platform.isPaper() ? FoliaTaskFactory.async(this) : BukkitTaskFactory.async(this);
+            TaskFactory.Async taskFactory = EpicPluginLib.Platform.hasThreadedRegions() ? FoliaTaskFactory.async(this) : BukkitTaskFactory.async(this);
             GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.VERSION, taskFactory);
 
             updateChecker.check((available, version) -> {
