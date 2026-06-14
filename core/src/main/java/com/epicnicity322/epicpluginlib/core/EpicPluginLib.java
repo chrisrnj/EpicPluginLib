@@ -25,8 +25,6 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-
 public final class EpicPluginLib
 {
     /**
@@ -57,27 +55,6 @@ public final class EpicPluginLib
 
     private EpicPluginLib()
     {
-    }
-
-    public static void main(String[] args)
-    {
-        System.out.println("I am a library, not an application!");
-
-        JFrame frame = new JFrame("Sorry");
-        JLabel textArea = new JLabel(" I am a library, not an application!");
-
-        frame.add(textArea);
-        frame.setSize(210, 60);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-
-        try {
-            Thread.sleep(7500);
-        } catch (Exception ignored) {
-        }
-
-        System.exit(0);
     }
 
     public enum Platform
