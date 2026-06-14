@@ -22,8 +22,10 @@ import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationManager;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
-import com.epicnicity322.epicpluginlib.core.tools.GitHubUpdateChecker;
+import com.epicnicity322.epicpluginlib.core.scheduler.TaskFactory;
+import com.epicnicity322.epicpluginlib.core.updater.GitHubUpdateChecker;
 import com.epicnicity322.epicpluginlib.sponge.logger.Logger;
+import com.epicnicity322.epicpluginlib.sponge.scheduler.SpongeTaskFactory;
 import com.google.inject.Inject;
 import org.bstats.sponge.Metrics;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +33,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
-import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.util.Ticks;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.metric.MetricsConfigManager;
 import org.spongepowered.plugin.PluginContainer;
@@ -85,17 +85,14 @@ public final class EpicPluginLibSponge
 
         // Checking for updates:
         if (mainConfig.config().getBoolean("Check for updates").orElse(true)) {
-            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.version);
+            TaskFactory.Async taskFactory = SpongeTaskFactory.async(event.plugin());
+            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.VERSION, taskFactory);
 
             updateChecker.check((available, version) -> {
                 if (!available) return;
 
                 // Update available alerting task.
-                Sponge.asyncScheduler().submit(Task.builder()
-                        .plugin(event.plugin())
-                        .interval(Ticks.of(36000))
-                        .execute(() -> logger.log("EpicPluginLib v" + version + " is available. Please update."))
-                        .build());
+                taskFactory.repeating(0, 36000, task -> logger.log("EpicPluginLib v" + version + " is available. Please update."));
             });
         }
 

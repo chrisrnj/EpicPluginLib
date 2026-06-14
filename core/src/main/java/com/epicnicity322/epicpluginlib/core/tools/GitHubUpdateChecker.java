@@ -30,7 +30,10 @@ import java.util.function.BiConsumer;
 
 /**
  * A class that allows you to check for new updates using your project's GitHub repository.
+ *
+ * @deprecated Use {@link com.epicnicity322.epicpluginlib.core.updater.GitHubUpdateChecker}
  */
+@Deprecated
 public class GitHubUpdateChecker
 {
     private final @NotNull Version currentVersion;

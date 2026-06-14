@@ -19,11 +19,14 @@
 package com.epicnicity322.epicpluginlib.bukkit;
 
 import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
+import com.epicnicity322.epicpluginlib.bukkit.scheduler.BukkitTaskFactory;
+import com.epicnicity322.epicpluginlib.bukkit.scheduler.FoliaTaskFactory;
 import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationManager;
 import com.epicnicity322.epicpluginlib.core.logger.ConsoleLogger;
-import com.epicnicity322.epicpluginlib.core.tools.GitHubUpdateChecker;
+import com.epicnicity322.epicpluginlib.core.scheduler.TaskFactory;
+import com.epicnicity322.epicpluginlib.core.updater.GitHubUpdateChecker;
 import com.epicnicity322.yamlhandler.loaders.YamlConfigurationLoader;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
@@ -100,19 +103,14 @@ public final class EpicPluginLibBukkit extends JavaPlugin
 
         // Checking for updates:
         if (mainConfig.config().getBoolean("Check for updates").orElse(true)) {
-            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.version);
+            TaskFactory.Async taskFactory = EpicPluginLib.Platform.isPaper() ? FoliaTaskFactory.async(this) : BukkitTaskFactory.async(this);
+            GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.VERSION, taskFactory);
 
             updateChecker.check((available, version) -> {
                 if (!available) return;
 
                 // Update available alerting task.
-                if (EpicPluginLib.Platform.isFolia()) {
-                    getServer().getGlobalRegionScheduler().runAtFixedRate(this, task ->
-                            logger.log("EpicPluginLib v" + version + " is available. Please update."), 1, 36000);
-                } else {
-                    getServer().getScheduler().runTaskTimerAsynchronously(this, task ->
-                            logger.log("EpicPluginLib v" + version + " is available. Please update."), 0, 36000);
-                }
+                taskFactory.repeating(0, 36000, task -> logger.log("EpicPluginLib v" + version + " is available. Please update."));
             });
         }
 
