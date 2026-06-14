@@ -105,7 +105,7 @@ public final class ReflectionUtil
      * Gets the version suffix of the Minecraft Server package.
      * <p>
      * The suffix might be blank depending on the server version the lib is running. For example: in versions newer or
-     * equal to 1.17 there is no suffix, so this is subject to change in any version. Use {@link EpicPluginLib.Platform#getVersion()}
+     * equal to 1.17 there is no suffix, so this is subject to change in any version. Use {@link EpicPluginLib.Platform#version()}
      * if you're looking for the running server version.
      *
      * @return The suffix of net.minecraft.server package, blank if there isn't one.
@@ -119,7 +119,7 @@ public final class ReflectionUtil
      * Gets the version suffix of the CraftBukkit package.
      * <p>
      * The suffix might be blank depending on the version of CraftBukkit the lib is running. For example: in versions
-     * older than 1.4.5 there was no suffix, so this is subject to change in any version. Use {@link EpicPluginLib.Platform#getVersion()}
+     * older than 1.4.5 there was no suffix, so this is subject to change in any version. Use {@link EpicPluginLib.Platform#version()}
      * if you're looking for the running server version.
      *
      * @return The suffix of org.bukkit.craftbukkit package, blank if there isn't one.

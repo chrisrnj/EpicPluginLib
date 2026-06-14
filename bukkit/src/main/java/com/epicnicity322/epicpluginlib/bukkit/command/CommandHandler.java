@@ -19,7 +19,7 @@
 package com.epicnicity322.epicpluginlib.bukkit.command;
 
 import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
-import com.epicnicity322.epicpluginlib.core.tools.Version;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -34,7 +34,7 @@ import java.util.List;
 public final class CommandHandler implements CommandExecutor, TabCompleter
 {
     //Tab completions are already sorted in 1.13+
-    private static final boolean sortCompletions = EpicPluginLib.Platform.getVersion().compareTo(new Version("1.13")) < 0;
+    private static final boolean sortCompletions = EpicPluginLib.Platform.version().compareTo(new ComparableVersion("1.13")) < 0;
     private final @NotNull Collection<? extends Command> subCommands;
     private final @Nullable CommandRunnable onDescription;
     private final @Nullable CommandRunnable onUnknownCommand;

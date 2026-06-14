@@ -18,47 +18,31 @@
 
 package com.epicnicity322.epicpluginlib.core.tools;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.regex.Pattern;
-
+/**
+ * @deprecated In favour of {@link ComparableVersion}. Removal scheduled for 3.0.
+ */
+@Deprecated
 public class Version implements Comparable<Version>
 {
-    private static final @NotNull Pattern validVersion = Pattern.compile("^\\d+(\\.\\d+)+$");
-    private static final @NotNull Pattern versionSeparator = Pattern.compile("\\.");
-    private final @NotNull String version;
+    private final @NotNull ComparableVersion version;
 
     public Version(@NotNull String version)
     {
-        if (!validVersion.matcher(version).matches())
-            throw new IllegalArgumentException("'" + version + "' is not a valid version");
-
-        this.version = version;
+        this.version = new ComparableVersion(version);
     }
 
     public final @NotNull String getVersion()
     {
-        return version;
+        return version.toString();
     }
 
     @Override
     public int compareTo(@NotNull Version version)
     {
-        String[] versionNodes = versionSeparator.split(getVersion());
-        String[] greaterNodes = versionSeparator.split(version.getVersion());
-        int length = Math.max(versionNodes.length, greaterNodes.length);
-
-        for (int i = 0; i < length; ++i) {
-            int versionNode = i < versionNodes.length ? Integer.parseInt(versionNodes[i]) : 0;
-            int greaterNode = i < greaterNodes.length ? Integer.parseInt(greaterNodes[i]) : 0;
-
-            if (versionNode < greaterNode)
-                return -1;
-            else if (versionNode != greaterNode)
-                return 1;
-        }
-
-        return 0;
+        return this.version.compareTo(version.version);
     }
 
     @Override
@@ -68,12 +52,12 @@ public class Version implements Comparable<Version>
         if (!(o instanceof Version)) return false;
 
         Version that = (Version) o;
-        return compareTo(that) == 0;
+        return version.equals(that.version);
     }
 
     @Override
     public @NotNull String toString()
     {
-        return version;
+        return version.toString();
     }
 }

@@ -21,6 +21,7 @@ package com.epicnicity322.epicpluginlib.core;
 import com.epicnicity322.epicpluginlib.common.BukkitVersion;
 import com.epicnicity322.epicpluginlib.common.SpongeVersion;
 import com.epicnicity322.epicpluginlib.core.tools.Version;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,13 +31,29 @@ public final class EpicPluginLib
 {
     /**
      * The version of EpicPluginLib as string.
+     *
+     * @deprecated Use {@link #VERSION_STRING}
      */
+    @Deprecated
     public static final @NotNull String versionString = EpicPluginLibVersion.version;
+
+    /**
+     * The version of EpicPluginLib as a string.
+     */
+    public static final @NotNull String VERSION_STRING = EpicPluginLibVersion.version;
+
+    /**
+     * The version of EpicPluginLib.
+     *
+     * @deprecated Use {@link #VERSION}
+     */
+    @Deprecated
+    public static final @NotNull Version version = new Version(VERSION_STRING);
 
     /**
      * The version of EpicPluginLib.
      */
-    public static final @NotNull Version version = new Version(versionString);
+    public static final @NotNull ComparableVersion VERSION = new ComparableVersion(VERSION_STRING);
 
     private EpicPluginLib()
     {
@@ -68,20 +85,20 @@ public final class EpicPluginLib
         BUKKIT, SPONGE, UNKNOWN;
 
         private static final @NotNull Platform platform;
-        private static final @NotNull Version version;
+        private static final @NotNull ComparableVersion version;
         private static final boolean paper = getClass("com.destroystokyo.paper.ParticleBuilder") != null;
         private static final boolean folia = getClass("io.papermc.paper.threadedregions.RegionizedServer") != null;
 
         static {
             if (getClass("org.bukkit.Bukkit") != null) {
                 platform = BUKKIT;
-                version = new Version(BukkitVersion.getVersion());
+                version = new ComparableVersion(BukkitVersion.getVersion());
             } else if (getClass("org.spongepowered.api.Sponge") != null) {
                 platform = SPONGE;
-                version = new Version(SpongeVersion.getVersion());
+                version = new ComparableVersion(SpongeVersion.getVersion());
             } else {
                 platform = UNKNOWN;
-                version = new Version("0.0");
+                version = new ComparableVersion("0.0");
             }
         }
 
@@ -118,8 +135,20 @@ public final class EpicPluginLib
          * Gets the current platform EpicPluginLib is running on.
          *
          * @return The enum referencing to the platform EpicPluginLib was initialized on.
+         * @deprecated Use {@link #current()}
          */
+        @Deprecated
         public static @NotNull Platform getPlatform()
+        {
+            return current();
+        }
+
+        /**
+         * Gets the current platform EpicPluginLib is running on.
+         *
+         * @return The enum referencing to the platform EpicPluginLib was initialized on.
+         */
+        public static @NotNull Platform current()
         {
             return platform;
         }
@@ -128,8 +157,20 @@ public final class EpicPluginLib
          * Gets the version of the current platform EpicPluginLib is running on.
          *
          * @return The version of the platform EpicPluginLib is running, 0.0 in case platform is {@link #UNKNOWN}.
+         * @deprecated Use {@link #version()}
          */
+        @Deprecated
         public static @NotNull Version getVersion()
+        {
+            return new Version(version.toString());
+        }
+
+        /**
+         * Gets the version of the current platform EpicPluginLib is running on.
+         *
+         * @return The version of the platform EpicPluginLib is running, 0.0 in case platform is {@link #UNKNOWN}.
+         */
+        public static @NotNull ComparableVersion version()
         {
             return version;
         }

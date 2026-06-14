@@ -50,12 +50,13 @@
     </licenses>
 
     <properties>
-        <bukkit.version>1.21.11-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>[26.1.2.build,)</bukkit.version>
         <sponge.version>18.0.0-SNAPSHOT</sponge.version>
-        <bstats.version>3.1.0</bstats.version>
+        <bstats.version>3.2.1</bstats.version>
         <yaml-handler.version>f17f51aa56</yaml-handler.version>
         <gson.version>2.13.2</gson.version>
-        <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
+        <maven-artifact.version>3.9.16</maven-artifact.version>
+        <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven.compiler.release>8</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -74,7 +75,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.1</version>
+                <version>3.15.0</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-Xpkginfo:always</arg>
@@ -92,11 +93,18 @@
     </repositories>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+        <!-- Source: https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.2-1</version>
+            <version>26.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.46</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

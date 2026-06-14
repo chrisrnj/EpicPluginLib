@@ -25,6 +25,7 @@ import com.epicnicity322.yamlhandler.Configuration;
 import com.epicnicity322.yamlhandler.exceptions.InvalidConfigurationException;
 import com.epicnicity322.yamlhandler.loaders.YamlConfigurationLoader;
 import com.epicnicity322.yamlhandler.serializers.CustomSerializer;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,9 +43,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConfigurationManager
 {
-    private static final @NotNull Version[] dummyMinMaxVersion = new Version[0];
+    private static final @NotNull ComparableVersion[] dummyMinMaxVersion = new ComparableVersion[0];
     final @NotNull YamlConfigurationLoader loader;
-    private final @NotNull Map<ConfigurationHolder, Version[]> configurations = new ConcurrentHashMap<>();
+    private final @NotNull Map<ConfigurationHolder, ComparableVersion[]> configurations = new ConcurrentHashMap<>();
 
     public ConfigurationManager(@NotNull CustomSerializer<?> @Nullable ... customSerializers)
     {
@@ -56,7 +57,7 @@ public class ConfigurationManager
      * on {@link #loadConfigurations()}.
      *
      * @param configuration The configuration to be updated on {@link #loadConfigurations()}.
-     * @see #registerConfiguration(ConfigurationHolder, Version, Version)
+     * @see #registerConfiguration(ConfigurationHolder, ComparableVersion, ComparableVersion)
      */
     public void registerConfiguration(@NotNull ConfigurationHolder configuration)
     {
@@ -74,15 +75,34 @@ public class ConfigurationManager
      * @param minimumVersion The minimum version this configuration can have to not be restored.
      * @param maximumVersion The maximum version this configuration can have to not be restored.
      * @see #loadConfigurations()
+     * @deprecated Use ComparableVersion {@link #registerConfiguration(ConfigurationHolder, ComparableVersion, ComparableVersion)}
      */
+    @Deprecated
     public void registerConfiguration(@NotNull ConfigurationHolder configuration, @Nullable Version minimumVersion, @Nullable Version maximumVersion)
     {
-        Version[] minMaxVersion;
+        registerConfiguration(configuration, minimumVersion == null ? null : new ComparableVersion(minimumVersion.getVersion()), maximumVersion == null ? null : new ComparableVersion(maximumVersion.getVersion()));
+    }
+
+    /**
+     * Registers a {@link ConfigurationHolder} to have its {@link ConfigurationHolder#config()} value updated
+     * on {@link #loadConfigurations()}.
+     * <p>
+     * Configurations can have minimum or maximum versions. Configurations that don't have "Version" key or is out of
+     * the specified range will be restored to their default values.
+     *
+     * @param configuration  The configuration to be updated on {@link #loadConfigurations()}.
+     * @param minimumVersion The minimum version this configuration can have to not be restored.
+     * @param maximumVersion The maximum version this configuration can have to not be restored.
+     * @see #loadConfigurations()
+     */
+    public void registerConfiguration(@NotNull ConfigurationHolder configuration, @Nullable ComparableVersion minimumVersion, @Nullable ComparableVersion maximumVersion)
+    {
+        ComparableVersion[] minMaxVersion;
 
         if (minimumVersion == null && maximumVersion == null) {
             minMaxVersion = dummyMinMaxVersion;
         } else {
-            minMaxVersion = new Version[]{minimumVersion, maximumVersion};
+            minMaxVersion = new ComparableVersion[]{minimumVersion, maximumVersion};
         }
 
         configurations.put(configuration, minMaxVersion);
@@ -126,7 +146,7 @@ public class ConfigurationManager
         configurations.entrySet().stream().parallel().forEach(configurationEntry -> {
             ConfigurationHolder config = configurationEntry.getKey();
             Path path = config.path();
-            Version[] minAndMaxVersions = configurationEntry.getValue();
+            ComparableVersion[] minAndMaxVersions = configurationEntry.getValue();
 
             try (PathLocker.LockToken ignored = PathLocker.lock(path)) {
                 Configuration configuration = null;
@@ -134,13 +154,14 @@ public class ConfigurationManager
 
                 if (Files.exists(path)) {
                     if (minAndMaxVersions != dummyMinMaxVersion) {
-                        Version version = null;
+                        ComparableVersion version = null;
 
                         try {
                             configuration = loader.load(path);
                             Optional<Object> versionOptional = configuration.getObject("Version");
 
-                            if (versionOptional.isPresent()) version = new Version(versionOptional.get().toString());
+                            if (versionOptional.isPresent())
+                                version = new ComparableVersion(versionOptional.get().toString());
                         } catch (InvalidConfigurationException | IllegalArgumentException | IOException ignored1) {
                         }
 
