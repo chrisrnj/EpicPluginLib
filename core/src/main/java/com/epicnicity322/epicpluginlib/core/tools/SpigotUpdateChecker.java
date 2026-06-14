@@ -28,7 +28,9 @@ import java.util.function.BiConsumer;
 
 /**
  * A class to check for updates on spigotmc.org.
+ * @deprecated Use {@link com.epicnicity322.epicpluginlib.core.updater.SpigotUpdateChecker}
  */
+@Deprecated
 public class SpigotUpdateChecker
 {
     private final int id;
