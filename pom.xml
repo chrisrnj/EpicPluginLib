@@ -53,7 +53,7 @@
         <bukkit.version>[26.1.2.build,)</bukkit.version>
         <sponge.version>18.0.0-SNAPSHOT</sponge.version>
         <bstats.version>3.2.1</bstats.version>
-        <yaml-handler.version>f17f51aa56</yaml-handler.version>
+        <yaml-handler.version>1.5.3</yaml-handler.version>
         <gson.version>2.13.2</gson.version>
         <maven-artifact.version>3.9.16</maven-artifact.version>
         <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>

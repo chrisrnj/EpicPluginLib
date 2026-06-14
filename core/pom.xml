@@ -102,6 +102,12 @@
             <version>${yaml-handler.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.chrisrnj.yaml-handler</groupId>
+            <artifactId>yamlhandler-compat</artifactId>
+            <version>${yaml-handler.version}</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
