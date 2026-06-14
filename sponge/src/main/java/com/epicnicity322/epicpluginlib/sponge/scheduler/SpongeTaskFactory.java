@@ -81,9 +81,7 @@ public final class SpongeTaskFactory
             {
                 SpongeScheduled scheduled = new SpongeScheduled();
 
-                scheduled.task = Sponge.server().scheduler().submit(Task.builder().plugin(plugin).delay(Ticks.of(delay)).interval(Ticks.of(repeat)).execute(task -> {
-                    runnable.accept(scheduled);
-                }).build());
+                scheduled.task = Sponge.server().scheduler().submit(Task.builder().plugin(plugin).delay(Ticks.of(delay)).interval(Ticks.of(repeat)).execute(task -> runnable.accept(scheduled)).build());
 
                 return scheduled;
             }
@@ -127,9 +125,7 @@ public final class SpongeTaskFactory
             {
                 SpongeScheduled scheduled = new SpongeScheduled();
 
-                scheduled.task = Sponge.asyncScheduler().submit(Task.builder().plugin(plugin).delay(Ticks.of(delay)).interval(Ticks.of(repeat)).execute(task -> {
-                    runnable.accept(scheduled);
-                }).build());
+                scheduled.task = Sponge.asyncScheduler().submit(Task.builder().plugin(plugin).delay(Ticks.of(delay)).interval(Ticks.of(repeat)).execute(task -> runnable.accept(scheduled)).build());
 
                 return scheduled;
             }
