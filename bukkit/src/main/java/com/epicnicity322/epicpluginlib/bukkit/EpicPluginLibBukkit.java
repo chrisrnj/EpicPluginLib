@@ -21,6 +21,7 @@ package com.epicnicity322.epicpluginlib.bukkit;
 import com.epicnicity322.epicpluginlib.bukkit.logger.Logger;
 import com.epicnicity322.epicpluginlib.bukkit.scheduler.BukkitTaskFactory;
 import com.epicnicity322.epicpluginlib.bukkit.scheduler.FoliaTaskFactory;
+import com.epicnicity322.epicpluginlib.common.BukkitVersion;
 import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationHolder;
 import com.epicnicity322.epicpluginlib.core.config.ConfigurationManager;
@@ -29,15 +30,18 @@ import com.epicnicity322.epicpluginlib.core.scheduler.TaskFactory;
 import com.epicnicity322.epicpluginlib.core.updater.GitHubUpdateChecker;
 import com.epicnicity322.yamlhandler.loaders.YamlConfigurationLoader;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class EpicPluginLibBukkit extends JavaPlugin
 {
@@ -72,6 +76,24 @@ public final class EpicPluginLibBukkit extends JavaPlugin
     @Override
     public void onEnable()
     {
+        try {
+            if (YamlConfiguration.loadConfiguration(new InputStreamReader(Objects.requireNonNull(getResource("plugin.yml")))).getString("api-version", "1.13").equals("1.19")) {
+                // Spigot (and forks) did not support minor versions in 'api-version' until 1.20.5.
+                // EpicPluginLib-Bukkit supports only 1.19.2+, so we must check manually for 1.19 and 1.19.1.
+                String[] version = BukkitVersion.getVersion().split("\\.");
+                if (version[0].equals("1")) {
+                    if (Integer.parseInt(version[1]) < 19 || (version[1].equals("19") && (version.length == 2 || version[2].equals("1")))) {
+                        logger.log("The current server version is not supported by EpicPluginLib-Bukkit.", ConsoleLogger.Level.ERROR);
+                        logger.log("Use EpicPluginLib-Bukkit-Legacy instead!", ConsoleLogger.Level.ERROR);
+                        logger.log("Download it at: https://github.com/chrisrnj/EpicPluginLib/releases/latest", ConsoleLogger.Level.ERROR);
+                        getServer().getPluginManager().disablePlugin(this);
+                        return;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         int dependingPlugins = 0;
 
         for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
