@@ -22,5 +22,5 @@ import org.jetbrains.annotations.NotNull;
 
 final class EpicPluginLibVersion
 {
-    static final @NotNull String version = "3.0";
+    static final @NotNull String version = "3.1";
 }
