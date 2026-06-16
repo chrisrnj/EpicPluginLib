@@ -32,44 +32,51 @@ import java.util.Objects;
 public final class ReflectionUtil
 {
     private static final Method method_CraftPlayer_getHandle;
-    private static final Method method_PlayerConnection_sendPacket;
-    private static final Field field_EntityPlayer_playerConnection;
+    private static final Method method_ServerPlayerConnection_send;
+    private static final Field field_ServerPlayer_connection;
 
     static {
-        // Finding equivalents of PlayerConnection#sendPacket on the current version.
+        // Finding equivalents of ServerPlayerConnection#send on the current version.
         Method method_CraftPlayer_getHandle1 = null;
-        Method method_PlayerConnection_sendPacket1 = null;
-        Field field_EntityPlayer_playerConnection1 = null;
+        Method method_ServerPlayerConnection_send1 = null;
+        Field field_ServerPlayer_connection1 = null;
         try {
             Class<?> class_CraftPlayer = Objects.requireNonNull(getClass("CraftPlayer", SubPackageType.ENTITY));
 
-            Class<?> class_EntityPlayer = getClass("EntityPlayer", PackageType.MINECRAFT_SERVER);
-            if (class_EntityPlayer == null)
-                class_EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
+            Class<?> class_ServerPlayer = getClass("net.minecraft.server.level.ServerPlayer");
+            if (class_ServerPlayer == null) {
+                class_ServerPlayer = getClass("net.minecraft.server.level.EntityPlayer");
+                if (class_ServerPlayer == null)
+                    class_ServerPlayer = Objects.requireNonNull(getClass("EntityPlayer", PackageType.MINECRAFT_SERVER));
+            }
 
-            Class<?> class_Packet = getClass("Packet", PackageType.MINECRAFT_SERVER);
-            if (class_Packet == null) class_Packet = Class.forName("net.minecraft.network.protocol.Packet");
+            Class<?> class_Packet = getClass("net.minecraft.network.protocol.Packet");
+            if (class_Packet == null)
+                class_Packet = Objects.requireNonNull(getClass("Packet", PackageType.MINECRAFT_SERVER));
 
-            Class<?> class_PlayerConnection = getClass("PlayerConnection", PackageType.MINECRAFT_SERVER);
-            if (class_PlayerConnection == null)
-                class_PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
+            Class<?> class_ServerPlayerConnection = getClass("net.minecraft.server.network.ServerPlayerConnection");
+            if (class_ServerPlayerConnection == null) {
+                class_ServerPlayerConnection = getClass("net.minecraft.server.network.PlayerConnection");
+                if (class_ServerPlayerConnection == null)
+                    class_ServerPlayerConnection = Objects.requireNonNull(getClass("PlayerConnection", PackageType.MINECRAFT_SERVER));
+            }
 
-            method_CraftPlayer_getHandle1 = Objects.requireNonNull(getMethod(class_CraftPlayer, "getHandle"));
-            field_EntityPlayer_playerConnection1 = Objects.requireNonNull(findFieldByType(class_EntityPlayer, class_PlayerConnection));
+            method_CraftPlayer_getHandle1 = class_CraftPlayer.getMethod("getHandle");
+            field_ServerPlayer_connection1 = Objects.requireNonNull(findFieldByType(class_ServerPlayer, class_ServerPlayerConnection));
 
             // Finding send packet method.
-            for (Method m : class_PlayerConnection.getMethods()) {
+            for (Method m : class_ServerPlayerConnection.getMethods()) {
                 if (m.getReturnType() == Void.TYPE && DataType.equalsArray(m.getParameterTypes(), new Class[]{class_Packet})) {
-                    method_PlayerConnection_sendPacket1 = m;
+                    method_ServerPlayerConnection_send1 = m;
                     break;
                 }
             }
         } catch (Exception e) {
-            new Exception("Could not find equivalent of PlayerConnection#sendPacket. Does the server have NMS?", e).printStackTrace();
+            new Exception("Could not find equivalent of ServerPlayerConnection#send. Does the server have NMS?", e).printStackTrace();
         }
         method_CraftPlayer_getHandle = method_CraftPlayer_getHandle1;
-        method_PlayerConnection_sendPacket = method_PlayerConnection_sendPacket1;
-        field_EntityPlayer_playerConnection = field_EntityPlayer_playerConnection1;
+        method_ServerPlayerConnection_send = method_ServerPlayerConnection_send1;
+        field_ServerPlayer_connection = field_ServerPlayer_connection1;
     }
 
     private ReflectionUtil()
@@ -78,24 +85,39 @@ public final class ReflectionUtil
 
     /**
      * Sends a net.minecraft.server packet to a player. In order to be compatible with all versions, reflection is used
-     * to find the equivalent of PlayerConnection#sendPacket method in the current version.
+     * to find the equivalent of ServerPlayerConnection#send method in the current version.
      *
      * @param player The player to send the packet.
      * @param packet The packet to send to the player.
-     * @throws UnsupportedOperationException If PlayerConnection#sendPacket could not be found in the running server.
+     * @throws UnsupportedOperationException If ServerPlayerConnection#send could not be found in the running server.
      * @throws RuntimeException              If there was an issue invoking the methods or getting the playerConnection field.
+     * @see #sendPackets(Player, Object...)
      */
     public static void sendPacket(@NotNull Player player, @NotNull Object packet)
     {
+        sendPackets(player, packet);
+    }
+
+    /**
+     * Sends multiple net.minecraft.server packet to a player. In order to be compatible with all versions, reflection is used
+     * to find the equivalent of ServerPlayerConnection#send method in the current version.
+     *
+     * @param player  The player to send the packet.
+     * @param packets The packets to send to the player.
+     * @throws UnsupportedOperationException If ServerPlayerConnection#send could not be found in the running server.
+     * @throws RuntimeException              If there was an issue invoking the methods or getting the playerConnection field.
+     */
+    public static void sendPackets(@NotNull Player player, @NotNull Object... packets)
+    {
         if (method_CraftPlayer_getHandle == null) {
-            throw new UnsupportedOperationException("Packet could not be sent because the equivalent of PlayerConnection#sendPacket could not be found.");
+            throw new UnsupportedOperationException("Packet could not be sent because the equivalent of ServerPlayerConnection#send could not be found.");
         }
 
         try {
             Object entityPlayer = method_CraftPlayer_getHandle.invoke(player);
-            Object playerConnection = field_EntityPlayer_playerConnection.get(entityPlayer);
+            Object playerConnection = field_ServerPlayer_connection.get(entityPlayer);
 
-            method_PlayerConnection_sendPacket.invoke(playerConnection, packet);
+            for (Object packet : packets) method_ServerPlayerConnection_send.invoke(playerConnection, packet);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
