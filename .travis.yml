@@ -1,9 +1,0 @@
-language: java
-
-jdk: openjdk25
-
-script: mvn clean install
-
-os: linux
-
-dist: xenial
