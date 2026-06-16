@@ -337,7 +337,7 @@ public final class ReflectionUtil
     }
 
     /**
-     * Finds the first {@link Field} of a class that has the specified {@link Class} type, this is for both static and
+     * Finds the first {@link Field} of a class which the specified type is assignable from. This is for both static and
      * non-static fields.
      *
      * @param clazz     The class to look for the field.
@@ -348,7 +348,7 @@ public final class ReflectionUtil
     public static @Nullable Field findFieldByType(@NotNull Class<?> clazz, @NotNull Class<?> fieldType)
     {
         for (Field field : clazz.getDeclaredFields())
-            if (field.getType() == fieldType) {
+            if (fieldType.isAssignableFrom(field.getType())) {
                 trySetAccessible(field);
                 return field;
             }
@@ -357,7 +357,7 @@ public final class ReflectionUtil
     }
 
     /**
-     * Finds the first {@link Field} of a class that has the specified {@link Class} type.
+     * Finds the first {@link Field} of a class which the specified type is assignable from.
      *
      * @param clazz     The class to look for the field.
      * @param fieldType The class type the field is.
@@ -367,7 +367,7 @@ public final class ReflectionUtil
     public static @Nullable Field findFieldByType(@NotNull Class<?> clazz, @NotNull Class<?> fieldType, boolean isStatic)
     {
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType() != fieldType) continue;
+            if (!fieldType.isAssignableFrom(field.getType())) continue;
             if (isStatic == Modifier.isStatic(field.getModifiers())) {
                 trySetAccessible(field);
                 return field;
