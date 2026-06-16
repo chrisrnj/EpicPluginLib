@@ -55,7 +55,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <bukkit.version>[26.1.2.build,)</bukkit.version>
         <sponge.version>19.0.0-SNAPSHOT</sponge.version>
-        <yaml-handler.version>3193542ad0</yaml-handler.version>
+        <yaml-handler.version>00d05afa73</yaml-handler.version>
         <!-- Source: https://mvnrepository.com/artifact/org.bstats/bstats-base -->
         <bstats.version>3.2.1</bstats.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.code.gson/gson -->
