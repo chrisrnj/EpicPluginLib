@@ -120,14 +120,16 @@ public final class CommandHandler implements CommandExecutor, TabCompleter
                 if (permission == null || sender.hasPermission(permission)) {
                     String name = subCommand.getName();
 
-                    if (name.startsWith(args[0])) list.add(name);
+                    if (name.startsWith(args[0])) {
+                        list.add(name);
+                    } else {
+                        String[] aliases = subCommand.getAliases();
 
-                    String[] aliases = subCommand.getAliases();
-
-                    if (aliases != null) {
-                        for (String alias : subCommand.getAliases()) {
-                            if (alias != null && alias.startsWith(args[0])) {
-                                list.add(alias);
+                        if (aliases != null) {
+                            for (String alias : subCommand.getAliases()) {
+                                if (alias != null && alias.startsWith(args[0])) {
+                                    list.add(alias);
+                                }
                             }
                         }
                     }
