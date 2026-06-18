@@ -85,7 +85,7 @@ public final class EpicPluginLibSponge
 
         // Checking for updates:
         if (mainConfig.config().getBoolean("Check for updates").orElse(true)) {
-            TaskFactory.Async taskFactory = SpongeTaskFactory.async(event.plugin());
+            TaskFactory.Async taskFactory = new SpongeTaskFactory(event.plugin()).async();
             GitHubUpdateChecker updateChecker = new GitHubUpdateChecker("chrisrnj/EpicPluginLib", EpicPluginLib.VERSION, taskFactory);
 
             updateChecker.check((available, version) -> {
