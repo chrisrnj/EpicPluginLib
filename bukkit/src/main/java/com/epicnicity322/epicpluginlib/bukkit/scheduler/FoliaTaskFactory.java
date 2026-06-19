@@ -136,7 +136,7 @@ public final class FoliaTaskFactory implements TaskFactoryProvider<World, Entity
             {
                 if (delay < 0) delay = 0;
                 if (repeat <= 0) repeat = 1;
-                return fromScheduledTask(plugin.getServer().getAsyncScheduler().runAtFixedRate(plugin, taskConsumer(runnable), delay * millisPerTick, repeat, TimeUnit.MILLISECONDS));
+                return fromScheduledTask(plugin.getServer().getAsyncScheduler().runAtFixedRate(plugin, taskConsumer(runnable), delay * millisPerTick, repeat * millisPerTick, TimeUnit.MILLISECONDS));
             }
         };
     }
