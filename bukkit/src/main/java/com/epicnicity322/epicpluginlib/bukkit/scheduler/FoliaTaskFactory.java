@@ -19,6 +19,7 @@
 package com.epicnicity322.epicpluginlib.bukkit.scheduler;
 
 import com.epicnicity322.epicpluginlib.core.EpicPluginLib;
+import com.epicnicity322.epicpluginlib.core.scheduler.ExecutorTaskFactory;
 import com.epicnicity322.epicpluginlib.core.scheduler.Scheduled;
 import com.epicnicity322.epicpluginlib.core.scheduler.TaskFactory;
 import com.epicnicity322.epicpluginlib.core.scheduler.TaskFactoryProvider;
@@ -50,7 +51,6 @@ import java.util.function.Consumer;
  */
 public final class FoliaTaskFactory implements TaskFactoryProvider<World, Entity>
 {
-    private static final long millisPerTick = 50;
     private final @NotNull Plugin plugin;
 
     public FoliaTaskFactory(@NotNull Plugin plugin)
@@ -127,7 +127,7 @@ public final class FoliaTaskFactory implements TaskFactoryProvider<World, Entity
                 if (delay <= 0) {
                     return fromScheduledTask(plugin.getServer().getAsyncScheduler().runNow(plugin, taskConsumer(runnable)));
                 } else {
-                    return fromScheduledTask(plugin.getServer().getAsyncScheduler().runDelayed(plugin, taskConsumer(runnable), delay * millisPerTick, TimeUnit.MILLISECONDS));
+                    return fromScheduledTask(plugin.getServer().getAsyncScheduler().runDelayed(plugin, taskConsumer(runnable), delay * ExecutorTaskFactory.MILLIS_PER_TICK, TimeUnit.MILLISECONDS));
                 }
             }
 
@@ -136,7 +136,7 @@ public final class FoliaTaskFactory implements TaskFactoryProvider<World, Entity
             {
                 if (delay < 0) delay = 0;
                 if (repeat <= 0) repeat = 1;
-                return fromScheduledTask(plugin.getServer().getAsyncScheduler().runAtFixedRate(plugin, taskConsumer(runnable), delay * millisPerTick, repeat * millisPerTick, TimeUnit.MILLISECONDS));
+                return fromScheduledTask(plugin.getServer().getAsyncScheduler().runAtFixedRate(plugin, taskConsumer(runnable), delay * ExecutorTaskFactory.MILLIS_PER_TICK, repeat * ExecutorTaskFactory.MILLIS_PER_TICK, TimeUnit.MILLISECONDS));
             }
         };
     }
